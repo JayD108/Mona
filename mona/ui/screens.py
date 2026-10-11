@@ -129,6 +129,9 @@ def open_lab(stage_id):
     if stage_id == "training":
         from .labs.timemachine import TimeMachineLab
         return TimeMachineLab()
+    if stage_id == "layers":
+        from .labs.layers import LayersLab
+        return LayersLab()
     if stage_id == "next":
         from .labs.sampling import SamplingLab
         return SamplingLab()
