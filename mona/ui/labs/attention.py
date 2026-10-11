@@ -104,7 +104,7 @@ class AttentionLab(Screen):
     def on_mount(self):
         self.cur_layer, self.cur_head, self.avg, self.focus_i, self.view_focus = 0, 0, False, None, False
         self.example_i, self.trace, self.quiz_q, self.quiz_wins = 0, None, None, 0
-        self.query_one("#sentence", Input).value = EXAMPLES[0]
+        self.query_one("#sentence", Input).value = getattr(self, "seed", None) or EXAMPLES[0]
         self.refresh_texts()
         self.run_trace()
 

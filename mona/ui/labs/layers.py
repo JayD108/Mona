@@ -69,7 +69,7 @@ class LayersLab(Screen):
 
     def on_mount(self):
         self.trace, self.pos = None, 0
-        self.query_one("#sentence", Input).value = self.EXAMPLE
+        self.query_one("#sentence", Input).value = getattr(self, "seed", None) or self.EXAMPLE
         self.refresh_texts()
         self.run()
 

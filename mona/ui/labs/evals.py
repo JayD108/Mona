@@ -130,9 +130,11 @@ class EvalsLab(Screen):
     def on_mount(self):
         self.exam_results, self.own = None, list(self.app.state.records.get("own_exam", []))
         self.query_one("#own-input", Input).value = "The opposite of hot is | cold* | blue | fast | loud"
-        self.query_one("#sur-input", Input).value = "भारत एक विशाल देश है। India is a vast country."
+        self.query_one("#sur-input", Input).value = getattr(self, "seed", None) or "भारत एक विशाल देश है। India is a vast country."
         self.refresh_texts()
         self.query_one("#exam-view").focus()
+        if getattr(self, "seed", None):
+            self.call_after_refresh(self.action_tab, "surprise")
 
     def refresh_texts(self):
         tr = self.app.tr

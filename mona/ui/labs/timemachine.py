@@ -122,7 +122,7 @@ class TimeMachineLab(Screen):
 
     def on_mount(self):
         self.rows = []                      # [(label, text or None)]
-        self.query_one("#prompt", Input).value = self.EXAMPLE
+        self.query_one("#prompt", Input).value = getattr(self, "seed", None) or self.EXAMPLE
         self.refresh_texts()
         self.ask()
         self.app.state.complete("training")

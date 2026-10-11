@@ -96,7 +96,7 @@ class SamplingLab(Screen):
         self.temp_i, self.topk_i, self.topp_i = TEMPS.index(1.0), 0, 0
         self.ids, self.gen, self.cands = [], [], []     # gen = [(Token, prob)]
         self.done = set(self.app.state.records.get("temp_challenges", []))
-        self.query_one("#prompt", Input).value = self.EXAMPLE
+        self.query_one("#prompt", Input).value = getattr(self, "seed", None) or self.EXAMPLE
         self.refresh_texts()
         self.start()
 

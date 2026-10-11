@@ -196,7 +196,7 @@ class TokensLab(Screen):
     def on_mount(self):
         self.merge_steps, self.merge_i, self.merge_timer = [], 0, None
         self.race_revealed, self.race_choice = False, None
-        self.query_one("#peek-input", Input).value = self.EXAMPLE
+        self.query_one("#peek-input", Input).value = getattr(self, "seed", None) or self.EXAMPLE
         self.query_one("#merge-input", Input).value = "भारत"
         self.refresh_texts()
         self.query_one("#peek-input").focus()

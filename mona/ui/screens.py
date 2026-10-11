@@ -55,7 +55,16 @@ class DisplayCheckScreen(Screen):
 
 class HomeScreen(Screen):
     BINDINGS = [Binding("l", "app.cycle_lang", "language"), Binding("d", "app.cycle_depth", "depth"),
-                Binding("r", "app.toggle_roman", "romanize"), Binding("q", "app.quit", "quit")]
+                Binding("r", "app.toggle_roman", "romanize"), Binding("q", "app.quit", "quit"),
+                Binding("s", "story", "story"), Binding("b", "badges", "badges")]
+
+    def action_story(self):
+        from .story import StoryScreen
+        self.app.push_screen(StoryScreen())
+
+    def action_badges(self):
+        from .story import BadgesScreen
+        self.app.push_screen(BadgesScreen())
 
     def compose(self) -> ComposeResult:
         yield Static(id="topbar")
@@ -99,7 +108,7 @@ class HomeScreen(Screen):
                                   (name, "bold" if sid in READY else "#8a8fb0"))
             stages.add_option(Option(label, id=sid))
         stages.highlighted = highlighted if highlighted is not None else 2
-        done = len(s.completed)
+        done = len([c for c in s.completed if c in {st[0] for st in STAGES}])   # stages only, not story
         bar = "█" * done + "░" * (len(STAGES) - done)
         badges = "   " + "  ".join(f"🏅 {b}" for b in s.badges) if s.badges else ""
         self.query_one("#progress", Static).update(

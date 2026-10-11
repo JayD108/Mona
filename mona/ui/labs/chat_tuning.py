@@ -109,7 +109,7 @@ class ChatTuningLab(Screen):
         self.examples, self.ex_i, self.cmp = None, 0, None
         self.query_one("#q", Input).value = "भारत की राजधानी क्या है?"
         self.query_one("#a", Input).value = "भारत की राजधानी नई दिल्ली है।"
-        self.query_one("#cmp-q", Input).value = "What is photosynthesis?"
+        self.query_one("#cmp-q", Input).value = getattr(self, "seed", None) or "What is photosynthesis?"
         self.refresh_texts()
         self.load_examples()
         self.app.state.complete("chat")
