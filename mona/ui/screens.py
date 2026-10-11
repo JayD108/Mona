@@ -132,6 +132,9 @@ def open_lab(stage_id):
     if stage_id == "data":
         from .labs.data import DataLab
         return DataLab()
+    if stage_id == "chat":
+        from .labs.chat_tuning import ChatTuningLab
+        return ChatTuningLab()
     if stage_id == "tokens":
         from .labs.tokens import TokensLab
         return TokensLab()
