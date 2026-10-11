@@ -1,4 +1,6 @@
 """MONA: the interactive terminal app.   Run:  mona   (or  python -m mona)"""
+from pathlib import Path
+
 from textual import work
 from textual.app import App
 from textual.binding import Binding
@@ -22,15 +24,20 @@ Screen { background: #14172b; color: #e8e8f0; }
 #stages { margin: 0 2; height: 1fr; border: round #3a3f5c; background: #14172b; }
 #progress { margin: 0 2 1 2; height: 1; }
 
-#tok-head { height: auto; max-height: 9; margin: 1 1 0 1; }
-#tok-head Vertical { height: auto; }
-#tok-avatar { width: 11; height: 5; }
-#tok-title { margin: 0; }
-#tok-explain { color: #c9cce0; padding: 0 1 0 0; height: auto; }
-#tok-input { margin: 1 1 0 1; border: tall #ffd166; }
-#tok-body { margin: 0 2; height: 1fr; }
-#tok-count { margin: 1 0 0 0; }
-#tok-chips { margin: 1 0 0 0; }
+/* labs */
+.lab-head { height: 6; margin: 1 1 0 1; }
+.lab-avatar { width: 11; }
+.lab-title { text-style: bold; color: #ffd166; padding: 2 1; }
+.explain { color: #c9cce0; margin: 1 1 0 1; height: auto; }
+.count { margin: 1 0 0 0; }
+.chips { margin: 1 0 0 0; }
+.panel { margin: 1 1; padding: 1 2; border: round #3a3f5c; height: auto; min-height: 5; }
+.panel:focus { border: round #ffd166; }
+.race-input { margin: 0 1; }
+TabbedContent { height: 1fr; }
+TabPane { padding: 0 1; }
+Input { margin: 1 1 0 1; border: tall #3a3f5c; }
+Input:focus { border: tall #ffd166; }
 
 #check-box { align: center middle; padding: 2 4; }
 #check-sample { text-style: bold; color: #ffd166; padding: 1 2; border: round #ffd166; width: auto; margin: 1 0; }
@@ -59,6 +66,16 @@ class MonaApp(App):
 
     def roman(self, text):
         return romanize(text)
+
+    @property
+    def tokenizer(self):
+        """MONA's tokenizer, available instantly (before the model has finished loading)."""
+        if self.gb is not None:
+            return self.gb.tok
+        if getattr(self, "_tok", None) is None:
+            from tokenizers import Tokenizer
+            self._tok = Tokenizer.from_file(str(Path(__file__).resolve().parents[2] / "models" / "mona" / "tokenizer.json"))
+        return self._tok
 
     # ── start-up ──────────────────────────────────────────────────────────────
     def on_mount(self):

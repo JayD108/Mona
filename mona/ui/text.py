@@ -75,46 +75,13 @@ S = {
     "yes": {"en": "Yes, looks right", "hi": "हाँ, सही है", "hinglish": "Haan, sahi hai"},
     "no": {"en": "No, it's broken", "hi": "नहीं, टूटा हुआ है", "hinglish": "Nahi, toota hua hai"},
 
-    # ── stage 2: tokens (teaser) ─────────────────────────────────────────────
-    "tok_title": {"en": "Tokens: how MONA reads", "hi": "टोकन: MONA कैसे पढ़ती है", "hinglish": "Tokens: MONA kaise padhti hai"},
-    "tok_prompt": {"en": "Type anything, in any language…", "hi": "कुछ भी लिखिए, किसी भी भाषा में…",
-                   "hinglish": "Kuch bhi likho, kisi bhi bhasha mein…"},
-    "tok_explain": {
-        "en": {"simple": "MONA doesn't read letters or whole words. It cuts text into pieces called tokens. "
-                         "Common words are one piece; rare words get cut into smaller pieces.",
-               "student": "Each coloured box is one token: a piece of text MONA knows. MONA has 32,768 of them, "
-                          "learned from data. Every token has a number (its id); MONA only ever sees those numbers.",
-               "engineer": "Byte-level BPE, 32,768 merges learned on a balanced EN/HI/Hinglish/Awadhi sample. Words are "
-                           "pre-split by a GPT-4-style regex with \\p{M} so Devanagari vowel signs stay attached."},
-        "hi": {"simple": "MONA अक्षर या पूरे शब्द नहीं पढ़ती। वह लिखे हुए को छोटे टुकड़ों में काटती है, जिन्हें टोकन कहते हैं। "
-                         "आम शब्द एक टुकड़ा होते हैं, कम दिखने वाले शब्द कई टुकड़ों में कटते हैं।",
-               "student": "हर रंगीन डिब्बा एक टोकन है: लिखाई का एक टुकड़ा जिसे MONA जानती है। MONA के पास ऐसे 32,768 टुकड़े हैं, "
-                          "जो उसने डेटा से सीखे। हर टोकन का एक नंबर (id) होता है; MONA केवल ये नंबर ही देखती है।",
-               "engineer": "बाइट-स्तर BPE, 32,768 merges, संतुलित EN/HI/Hinglish/अवधी नमूने पर सीखे गए। शब्दों को पहले "
-                           "GPT-4 जैसे regex (\\p{M} सहित) से अलग किया जाता है ताकि मात्राएँ अपने अक्षर से जुड़ी रहें।"},
-        "hinglish": {"simple": "MONA letters ya poore words nahi padhti. Woh text ko chhote tukdon mein kaatti hai, jinhe tokens kehte hain. "
-                               "Common words ek tukda hote hain, rare words kai tukdon mein katte hain.",
-                     "student": "Har rangeen box ek token hai: text ka ek tukda jo MONA jaanti hai. MONA ke paas 32,768 aise tukde hain, "
-                                "data se seekhe hue. Har token ka ek number (id) hota hai; MONA sirf yahi numbers dekhti hai.",
-                     "engineer": "Byte-level BPE, 32,768 merges, balanced EN/HI/Hinglish/Awadhi sample par seekhe. Words pehle "
-                                 "GPT-4-style regex (\\p{M} ke saath) se split hote hain taaki matras apne letter se judi rahein."},
-    },
-    "tok_count": {"en": "{chars} characters → {n} tokens", "hi": "{chars} अक्षर → {n} टोकन",
-                  "hinglish": "{chars} characters → {n} tokens"},
-    "next_title": {"en": "What MONA would write next", "hi": "MONA आगे क्या लिखेगी", "hinglish": "MONA aage kya likhegi"},
-    "next_explain": {
-        "en": {"simple": "Longer bar = MONA is more sure.",
-               "student": "MONA gives every one of its 32,768 tokens a probability. These are the top ones.",
-               "engineer": "softmax(logits) at the last position, temperature 1.0, top 8 of 32,768."},
-        "hi": {"simple": "लंबी पट्टी = MONA को ज़्यादा भरोसा है।",
-               "student": "MONA अपने सभी 32,768 टोकनों को एक संभावना देती है। ये सबसे ऊपर वाले हैं।",
-               "engineer": "आख़िरी स्थान पर softmax(logits), temperature 1.0, 32,768 में से शीर्ष 8।"},
-        "hinglish": {"simple": "Lambi bar = MONA ko zyada bharosa hai.",
-                     "student": "MONA apne saare 32,768 tokens ko ek probability deti hai. Yeh sabse upar wale hain.",
-                     "engineer": "Last position par softmax(logits), temperature 1.0, 32,768 mein se top 8."},
-    },
     "back": {"en": "Esc back", "hi": "Esc वापस", "hinglish": "Esc wapas"},
 }
+
+
+def register(entries):
+    """Each lab adds its own text when it is first opened."""
+    S.update(entries)
 
 
 def t(key, lang="en", depth="student", **fmt):

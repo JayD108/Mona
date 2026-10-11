@@ -16,6 +16,7 @@ class State:
     display_checked: bool = False
     completed: list = field(default_factory=list)   # stage ids
     badges: list = field(default_factory=list)
+    records: dict = field(default_factory=dict)     # challenge high scores
 
     @classmethod
     def load(cls):

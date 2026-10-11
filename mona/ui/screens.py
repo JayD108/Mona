@@ -1,15 +1,14 @@
 """The screens of the MONA app (Phase 0: display check, home, tokens)."""
 from rich.text import Text
-from textual import work
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
-from textual.widgets import Button, Input, OptionList, Static
+from textual.widgets import Button, OptionList, Static
 from textual.widgets.option_list import Option
 
 from .text import READY, STAGES, stage_name
-from .widgets import Avatar, prob_bars, token_chips
+from .widgets import Avatar
 
 
 class DisplayCheckScreen(Screen):
@@ -109,78 +108,19 @@ class HomeScreen(Screen):
         self.query_one("#keys", Static).update(tr("keys_home"))
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected):
-        sid = event.option.id
-        if sid == "tokens":
-            self.app.push_screen(TokenScreen())
+        lab = open_lab(event.option.id)
+        if lab:
+            self.app.push_screen(lab)
         else:
             self.app.notify(self.app.tr("soon"), timeout=3)
 
+    def on_screen_resume(self):
+        self.refresh_texts()            # progress / badges may have changed inside a lab
 
-class TokenScreen(Screen):
-    """Stage 2 (Phase 0 teaser): type anything -> see the tokens and MONA's next-token guesses."""
-    BINDINGS = [Binding("escape", "app.pop_screen", "back")]
-    EXAMPLE = "भारत एक विशाल देश है और"
 
-    def compose(self) -> ComposeResult:
-        with Horizontal(id="tok-head"):
-            yield Avatar(id="tok-avatar")
-            with Vertical():
-                yield Static(id="tok-title", classes="title")
-                yield Static(id="tok-explain")
-        yield Input(id="tok-input")
-        with VerticalScroll(id="tok-body"):
-            yield Static(id="tok-count")
-            yield Static(id="tok-chips")
-            yield Static(id="next-title", classes="subtitle")
-            yield Static(id="next-explain", classes="dim")
-            yield Static(id="next-bars")
-        yield Static(id="tok-keys", classes="keys")
-
-    def on_mount(self):
-        inp = self.query_one("#tok-input", Input)
-        inp.value = self.EXAMPLE
-        inp.focus()
-        self.refresh_texts()
-        self.recompute()
-
-    def refresh_texts(self):
-        tr = self.app.tr
-        self.query_one("#tok-title", Static).update(tr("tok_title"))
-        self.query_one("#tok-explain", Static).update(tr("tok_explain"))
-        self.query_one("#tok-input", Input).placeholder = tr("tok_prompt")
-        self.query_one("#next-title", Static).update(tr("next_title"))
-        self.query_one("#next-explain", Static).update(tr("next_explain"))
-        self.query_one("#tok-keys", Static).update(f"{tr('back')}   F2 language   F3 depth   F4 romanize")
-        self.recompute()
-
-    def on_engine_ready(self):
-        self.recompute()
-
-    def on_input_changed(self, event: Input.Changed):
-        self.recompute()
-
-    def recompute(self):
-        text = self.query_one("#tok-input", Input).value
-        if self.app.gb is None:
-            self.query_one("#tok-chips", Static).update(self.app.tr("loading"))
-            self.query_one("#tok-avatar", Avatar).set_mood("sleepy")
-            return
-        self.query_one("#tok-avatar", Avatar).set_mood("thinking")
-        self.analyse(text, self.app.state.depth)
-
-    @work(thread=True, exclusive=True)
-    def analyse(self, text, depth):
-        gb = self.app.gb
-        tokens = gb.tokens(text) if text else []
-        guesses = gb.next_word(text, top=8) if text else []
-        self.app.call_from_thread(self.show, text, tokens, guesses, depth)
-
-    def show(self, text, tokens, guesses, depth):
-        roman = self.app.roman if self.app.state.romanize else None
-        self.query_one("#tok-count", Static).update(
-            Text(self.app.tr("tok_count", chars=len(text), n=len(tokens)), style="bold #06d6a0"))
-        self.query_one("#tok-chips", Static).update(token_chips(tokens, roman, show_ids=depth != "simple"))
-        self.query_one("#next-bars", Static).update(prob_bars(guesses, roman) if guesses else "")
-        self.query_one("#tok-avatar", Avatar).set_mood("wow" if guesses and guesses[0].prob > 0.3 else "happy")
-        if tokens and "tokens" not in self.app.state.completed and len(text) > 3:
-            self.app.state.complete("tokens")
+def open_lab(stage_id):
+    """Labs are imported only when opened, so the app starts instantly."""
+    if stage_id == "tokens":
+        from .labs.tokens import TokensLab
+        return TokensLab()
+    return None
