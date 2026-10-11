@@ -46,9 +46,9 @@ S = {
     "journey": {"en": "THE JOURNEY OF A SENTENCE", "hi": "एक वाक्य का सफ़र", "hinglish": "EK SENTENCE KA SAFAR"},
     "progress": {"en": "your progress", "hi": "आपकी प्रगति", "hinglish": "aapki progress"},
     "keys_home": {
-        "en": "↑↓ choose  Enter open  S story mode  B badges  L language  D depth  R romanize  Q quit",
-        "hi": "↑↓ चुनें  Enter खोलें  S कहानी  B बैज  L भाषा  D गहराई  R रोमन लिपि  Q बंद करें",
-        "hinglish": "↑↓ chuno  Enter kholo  S story  B badges  L bhasha  D depth  R roman  Q band karo",
+        "en": "↑↓ choose  Enter open  S story mode  B badges  C vs big model  L language  D depth  R romanize  Q quit",
+        "hi": "↑↓ चुनें  Enter खोलें  S कहानी  B बैज  C बड़ा मॉडल  L भाषा  D गहराई  R रोमन लिपि  Q बंद करें",
+        "hinglish": "↑↓ chuno  Enter kholo  S story  B badges  C bada model  L bhasha  D depth  R roman  Q band karo",
     },
     "soon": {"en": "Coming soon: this stage is being built.", "hi": "जल्द आ रहा है: यह चरण बन रहा है।",
              "hinglish": "Jaldi aa raha hai: yeh stage ban raha hai."},

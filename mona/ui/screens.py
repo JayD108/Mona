@@ -56,7 +56,11 @@ class DisplayCheckScreen(Screen):
 class HomeScreen(Screen):
     BINDINGS = [Binding("l", "app.cycle_lang", "language"), Binding("d", "app.cycle_depth", "depth"),
                 Binding("r", "app.toggle_roman", "romanize"), Binding("q", "app.quit", "quit"),
-                Binding("s", "story", "story"), Binding("b", "badges", "badges")]
+                Binding("s", "story", "story"), Binding("b", "badges", "badges"), Binding("c", "compare", "compare")]
+
+    def action_compare(self):
+        from .labs.compare import CompareLab
+        self.app.push_screen(CompareLab())
 
     def action_story(self):
         from .story import StoryScreen

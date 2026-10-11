@@ -36,6 +36,8 @@ Screen { background: #14172b; color: #e8e8f0; }
 .race-input { margin: 0 1; }
 TabbedContent { height: 1fr; }
 .knobs { margin: 1 1 0 1; height: 1; }
+#cmp-cols { height: auto; }
+.cmp-col { width: 1fr; }
 .gen-text { margin: 0 1 1 1; padding: 1 2; border: round #3a3f5c; height: auto; }
 TabPane { padding: 0 1; }
 Input { margin: 1 1 0 1; border: tall #3a3f5c; }
