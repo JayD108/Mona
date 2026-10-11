@@ -382,3 +382,8 @@ class TokensLab(Screen):
             out.append(tr("ch_b_rec" if new else "ch_b_one", c=len(word), b=best), style="bold #06d6a0")
         self.query_one("#ch-result", Static).update(out)
         self.query_one("#avatar", Avatar).set_mood("wow" if n >= 6 or n == 1 else "happy")
+
+    def export(self):
+        from .. import exports
+        text = self.query_one("#peek-input", Input).value
+        return exports.tokens(text, self.app.gb.tokens(text) if self.app.gb else [])

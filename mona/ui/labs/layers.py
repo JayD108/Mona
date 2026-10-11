@@ -147,3 +147,10 @@ class LayersLab(Screen):
         self.query_one("#lens", Static).update(out)
         final = guesses[-1][0].prob
         self.query_one("#avatar", Avatar).set_mood("wow" if final > 0.4 else "thinking")
+
+    def export(self):
+        from .. import exports
+        if not self.trace:
+            return "Layers", "(nothing traced yet)", ""
+        guesses = [layer[self.pos] for layer in self.trace.layer_guesses]
+        return exports.layers(self.query_one("#sentence", Input).value, self.trace.tokens[self.pos].text, guesses)

@@ -251,3 +251,7 @@ class SamplingLab(Screen):
         self.query_one("#challenge", Static).update(ch)
         mood = "wow" if self.cands and self.cands[0][1] > 0.5 else ("thinking" if temp >= 1.6 else "happy")
         self.query_one("#avatar", Avatar).set_mood(mood)
+
+    def export(self):
+        from .. import exports
+        return exports.sampling(self.query_one("#prompt", Input).value, self.gen, *self.knobs)

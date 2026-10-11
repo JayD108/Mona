@@ -55,7 +55,7 @@ class MonaApp(App):
     CSS = CSS
     TITLE = "MONA"
     BINDINGS = [Binding("f2", "cycle_lang", "language", show=False), Binding("f3", "cycle_depth", "depth", show=False),
-                Binding("f4", "toggle_roman", "romanize", show=False)]
+                Binding("f4", "toggle_roman", "romanize", show=False), Binding("f9", "export", "export", show=False)]
 
     def __init__(self, weights=None):
         super().__init__()
@@ -113,6 +113,20 @@ class MonaApp(App):
     def action_cycle_depth(self):
         self.state.cycle("depth", DEPTHS)
         self._refresh_all()
+
+    def action_export(self):
+        """F9 anywhere: save a screenshot; labs that support it also save a report (.md) and a script (.py)."""
+        import datetime as dt
+        out_dir = Path.home() / "mona_exports"
+        out_dir.mkdir(exist_ok=True)
+        stamp = f"{dt.datetime.now():%Y%m%d_%H%M%S}_{type(self.screen).__name__.lower()}"
+        saved = [self.save_screenshot(filename=f"{stamp}.svg", path=str(out_dir))]
+        if hasattr(self.screen, "export"):
+            title, report, script = self.screen.export()
+            (out_dir / f"{stamp}.md").write_text(f"# {title}\n\n{report}\n", encoding="utf-8")
+            (out_dir / f"{stamp}.py").write_text(script, encoding="utf-8")
+            saved += [str(out_dir / f"{stamp}.md"), str(out_dir / f"{stamp}.py")]
+        self.notify("Saved: " + "  ".join(Path(s).name for s in saved) + f"  →  {out_dir}", timeout=6)
 
     def action_toggle_roman(self):
         self.state.romanize = not self.state.romanize

@@ -273,3 +273,11 @@ class AttentionLab(Screen):
             roles.append(tr("att_sink") + ":  ", style="#c9cce0")
             roles.append("   ".join(f"L{r['layer']}·H{r['head']} ({r['first']:.0%})" for r in sink), style="bold #cdb4db")
         self.query_one("#roles", Static).update(roles)
+
+    def export(self):
+        from .. import exports
+        if not self.trace:
+            return "Attention", "(nothing traced yet)", ""
+        head = None if self.avg else self.cur_head
+        return exports.attention(self.query_one("#sentence", Input).value, self.trace.tokens,
+                                 self.current().tolist(), self.cur_layer, head)

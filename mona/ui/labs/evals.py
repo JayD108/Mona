@@ -291,3 +291,8 @@ class EvalsLab(Screen):
                 out.append(f"{int(r['tokens']) / 1e9:7.2f}B " + "".join(f"{float(r[l]):10.3f}" for l in langs) + "\n",
                            style="#c9cce0")
         self.query_one("#trend", Static).update(out)
+
+    def export(self):
+        from .. import exports
+        results = self.exam_results or []
+        return exports.exam(results) if results else ("Evals", "(press R to run the exam first)", "")
