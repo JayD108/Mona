@@ -123,6 +123,9 @@ def open_lab(stage_id):
     if stage_id == "lm":
         from .labs.lm_game import LMGameLab
         return LMGameLab()
+    if stage_id == "embeddings":
+        from .labs.embeddings import EmbeddingsLab
+        return EmbeddingsLab()
     if stage_id == "tokens":
         from .labs.tokens import TokensLab
         return TokensLab()
