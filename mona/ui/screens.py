@@ -147,6 +147,9 @@ def open_lab(stage_id):
     if stage_id == "rag":
         from .labs.rag import RagLab
         return RagLab()
+    if stage_id == "beyond":
+        from .labs.beyond import BeyondLab
+        return BeyondLab()
     if stage_id == "tokens":
         from .labs.tokens import TokensLab
         return TokensLab()
