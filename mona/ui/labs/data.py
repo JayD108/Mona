@@ -246,15 +246,17 @@ class DataLab(Screen):
             manifest = json.loads((config.TOKENS_DIR / "manifest.json").read_text())
         except OSError:
             return
-        shares = {"english": 0.55, "hindi": 0.40, "hinglish": 0.049, "awadhi": 0.001}
+        # (stable-phase share, decay-phase share) from scripts/mona_pretrain.py; decay = last 15% of training
+        shares = {"english": (0.55, 0.55), "hindi": (0.40, 0.40), "hinglish": (0.049, 0.046), "awadhi": (0.001, 0.004)}
         total = sum(v["train_tokens"] for v in manifest.values())
         out = Text(tr("dat_mix_title") + "\n\n", style="bold #8ecae6")
         for c, (lang, v) in enumerate(sorted(manifest.items(), key=lambda kv: -kv[1]["train_tokens"])):
             n = v["train_tokens"]
             out.append(f"{lang:9s} ", style=f"bold {CHIP_COLOURS[c]}")
             out.append("█" * max(1, round(50 * n / total)), style=CHIP_COLOURS[c])
-            seen = shares.get(lang, 0) * 2.5e9 / n
-            out.append(f"  {n / 1e6:8,.1f}M tokens · {shares.get(lang, 0):.1%} of training · seen ~{seen:.1f}×\n", style="#c9cce0")
+            s_stable, s_decay = shares.get(lang, (0, 0))
+            seen = 2.5e9 * (0.85 * s_stable + 0.15 * s_decay) / n
+            out.append(f"  {n / 1e6:8,.1f}M tokens · {s_stable:.1%} of training · seen ~{seen:.1f}×\n", style="#c9cce0")
         out.append(f"\n{'total':9s} {total / 1e9:.2f}B tokens available · 2.5B used for training\n\n", style="bold")
         out.append(tr("dat_mix_note"), style="italic #c9cce0")
         self.query_one("#mix-view", Static).update(out)
