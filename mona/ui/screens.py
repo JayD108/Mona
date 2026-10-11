@@ -123,4 +123,7 @@ def open_lab(stage_id):
     if stage_id == "tokens":
         from .labs.tokens import TokensLab
         return TokensLab()
+    if stage_id == "next":
+        from .labs.sampling import SamplingLab
+        return SamplingLab()
     return None
