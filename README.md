@@ -1,5 +1,9 @@
 # MONA — a multilingual small LLM built from scratch
 
+> **Coming next: MONA Lab** — an interactive, playful terminal app where anyone can open up a real
+> LLM and see how it works, step by step, in English, Hindi or Hinglish. Plan:
+> [`docs/MONA_LAB_PLAN.md`](docs/MONA_LAB_PLAN.md)
+
 **MONA** is a ~110M-parameter Llama-style model (English + Hindi + Hinglish + Awadhi), built through
 every stage of a real LLM: data → tokenizer → architecture → pretraining → chat tuning → evaluation.
 Plan and numbers: [`docs/MONA_PLAN.md`](docs/MONA_PLAN.md).
@@ -42,6 +46,9 @@ Not in this repo (local only, many GB): `data/` (raw + cleaned text, token shard
 ## Data sources and licenses
 FineWeb-Edu (ODC-By) · AI4Bharat Sangraha (CC-BY-4.0) · smol-smoltalk (Apache-2.0) · Aya (Apache-2.0).
 The Tulsidas text is used for private research only and is not distributed here.
+
+## License
+MIT (see [`LICENSE`](LICENSE)). Datasets and model weights keep their own licenses (above).
 
 ## Acknowledgement
 Coding assisted by Claude (Anthropic).

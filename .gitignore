@@ -4,6 +4,7 @@
 
 !/.gitignore
 !/README.md
+!/LICENSE
 !/requirements-mona.txt
 
 !/mona/
@@ -23,6 +24,7 @@
 !/docs/
 /docs/*
 !/docs/MONA_PLAN.md
+!/docs/MONA_LAB_PLAN.md
 
 __pycache__/
 *.pyc
