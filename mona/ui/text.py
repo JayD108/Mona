@@ -24,7 +24,7 @@ STAGES = [  # id, English, हिंदी, Hinglish
     ("rag", "RAG", "RAG", "RAG"),
     ("beyond", "Beyond", "आगे", "Aage"),
 ]
-READY = {"lm", "data", "tokens", "embeddings", "next", "attention", "training", "layers", "evals", "chat"}          # stages that open in this version; the rest show "coming soon"
+READY = {"lm", "data", "tokens", "embeddings", "next", "attention", "training", "layers", "evals", "chat", "rag"}          # stages that open in this version; the rest show "coming soon"
 
 S = {
     "tagline": {

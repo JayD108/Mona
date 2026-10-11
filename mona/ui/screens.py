@@ -144,6 +144,9 @@ def open_lab(stage_id):
     if stage_id == "chat":
         from .labs.chat_tuning import ChatTuningLab
         return ChatTuningLab()
+    if stage_id == "rag":
+        from .labs.rag import RagLab
+        return RagLab()
     if stage_id == "tokens":
         from .labs.tokens import TokensLab
         return TokensLab()
