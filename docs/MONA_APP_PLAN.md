@@ -1,16 +1,16 @@
-# MONA Lab: plan
+# MONA: the interactive app (plan)
 
 > **Goal:** help anyone, from a school student to a curious adult to a developer, *understand how an LLM
 > works* by playing with a real one, step by step, in their own language.
-> **MONA** (the model we are training) is the **specimen** the learner dissects, not the end product.
-> **MONA Lab** is the product: an interactive, visual, playful terminal environment.
+> **MONA** is both: the model we train (the **specimen** learners open up) and the interactive, visual,
+> playful terminal app around it. One name, one command: `mona`.
 > This is a draft for your review. Nothing in it is built yet.
 
 ---
 
 ## 1. What makes it different
 
-| Most LLM tutorials | MONA Lab |
+| Most LLM tutorials | MONA |
 |---|---|
 | Slides, static diagrams, toy numbers | **A real model, real numbers.** Every chart comes from MONA's actual weights, activations and training logs |
 | English only | **English, Hindi and Hinglish** for every explanation, and the model itself speaks all three. Built for India's students first |
@@ -46,7 +46,7 @@ introduced *after* the learner has seen the thing, never before. Formulas only i
 
 ### 3.1 Home screen (sketch)
 ```
-╭─ MONA Lab ──────────────────────────────────────── EN | हिं | Hinglish ─ ⚙ ─╮
+╭─ MONA ──────────────────────────────────────── EN | हिं | Hinglish ─ ⚙ ─╮
 │   ◕‿◕  MONA: "Namaste! I'm a 110M-parameter language model.                 │
 │            Want to see what happens inside me when you type?"                │
 │                                                                              │
@@ -117,7 +117,7 @@ Each lab: **🎮 Play** (a game or experiment) → **🔬 See** (MONA's real int
 ## 7. Technical design
 
 ```
-mona_lab/
+mona/ (app parts)
 ├── engine/          "glass-box" API over MONA (no UI code)
 │   ├── inspect.py   tokenize, forward with hooks: attention maps, hidden states, logit lens
 │   ├── sample.py    step-by-step generation with full probability tables
@@ -132,7 +132,7 @@ mona_lab/
 ```
 - **Terminal only, always.** No web version: the terminal *is* the experience.
 - **Framework:** [Textual](https://textual.textualize.io/) (Python terminal UI: mouse, widgets, layouts, animation) + Rich for formatting. *(Exact versions to verify before building.)*
-- **One command:** `pip install mona-lab` → `mona` opens the Lab; `mona chat`, `mona train-tiny`, `mona eval`.
+- **One command:** `pip install mona` → `mona` opens the app; `mona chat`, `mona train-tiny`, `mona eval`.
 - **Models:** downloaded on first run from Hugging Face (MONA-Tiny ~45 MB, MONA-M ~440 MB) or used locally.
 - **Model change needed:** fast attention doesn't expose attention weights, so the engine adds an "inspection" path that computes them explicitly, used only for visualization.
 - ⚠️ **Known risk: Devanagari in terminals.** Hindi vowel signs render badly in some terminals and fonts. Mitigations (terminal only): a **display check on first run** (show a test word, ask "does this look right?") with fix steps per terminal (Windows Terminal + Nirmala UI, macOS Terminal, GNOME Terminal), and the **romanized display mode** as a fallback.
@@ -147,7 +147,7 @@ mona_lab/
 | **1. MVP (4 labs)** | ② Tokens, ⑥ Next word & sampling, ④ Attention, ⑦ Training time machine (MONA's real snapshots) + Playground chat | 4–6 sessions |
 | **2. The full journey** | ⓪ What is an LM, ① Data, ③ Embeddings, ⑤ Logit lens, ⑧ Chat tuning, ⑨ Evals, Story mode, quests and badges | 6–8 sessions |
 | **3. Beyond** | ⑩ RAG, ⑪ Quantization and tools, Ollama comparison, teacher mode, export | 5–7 sessions |
-| **4. Release** | `pip install mona-lab`, models on Hugging Face, docs, demo GIFs/videos, translations reviewed by native speakers | 2–3 sessions |
+| **4. Release** | `pip install mona`, models on Hugging Face, docs, demo GIFs/videos, translations reviewed by native speakers | 2–3 sessions |
 
 MONA-M's training (running now) is not blocked by any of this. Phase 0–1 can start on MONA-Tiny and the pilot model, then switch to MONA-M once it's done.
 
@@ -155,14 +155,14 @@ MONA-M's training (running now) is not blocked by any of this. Phase 0–1 can s
 
 ## 9. How we'll know it works
 - A beginner can explain "tokens, attention, next-word prediction" in their own words after Story mode (a short quiz at start and end measures it).
-- A student can build an eval and a mini RAG in the Lab without writing code.
+- A student can build an eval and a mini RAG inside MONA without writing code.
 - Testers in Hindi and English both finish the MVP labs without help.
 - It runs on a CPU-only laptop.
 
 ---
 
 ## 10. Decisions (made 2026-10-11)
-1. **Name:** MONA Lab.
+1. **Name:** MONA (no "Lab"): one name for the model and the app.
 2. **Audience:** college students and developers first; approachable for school students too (plain-language rule, §2).
 3. **Terminal only, always.**
 4. **MVP labs:** ② Tokens, ⑥ Next word & sampling, ④ Attention, ⑦ Training time machine.

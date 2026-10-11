@@ -1,8 +1,8 @@
 # MONA — a multilingual small LLM built from scratch
 
-> **Coming next: MONA Lab** — an interactive, playful terminal app where anyone can open up a real
-> LLM and see how it works, step by step, in English, Hindi or Hinglish. Plan:
-> [`docs/MONA_LAB_PLAN.md`](docs/MONA_LAB_PLAN.md)
+> **The MONA app** (in progress): an interactive, playful terminal app where anyone can open up a real
+> LLM and see how it works, step by step, in English, Hindi or Hinglish.
+> Try it: `pip install -e .` then run **`mona`**. Plan: [`docs/MONA_APP_PLAN.md`](docs/MONA_APP_PLAN.md)
 
 **MONA** is a ~110M-parameter Llama-style model (English + Hindi + Hinglish + Awadhi), built through
 every stage of a real LLM: data → tokenizer → architecture → pretraining → chat tuning → evaluation.
@@ -33,6 +33,8 @@ Code: `mona/` (config, tokenizer, model, data). Lessons you can run: `learn/01`�
 
 ```
 mona/        library: config.py, tokenizer.py (byte-level BPE), model.py (Llama-style decoder), data.py
+  engine/    glass box: tokens, next-word probabilities, attention maps, layer-by-layer guesses
+  ui/        the interactive terminal app (Textual): home, display check, stages
 pipeline/    mona_download, mona_clean, mona_tokenizer, mona_tokenize, mona_build_sft
 scripts/     mona_pretrain, mona_sft, mona_eval, mona_chat, mona_status, mona_run_all (job queue)
 ops/         unattended-training kit: power guard, watchdog, MONA_resume.cmd (Windows Startup)

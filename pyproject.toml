@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mona"
+version = "0.1.0"
+description = "MONA: open up a real language model and see how it thinks (English, Hindi, Hinglish)."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.4",
+    "tokenizers>=0.20",
+    "numpy",
+    "textual>=8.0",
+    "rich",
+    "indic-transliteration",
+]
+
+[project.optional-dependencies]
+train = ["pyarrow", "regex", "huggingface_hub", "matplotlib"]
+
+[project.scripts]
+mona = "mona.ui.app:main"
+
+[tool.setuptools.packages.find]
+include = ["mona*"]

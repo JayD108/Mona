@@ -6,6 +6,7 @@
 !/README.md
 !/LICENSE
 !/requirements-mona.txt
+!/pyproject.toml
 
 !/mona/
 !/learn/
@@ -24,7 +25,7 @@
 !/docs/
 /docs/*
 !/docs/MONA_PLAN.md
-!/docs/MONA_LAB_PLAN.md
+!/docs/MONA_APP_PLAN.md
 
 __pycache__/
 *.pyc
