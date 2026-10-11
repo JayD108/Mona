@@ -71,13 +71,15 @@ class Library:
 
 
 def build_library(n_wiki=3000, n_hinglish=1500):
-    """MONA's demo library: Tulsidas verse→meaning pairs + Hindi and Hinglish Wikipedia openings."""
+    """MONA's demo library: Tulsidas verses (public domain) + Hindi and Hinglish Wikipedia openings (CC BY-SA)."""
     lib = Library()
-    pairs = config.DATA_DIR / "processed" / "verse_meaning_pairs.jsonl"
-    if pairs.exists():
-        for line in open(pairs, encoding="utf-8"):
-            p = json.loads(line)
-            lib.add("tulsidas", p["verse"].split("\n")[0][:60], p["verse"] + "\n" + p["meaning"])
+    # Public-domain Tulsidas verses only, 4 lines per passage. The Gita Press commentary is likely still
+    # under copyright, so it is never part of MONA's library.
+    verse = config.DATA_DIR / "processed" / "tulsidas_verse_strict.txt"
+    if verse.exists():
+        lines = [l.strip() for l in open(verse, encoding="utf-8") if l.strip()]
+        for i in range(0, len(lines), 4):
+            lib.add("tulsidas", lines[i][:60], "\n".join(lines[i:i + 4]))
     for source, path, n in (("hindi-wiki", config.DATA_DIR / "raw/sft/hindi_wiki/synthetic/hin_Deva/wiki_hin_Deva_0000_of_0063.parquet", n_wiki),
                             ("hinglish-wiki", config.DATA_DIR / "raw/hinglish_sangraha/synthetic/hin_Latn/wiki_hin_Latn_0000_of_0063.parquet", n_hinglish)):
         if not path.exists():

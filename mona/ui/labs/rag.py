@@ -27,7 +27,7 @@ register({
                "student": "Retrieval-Augmented Generation: 1) search a library for text related to the question, 2) insert the "
                           "best passages into the prompt, 3) the model answers using them. Facts come from the library, not "
                           "the model's memory, so they can be updated, checked and cited. RAG only finds what's IN the library.",
-               "engineer": "BM25 retrieval (k1=1.5, b=0.75) over ~12K chunks (Tulsidas verse→meaning pairs, Hindi/Hinglish "
+               "engineer": "BM25 retrieval (k1=1.5, b=0.75) over ~12K chunks (Tulsidas verses, Hindi/Hinglish "
                            "Wikipedia openings) → top-k passages templated into the prompt → MONA generates (T=0.7). Real "
                            "systems use embedding search + rerankers; the pipeline is the same."},
         "hi": {"simple": "MONA हर तथ्य याद नहीं रख सकती, इसलिए कभी-कभी बातें गढ़ लेती है। RAG में हम पहले आपके सवाल के लिए एक "
@@ -35,7 +35,7 @@ register({
                "student": "Retrieval-Augmented Generation: 1) सवाल से जुड़ा पाठ पुस्तकालय में खोजो, 2) सबसे अच्छे अंश प्रॉम्प्ट में डालो, "
                           "3) मॉडल उन्हीं से जवाब देता है। तथ्य पुस्तकालय से आते हैं, मॉडल की याददाश्त से नहीं, इसलिए उन्हें बदला, "
                           "जाँचा और उद्धृत किया जा सकता है। RAG वही ढूँढ सकता है जो पुस्तकालय में है।",
-               "engineer": "~12K अंशों (तुलसीदास चौपाई→अर्थ, हिंदी/हिंग्लिश विकिपीडिया) पर BM25 खोज (k1=1.5, b=0.75) → शीर्ष-k अंश "
+               "engineer": "~12K अंशों (तुलसीदास की चौपाइयाँ, हिंदी/हिंग्लिश विकिपीडिया) पर BM25 खोज (k1=1.5, b=0.75) → शीर्ष-k अंश "
                            "प्रॉम्प्ट में → MONA जवाब बनाती है (T=0.7)। असली सिस्टम embedding खोज + reranker इस्तेमाल करते हैं; ढाँचा वही है।"},
         "hinglish": {"simple": "MONA har fact yaad nahi rakh sakti, isliye kabhi-kabhi baatein bana leti hai. RAG mein hum pehle "
                                "tumhare sawaal ke liye ek library mein dhoondte hain, jo mila use MONA ke prompt mein daalte hain, "
@@ -43,7 +43,7 @@ register({
                      "student": "Retrieval-Augmented Generation: 1) sawaal se juda text library mein dhoondo, 2) sabse achhe passages "
                                 "prompt mein daalo, 3) model unhi se jawab deta hai. Facts library se aate hain, model ki memory se "
                                 "nahi, isliye update, check aur cite ho sakte hain. RAG wahi dhoondh sakta hai jo library mein hai.",
-                     "engineer": "~12K chunks (Tulsidas chaupai→arth, Hindi/Hinglish Wikipedia) par BM25 search (k1=1.5, b=0.75) → "
+                     "engineer": "~12K chunks (Tulsidas chaupaiyan, Hindi/Hinglish Wikipedia) par BM25 search (k1=1.5, b=0.75) → "
                                  "top-k passages prompt mein → MONA generate karti hai (T=0.7). Asli systems embedding search + "
                                  "rerankers use karte hain; pipeline wahi hai."},
     },
@@ -121,7 +121,7 @@ class RagLab(Screen):
         self.lib = lib
         self.draw_lib()
         seed = getattr(self, "seed", None)
-        self.query_one("#question", Input).value = seed or "मंगल भवन अमंगल हारी का अर्थ क्या है?"
+        self.query_one("#question", Input).value = seed or "मंगल भवन अमंगल हारी द्रवउ सो दसरथ अजिर बिहारी"
         self.ask()
 
     def draw_lib(self):

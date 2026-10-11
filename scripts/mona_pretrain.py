@@ -53,10 +53,11 @@ p.add_argument("--stop-at", default=None, help="HH:MM local time: save and exit 
 p.add_argument("--resume", action="store_true")
 args = p.parse_args()
 
-# Awadhi has only ~0.9M tokens: 0.1% (stable) + 0.4% (decay) of 2.5B ≈ 4 passes in total, about the
-# most before a model starts memorising instead of learning (repeats up to ~4x cost almost nothing).
-MIX_STABLE = {"english": 0.55, "hindi": 0.40, "hinglish": 0.049, "awadhi": 0.001}
-MIX_DECAY  = {"english": 0.55, "hindi": 0.40, "hinglish": 0.046, "awadhi": 0.004}
+# Awadhi = public-domain Tulsidas VERSE only (~246K tokens; the copyrighted Gita Press commentary was removed
+# at 0.8B tokens). 0.026% (stable) + 0.104% (decay) of the remaining 1.7B tokens ≈ 3 passes: few enough
+# repeats that MONA learns the style instead of memorising.
+MIX_STABLE = {"english": 0.55, "hindi": 0.40, "hinglish": 0.04974, "awadhi": 0.00026}
+MIX_DECAY  = {"english": 0.55, "hindi": 0.40, "hinglish": 0.04896, "awadhi": 0.00104}
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True

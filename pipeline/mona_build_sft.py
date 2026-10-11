@@ -9,7 +9,7 @@ Sources (each optional: missing ones are skipped)
   hindi     Aya dataset Hindi rows (Apache-2.0), human-written
   hindi_qa  Hindi Wikipedia (Sangraha synthetic/hin_Deva): "X के बारे में बताइए" -> article opening
   hinglish  romanized Hindi Wikipedia (Sangraha synthetic/hin_Latn): "X ke baare mein batao"
-  tulsidas  verse -> meaning pairs (our splitter), asked in Hindi / English / Hinglish
+  tulsidas  verse completion from public-domain Tulsidas verses (no copyrighted commentary)
   identity  "who are you?" in all three languages, so MONA knows its name and its limits
 
 📘 Every conversation is checked against the 1,024-token context: long chats are cut at
@@ -116,27 +116,33 @@ def wiki_qa(source, folder, limit, stop):
                 return
 
 
-VERSE_ASKS = [
-    "इस चौपाई का अर्थ बताइए:\n{v}",
-    "निम्नलिखित पंक्तियों का भावार्थ समझाइए:\n{v}",
-    "Explain the meaning of these lines by Tulsidas (answer in Hindi):\n{v}",
-    "is chaupai ka arth batao:\n{v}",
+# Copyright: only Tulsidas's own verses (16th century, public domain) are used. The Hindi commentary
+# (Hanuman Prasad Poddar / Gita Press) is likely still under copyright, so no verse→meaning pairs.
+COMPLETE_ASKS = [
+    "इस चौपाई को पूरा कीजिए:\n{a} ।",
+    "तुलसीदास जी की यह पंक्ति आगे बढ़ाइए:\n{a} ।",
+    "Complete this chaupai by Tulsidas:\n{a} ।",
+    "is chaupai ko poora karo:\n{a} ।",
 ]
-VERSE_REVERSE = "तुलसीदास जी की वह पंक्ति सुनाइए जिसका भाव यह है:\n{m}"
+NEXT_LINE_ASKS = [
+    "इसके बाद की पंक्ति सुनाइए:\n{a}",
+    "What is the next line of this verse by Tulsidas?\n{a}",
+    "iske baad ki line sunao:\n{a}",
+]
 
 
 def tulsidas():
-    path = config.DATA_DIR / "processed" / "verse_meaning_pairs.jsonl"
-    for line in open(path, encoding="utf-8"):
-        p = json.loads(line)
-        verse, meaning = p["verse"].strip(), p["meaning"].strip()
-        if not (20 < len(verse) < 600 and 20 < len(meaning) < 1500):
-            continue
-        yield "tulsidas", [{"role": "user", "content": random.choice(VERSE_ASKS).format(v=verse)},
-                           {"role": "assistant", "content": meaning}]
-        if random.random() < 0.2:
-            yield "tulsidas", [{"role": "user", "content": VERSE_REVERSE.format(m=meaning)},
-                               {"role": "assistant", "content": verse}]
+    """Verse-completion tasks built only from public-domain verse lines."""
+    path = config.DATA_DIR / "processed" / "tulsidas_verse_strict.txt"
+    lines = [l.strip() for l in open(path, encoding="utf-8") if l.strip()]
+    for i, line in enumerate(lines):
+        halves = [h.strip() for h in line.rstrip("॥।0123456789०१२३४५६७८९ ").split("।") if h.strip()]
+        if len(halves) == 2 and all(len(h.split()) >= 3 for h in halves):          # a chaupai: half । half ॥
+            yield "tulsidas", [{"role": "user", "content": random.choice(COMPLETE_ASKS).format(a=halves[0])},
+                               {"role": "assistant", "content": f"{halves[0]} । {halves[1]} ॥"}]
+        if i + 1 < len(lines) and random.random() < 0.3:
+            yield "tulsidas", [{"role": "user", "content": random.choice(NEXT_LINE_ASKS).format(a=line)},
+                               {"role": "assistant", "content": lines[i + 1]}]
 
 
 IDENTITY = [

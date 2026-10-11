@@ -33,7 +33,9 @@ SOURCES = {   # language: (raw folder, glob)
     "hindi":    (RAW / "hindi_sangraha", "**/*.parquet"),
     "hinglish": (RAW / "hinglish_sangraha", "**/*.parquet"),
 }
-TULSIDAS = config.DATA_DIR / "processed" / "dataset_awadhi_tulsidas_verified.txt"
+# Public-domain Tulsidas VERSE only. The source corpus also contains Hanuman Prasad Poddar's Hindi
+# commentary (Gita Press), which is likely still under copyright, so it is never used for MONA.
+TULSIDAS = config.DATA_DIR / "processed" / "tulsidas_verse_strict.txt"
 SEP = "\x1e"
 MIN_CHARS = 200
 
@@ -115,7 +117,7 @@ def clean_file(job):
 
 
 def clean_awadhi():
-    """Tulsidas corpus -> ~2,000-character documents cut at line boundaries."""
+    """Tulsidas verse (public domain, no commentary) -> ~2,000-character documents cut at line boundaries."""
     dst = config.CLEAN_DIR / "awadhi" / "tulsidas.txt"
     dst.parent.mkdir(parents=True, exist_ok=True)
     text = normalise(TULSIDAS.read_text(encoding="utf-8"))

@@ -62,13 +62,14 @@ register({
                   "hinglish": "MONA-Chat abhi nahi hai: pretraining khatam hote hi yeh apne-aap train hogi. Dekho base MONA "
                               "sach mein jawab nahi deti; chat tuning yahi theek karti hai."},
     "ct_nodata": {"en": "The chat dataset is built automatically after pretraining. It will mix: ~80K English chats "
-                        "(smol-smoltalk), Hindi chats (Aya), Hindi and Hinglish Wikipedia Q&A, 7,747 Tulsidas verse→meaning "
-                        "pairs, and \"who are you?\" examples so MONA knows its own name.",
+                        "(smol-smoltalk), Hindi chats (Aya), Hindi and Hinglish Wikipedia Q&A, ~12K Tulsidas verse-completion "
+                        "tasks (public-domain verses only), and \"who are you?\" examples so MONA knows its own name.",
                   "hi": "चैट डेटा pretraining के बाद अपने-आप बनेगा। इसमें होंगे: ~80K अंग्रेज़ी बातचीत (smol-smoltalk), हिंदी बातचीत "
-                        "(Aya), हिंदी और हिंग्लिश विकिपीडिया प्रश्नोत्तर, 7,747 तुलसीदास चौपाई→अर्थ जोड़े, और \"तुम कौन हो?\" उदाहरण।",
+                        "(Aya), हिंदी और हिंग्लिश विकिपीडिया प्रश्नोत्तर, ~12K तुलसीदास चौपाई-पूर्ति कार्य (केवल सार्वजनिक चौपाइयाँ), "
+                        "और \"तुम कौन हो?\" उदाहरण।",
                   "hinglish": "Chat data pretraining ke baad apne-aap banega. Isme honge: ~80K English chats (smol-smoltalk), "
-                              "Hindi chats (Aya), Hindi aur Hinglish Wikipedia Q&A, 7,747 Tulsidas chaupai→arth pairs, aur "
-                              "\"tum kaun ho?\" examples."},
+                              "Hindi chats (Aya), Hindi aur Hinglish Wikipedia Q&A, ~12K Tulsidas chaupai-completion tasks "
+                              "(sirf public-domain chaupaiyan), aur \"tum kaun ho?\" examples."},
     "ct_keys": {"en": "Esc back   F5 Template  F6 Base vs Chat  F7 Examples   N next example   F2 language  F3 depth  F4 romanize",
                 "hi": "Esc वापस   F5 ढाँचा  F6 Base बनाम Chat  F7 उदाहरण   N अगला उदाहरण   F2 भाषा  F3 गहराई  F4 रोमन",
                 "hinglish": "Esc wapas   F5 Template  F6 Base vs Chat  F7 Examples   N agla example   F2 bhasha  F3 depth  F4 roman"},

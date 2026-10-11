@@ -247,7 +247,7 @@ class DataLab(Screen):
         except OSError:
             return
         # (stable-phase share, decay-phase share) from scripts/mona_pretrain.py; decay = last 15% of training
-        shares = {"english": (0.55, 0.55), "hindi": (0.40, 0.40), "hinglish": (0.049, 0.046), "awadhi": (0.001, 0.004)}
+        shares = {"english": (0.55, 0.55), "hindi": (0.40, 0.40), "hinglish": (0.0497, 0.049), "awadhi": (0.00026, 0.00104)}
         total = sum(v["train_tokens"] for v in manifest.values())
         out = Text(tr("dat_mix_title") + "\n\n", style="bold #8ecae6")
         for c, (lang, v) in enumerate(sorted(manifest.items(), key=lambda kv: -kv[1]["train_tokens"])):
