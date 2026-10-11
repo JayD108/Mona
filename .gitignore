@@ -1,0 +1,28 @@
+# MONA repo (github.com/JayD108/Mona) — WHITELIST: ignore everything, then allow MONA's code.
+# Data, tokens, model weights and run logs never go to git (many GB; some data is personal-use only).
+/*
+
+!/.gitignore
+!/README.md
+!/requirements-mona.txt
+
+!/mona/
+!/learn/
+
+!/pipeline/
+/pipeline/*
+!/pipeline/mona_*.py
+
+!/scripts/
+/scripts/*
+!/scripts/mona_*.py
+
+!/ops/
+/ops/*.lock
+
+!/docs/
+/docs/*
+!/docs/MONA_PLAN.md
+
+__pycache__/
+*.pyc

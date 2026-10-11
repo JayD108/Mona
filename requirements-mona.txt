@@ -1,0 +1,8 @@
+# MONA — Python 3.11, NVIDIA GPU with CUDA 12.8 (install torch from https://pytorch.org for your CUDA)
+torch>=2.11
+tokenizers>=0.23
+numpy
+pyarrow
+regex
+huggingface_hub
+matplotlib          # optional: loss plots
