@@ -237,7 +237,7 @@ class RagLab(Screen):
         p.append(rr(with_prompt[:700]) if with_prompt else "—", style="#c9cce0")
         self.query_one("#prompt", Static).update(p)
 
-        a = Text(tr("rag_step3") + "\n\n", style="bold #8ecae6")
+        a = Text(tr("rag_step3") + f"   ({getattr(self, 'which', '')})\n\n", style="bold #8ecae6")
         a.append(tr("rag_without") + "\n", style="bold #f78c6b")
         a.append(rr(without) + "\n\n", style="#e8e8f0")
         if with_ is not None:
