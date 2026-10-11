@@ -53,8 +53,10 @@ p.add_argument("--stop-at", default=None, help="HH:MM local time: save and exit 
 p.add_argument("--resume", action="store_true")
 args = p.parse_args()
 
-MIX_STABLE = {"english": 0.55, "hindi": 0.40, "hinglish": 0.048, "awadhi": 0.002}
-MIX_DECAY  = {"english": 0.55, "hindi": 0.40, "hinglish": 0.042, "awadhi": 0.008}
+# Awadhi has only ~0.9M tokens: 0.1% (stable) + 0.4% (decay) of 2.5B ≈ 4 passes in total, about the
+# most before a model starts memorising instead of learning (repeats up to ~4x cost almost nothing).
+MIX_STABLE = {"english": 0.55, "hindi": 0.40, "hinglish": 0.049, "awadhi": 0.001}
+MIX_DECAY  = {"english": 0.55, "hindi": 0.40, "hinglish": 0.046, "awadhi": 0.004}
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
