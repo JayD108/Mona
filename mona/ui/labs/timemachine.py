@@ -8,7 +8,7 @@ from textual.containers import Horizontal, VerticalScroll
 from textual.screen import Screen
 from textual.widgets import Input, Static
 
-from ...engine.lessons import checkpoints, load_model, training_curves
+from ...engine.lessons import checkpoints, load_model, recorded_samples, training_curves
 from ..text import register
 from ..widgets import Avatar
 
@@ -55,6 +55,9 @@ register({
     "tm_facts": {"en": "{tokens:.2f}B tokens read · step {step:,} of 4,769 · {pages:,} pages per step · GPU {temp}°C",
                  "hi": "{tokens:.2f}B टोकन पढ़े · कदम {step:,} / 4,769 · हर कदम में {pages:,} पन्ने · GPU {temp}°C",
                  "hinglish": "{tokens:.2f}B tokens padhe · step {step:,} / 4,769 · har step mein {pages:,} pages · GPU {temp}°C"},
+    "tm_recorded": {"en": "Recorded during training: what MONA wrote at each check (same prompt each time)",
+                    "hi": "ट्रेनिंग के दौरान दर्ज: हर जाँच पर MONA ने क्या लिखा (हर बार एक ही प्रॉम्प्ट)",
+                    "hinglish": "Training ke dauraan record: har check par MONA ne kya likha (har baar same prompt)"},
     "tm_keys": {"en": "Enter ask again   R refresh logs   Esc back   F2 language  F3 depth  F4 romanize",
                 "hi": "Enter फिर पूछें   R लॉग ताज़ा करें   Esc वापस   F2 भाषा  F3 गहराई  F4 रोमन",
                 "hinglish": "Enter phir poochho   R logs refresh   Esc wapas   F2 bhasha  F3 depth  F4 roman"},
@@ -118,6 +121,7 @@ class TimeMachineLab(Screen):
         with VerticalScroll():
             yield Static(id="versions", classes="panel")
             yield Static(id="curves", classes="panel")
+            yield Static(id="recorded", classes="panel")
         yield Static(id="keys", classes="keys")
 
     def on_mount(self):
@@ -210,3 +214,13 @@ class TimeMachineLab(Screen):
         else:
             out.append("  " + tr("tm_noeval"), style="#5a5f7c")
         self.query_one("#curves", Static).update(out)
+        # what MONA actually wrote at each evaluation during training (works even without snapshot files)
+        lang = {"en": "english", "hi": "hindi", "hinglish": "hinglish"}[self.app.state.lang]
+        recs = recorded_samples()
+        rec = Text(tr("tm_recorded") + "\n\n", style="bold #8ecae6")
+        roman = self.app.roman if self.app.state.romanize else (lambda s: s)
+        for billions, texts in recs[-8:]:
+            if lang in texts:
+                rec.append(f"{billions:5.2f}B  ", style="bold #ffd166")
+                rec.append(roman(texts[lang][:150]) + "\n", style="#e8e8f0")
+        self.query_one("#recorded", Static).update(rec if recs else "")

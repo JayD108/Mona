@@ -8,6 +8,7 @@ Each step has a "done" marker, so the queue can be killed and restarted at any t
   sft data   data/mona_sft/train.jsonl     (built after pretraining, when all chat data is downloaded)
   sft        runs/mona_m_chat/DONE
   eval       runs/mona_m/eval.txt
+  release    runs/mona_m/RELEASED          (only written after a successful upload to Hugging Face)
 When everything is done it writes "QUEUE COMPLETE" to runs/logs/mona_run_all.log.
 """
 import datetime as dt
@@ -31,6 +32,8 @@ STEPS = [  # (name, done-marker, command)
      [sys.executable, "-u", "-m", "scripts.mona_sft", "--base", str(PRE / "final.pt"), "--name", "mona_m_chat"]),
     ("eval", PRE / "eval.txt",
      [sys.executable, "-u", "-m", "scripts.mona_eval", str(PRE / "final.pt"), str(CHAT / "model.pt")]),
+    ("release", PRE / "RELEASED",                      # checks, licence-clean bundle, model card, upload to HF
+     [sys.executable, "-u", "-m", "scripts.mona_release"]),
 ]
 
 

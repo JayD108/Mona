@@ -1,17 +1,10 @@
 """MONA settings: paths, model size, training schedule. One place to change things."""
 from dataclasses import dataclass
-from pathlib import Path
 
 import torch
 
-ROOT        = Path(__file__).resolve().parent.parent
-DATA_DIR    = ROOT / "data"
-CLEAN_DIR   = DATA_DIR / "mona_clean"          # cleaned text per language (*.txt)
-TOKENS_DIR  = DATA_DIR / "mona_tokens"         # uint16 token shards (*.bin) + manifest
-SFT_DIR     = DATA_DIR / "mona_sft"            # chat examples (train/val .jsonl)
-MODEL_DIR   = ROOT / "models" / "mona"         # tokenizer + released weights
-RUNS_DIR    = ROOT / "runs"                    # one folder per training run
-TOKENIZER_PATH = MODEL_DIR / "tokenizer.json"
+from .paths import (CLEAN_DIR, CODE_ROOT, DATA_DIR, DEV, MODEL_DIR, OUTPUTS_DIR, ROOT, RUNS_DIR,  # noqa: F401
+                    SFT_DIR, TOKENIZER_PATH, TOKENS_DIR, VERSE_PATH)
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 

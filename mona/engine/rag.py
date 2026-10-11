@@ -90,7 +90,7 @@ def build_library(n_wiki=3000, n_hinglish=1500):
             if len(parts) == 2 and 2 <= len(parts[0]) <= 60:
                 body = " ".join(l.strip() for l in parts[1].split("\n") if len(l.strip()) > 40)[:700]
                 if source == "hinglish-wiki":
-                    from pipeline.mona_clean import fix_hinglish
+                    from ..textclean import fix_hinglish
                     body, title = fix_hinglish(body), fix_hinglish(parts[0].strip())
                 else:
                     title = parts[0].strip()

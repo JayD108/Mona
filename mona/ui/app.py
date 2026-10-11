@@ -81,7 +81,8 @@ class MonaApp(App):
             return self.gb.tok
         if getattr(self, "_tok", None) is None:
             from tokenizers import Tokenizer
-            self._tok = Tokenizer.from_file(str(Path(__file__).resolve().parents[2] / "models" / "mona" / "tokenizer.json"))
+            from ..paths import TOKENIZER_PATH
+            self._tok = Tokenizer.from_file(str(TOKENIZER_PATH))
         return self._tok
 
     # ── start-up ──────────────────────────────────────────────────────────────
@@ -146,6 +147,8 @@ def main():
     if args.reset:
         from .state import STATE_PATH
         STATE_PATH.unlink(missing_ok=True)
+    from ..assets import ensure
+    ensure()                                   # pip installs: fetch weights + demo data once
     MonaApp(args.weights).run()
 
 

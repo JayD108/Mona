@@ -23,7 +23,7 @@ import pyarrow.parquet as pq
 
 from mona import config
 from mona import tokenizer as T
-from pipeline.mona_clean import fix_hinglish, normalise
+from mona.textclean import fix_hinglish, normalise
 
 RAW = config.DATA_DIR / "raw"
 random.seed(0)

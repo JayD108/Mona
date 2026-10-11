@@ -119,6 +119,8 @@ def checkpoints():
         out.append((f"{snap.stem[5:]} tokens", float(snap.stem[5:-1]), snap))
     if (RUN / "final.pt").exists():
         out.append(("final", 2.5, RUN / "final.pt"))
+    elif (config.MODEL_DIR / "mona.pt").exists():                 # installed copy: released weights
+        out.append(("final (released)", 2.5, config.MODEL_DIR / "mona.pt"))
     elif (RUN / "ckpt.pt").exists():
         rows = list(csv.DictReader(open(RUN / "train_log.csv")))
         seen = int(rows[-1]["tokens"]) / 1e9 if rows else 0.0
@@ -142,3 +144,23 @@ def training_curves():
     train = list(csv.DictReader(open(RUN / "train_log.csv"))) if (RUN / "train_log.csv").exists() else []
     evals = list(csv.DictReader(open(RUN / "eval_log.csv"))) if (RUN / "eval_log.csv").exists() else []
     return train, evals
+
+
+def recorded_samples():
+    """What MONA wrote at every evaluation during its real training run (runs/mona_m/samples.txt).
+
+    Returns [(tokens_in_billions, {language: text})], oldest first. Works without any snapshot files.
+    """
+    path = RUN / "samples.txt"
+    if not path.exists():
+        return []
+    out, cur = [], None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("===== step"):
+            billions = float(line.split("(")[1].split("B")[0])
+            cur = (billions, {})
+            out.append(cur)
+        elif cur is not None and line.startswith("[") and "] " in line:
+            lang, text = line[1:].split("] ", 1)
+            cur[1][lang] = text
+    return out

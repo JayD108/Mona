@@ -154,7 +154,7 @@ class DataLab(Screen):
     # ── load real raw documents and run MONA's real cleaner on them ─────────
     @work(thread=True, exclusive=True)
     def load_pool(self):
-        from pipeline.mona_clean import DEVA, LATIN, LETTER, fix_hinglish, keep, normalise
+        from ...textclean import DEVA, LATIN, LETTER, fix_hinglish, keep, normalise
         kept, dropped, rates, fix = [], [], {}, None
         for lang, path in SOURCES:
             if not path.exists():
