@@ -120,6 +120,9 @@ class HomeScreen(Screen):
 
 def open_lab(stage_id):
     """Labs are imported only when opened, so the app starts instantly."""
+    if stage_id == "lm":
+        from .labs.lm_game import LMGameLab
+        return LMGameLab()
     if stage_id == "tokens":
         from .labs.tokens import TokensLab
         return TokensLab()
