@@ -123,6 +123,9 @@ def open_lab(stage_id):
     if stage_id == "tokens":
         from .labs.tokens import TokensLab
         return TokensLab()
+    if stage_id == "attention":
+        from .labs.attention import AttentionLab
+        return AttentionLab()
     if stage_id == "next":
         from .labs.sampling import SamplingLab
         return SamplingLab()
