@@ -56,7 +56,8 @@ def single_instance():
 
 
 def processes():
-    ps = ("Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | "
+    # python.exe AND pythonw.exe: the watchdog runs windowless (pythonw), so the training it starts does too
+    ps = ("Get-CimInstance Win32_Process -Filter \"Name='python.exe' OR Name='pythonw.exe'\" | "
           "ForEach-Object { \"$($_.ProcessId)`t$($_.ParentProcessId)`t$($_.CommandLine)\" }")
     r = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True,
                        creationflags=NO_WINDOW)

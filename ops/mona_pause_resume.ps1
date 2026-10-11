@@ -10,7 +10,7 @@ public static class MonaPx {
   [DllImport("kernel32.dll")] public static extern bool CloseHandle(IntPtr h);
 }
 "@
-$procs = Get-CimInstance Win32_Process -Filter "Name='python.exe'" | Where-Object { $_.CommandLine -match "scripts\.mona_(run_all|pretrain|sft|eval)|pipeline\.mona_build_sft" }
+$procs = Get-CimInstance Win32_Process -Filter "Name='python.exe' OR Name='pythonw.exe'" | Where-Object { $_.CommandLine -match "scripts\.mona_(run_all|pretrain|sft|eval)|pipeline\.mona_build_sft" }
 foreach ($p in $procs) {
   $h = [MonaPx]::OpenProcess(0x0800, $false, [int]$p.ProcessId)
   if ($h -ne [IntPtr]::Zero) {
