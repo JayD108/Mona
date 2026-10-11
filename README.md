@@ -1,8 +1,18 @@
 # MONA — a multilingual small LLM built from scratch
 
-> **The MONA app** (in progress): an interactive, playful terminal app where anyone can open up a real
-> LLM and see how it works, step by step, in English, Hindi or Hinglish.
-> Try it: `pip install -e .` then run **`mona`**. Plan: [`docs/MONA_APP_PLAN.md`](docs/MONA_APP_PLAN.md)
+> **The MONA app**: an interactive, playful terminal app where anyone can open up a real LLM and see
+> how it works, step by step, in English, Hindi or Hinglish. Install with `pip install -e .`, then run **`mona`**.
+> Plan: [`docs/MONA_APP_PLAN.md`](docs/MONA_APP_PLAN.md)
+
+| Key (home) | What |
+|---|---|
+| ↑↓ Enter | open one of 12 stages: what is an LM · data · tokens · embeddings · attention · layers · next word · training · chat tuning · evals · RAG · beyond |
+| S | Story mode: your sentence travels through MONA, with real facts from its build diary |
+| C | compare MONA with a big local model (Ollama) |
+| T | Teacher mode: 45-minute lesson plans and printable quizzes |
+| B | badges |
+| L / D / R (F2 / F3 / F4 anywhere) | language EN·हिं·Hinglish / depth Simple·Student·Engineer / romanized Hindi |
+| F9 (anywhere) | export: screenshot + report + a Python script that reproduces the experiment |
 
 **MONA** is a ~110M-parameter Llama-style model (English + Hindi + Hinglish + Awadhi), built through
 every stage of a real LLM: data → tokenizer → architecture → pretraining → chat tuning → evaluation.
