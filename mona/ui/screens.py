@@ -129,6 +129,9 @@ def open_lab(stage_id):
     if stage_id == "evals":
         from .labs.evals import EvalsLab
         return EvalsLab()
+    if stage_id == "data":
+        from .labs.data import DataLab
+        return DataLab()
     if stage_id == "tokens":
         from .labs.tokens import TokensLab
         return TokensLab()
