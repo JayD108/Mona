@@ -9,7 +9,6 @@
 </p>
 
 <p align="center">
-  <img src="docs/img/home.svg" alt="The MONA home screen: a four-track learning path and hands-on experiments" width="900">
   <br>
   <sub>The MONA home screen: a four-track learning path and hands-on experiments</sub>
 </p>
