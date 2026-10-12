@@ -2,8 +2,6 @@
   <img src="Elegant White Calligraphic Mona Logo.png" alt="MONA icon" width="160">
 </p>
 
-<h1 align="center">MONA</h1>
-
 <p align="center"><b>Understand AI from the inside: look into a real language model while it thinks</b></p>
 
 <p align="center">
