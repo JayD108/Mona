@@ -1,4 +1,6 @@
-"""The screens of the MONA app (Phase 0: display check, home, tokens)."""
+"""The screens of the MONA app: display check, home (12 stages + the CEO desk)."""
+import datetime as dt
+
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -7,8 +9,67 @@ from textual.screen import Screen
 from textual.widgets import Button, OptionList, Static
 from textual.widgets.option_list import Option
 
-from .text import READY, STAGES, stage_name
+from .text import READY, STAGES, register, stage_name
+from .welcome import greeting_key
 from .widgets import Avatar
+
+# The CEO desk: everything that isn't one of the 12 stages.  (id, key, en, hi, hinglish)
+DESK = [
+    ("tour", "O", "Lab tour: how a frontier lab works", "लैब टूर: बड़ी AI लैब कैसे काम करती है", "Lab tour: badi AI lab kaise kaam karti hai"),
+    ("journey", "J", "MONA's training journey", "MONA की ट्रेनिंग का सफ़र", "MONA ki training ka safar"),
+    ("course", "G", "Train your own model (guided)", "अपना मॉडल ट्रेन कीजिए (गाइड)", "Apna model train karo (guided)"),
+    ("incidents", "I", "Incident room: real crises", "इंसिडेंट रूम: असली संकट", "Incident room: asli crises"),
+    ("budget", "P", "Budget planner: size vs cost", "बजट प्लानर: आकार बनाम ख़र्च", "Budget planner: size vs kharcha"),
+    ("story", "S", "Story mode: follow your sentence", "कहानी: अपने वाक्य का पीछा कीजिए", "Story: apne sentence ke saath chalo"),
+    ("compare", "C", "MONA vs a big model", "MONA बनाम बड़ा मॉडल", "MONA vs bada model"),
+    ("teacher", "T", "Teacher mode", "शिक्षक मोड", "Teacher mode"),
+    ("badges", "B", "Badges & CEO certificate", "बैज और CEO प्रमाणपत्र", "Badges aur CEO certificate"),
+]
+
+# One lab memo per day on the home screen: small true facts that make people curious.
+MEMOS = [
+    ("MONA has 110 million numbers inside. GPT-3 has 175 billion: 1,600 times more.",
+     "MONA के अंदर 11 करोड़ संख्याएँ हैं। GPT-3 में 17,500 करोड़: 1,600 गुना ज़्यादा।",
+     "MONA ke andar 11 crore numbers hain. GPT-3 mein 17,500 crore: 1,600 guna zyada."),
+    ("MONA read 2.5 billion tokens. Reading one book a day, a person would need about 30,000 years.",
+     "MONA ने 2.5 अरब टोकन पढ़े। रोज़ एक किताब पढ़ें तो इंसान को लगभग 30,000 साल लगेंगे।",
+     "MONA ne 2.5 billion tokens padhe. Roz ek kitaab padho to insaan ko lagbhag 30,000 saal lagenge."),
+    ("A model never sees letters, only numbers. 'नमस्ते' is just a few token numbers to MONA.",
+     "मॉडल अक्षर कभी नहीं देखता, सिर्फ़ संख्याएँ। MONA के लिए 'नमस्ते' बस कुछ टोकन नंबर है।",
+     "Model letters kabhi nahi dekhta, sirf numbers. MONA ke liye 'नमस्ते' bas kuch token numbers hai."),
+    ("Training MONA took about 30 hours on one laptop. Frontier models use thousands of GPUs for months.",
+     "MONA की ट्रेनिंग एक लैपटॉप पर लगभग 30 घंटे चली। बड़े मॉडल हज़ारों GPU पर महीनों चलते हैं।",
+     "MONA ki training ek laptop par lagbhag 30 ghante chali. Bade models hazaron GPUs par mahino chalte hain."),
+    ("Chat models are first trained to continue text. Only then are they taught to answer like an assistant.",
+     "चैट मॉडल पहले सिर्फ़ पाठ आगे बढ़ाना सीखते हैं। उसके बाद ही उन्हें सहायक की तरह जवाब देना सिखाया जाता है।",
+     "Chat models pehle sirf text aage badhana seekhte hain. Uske baad hi unhe assistant ki tarah jawab dena sikhaya jaata hai."),
+    ("During training, a laptop GPU reached 83°C. Real labs plan cooling as carefully as the model itself.",
+     "ट्रेनिंग के दौरान लैपटॉप का GPU 83°C तक पहुँचा। असली लैब ठंडक की योजना मॉडल जितनी ही ध्यान से बनाती हैं।",
+     "Training ke dauran laptop ka GPU 83°C tak pahuncha. Asli labs cooling ka plan model jitna hi dhyaan se banati hain."),
+    ("Copyright matters: MONA's team removed a modern commentary from training and kept only 450-year-old verse.",
+     "कॉपीराइट ज़रूरी है: MONA की टीम ने आधुनिक टीका हटाकर सिर्फ़ 450 साल पुरानी चौपाइयाँ रखीं।",
+     "Copyright zaroori hai: MONA ki team ne modern commentary hata kar sirf 450 saal purani chaupaiyan rakhin."),
+    ("'Temperature' decides how adventurous the model is. Low = safe and boring, high = creative and wild.",
+     "'टेम्परेचर' तय करता है कि मॉडल कितना साहसी हो। कम = सुरक्षित और नीरस, ज़्यादा = रचनात्मक और बेलगाम।",
+     "'Temperature' decide karta hai model kitna adventurous ho. Kam = safe aur boring, zyada = creative aur wild."),
+    ("Hindi costs MONA 1.33 tokens per word. Many English-first models spend 4 or more.",
+     "MONA को हिंदी के एक शब्द के लिए 1.33 टोकन लगते हैं। कई अंग्रेज़ी-केंद्रित मॉडल 4 या ज़्यादा लगाते हैं।",
+     "MONA ko Hindi ke ek word ke liye 1.33 tokens lagte hain. Kai English-first models 4 ya zyada lagate hain."),
+    ("Most of a lab's work is not the model code (MONA's is 170 lines) but data, testing and keeping training alive.",
+     "लैब का ज़्यादातर काम मॉडल का कोड नहीं (MONA का 170 लाइन है), बल्कि डेटा, जाँच और ट्रेनिंग को चालू रखना है।",
+     "Lab ka zyadatar kaam model ka code nahi (MONA ka 170 lines hai), balki data, testing aur training ko chaalu rakhna hai."),
+    ("A model that 'sounds sure' can still be wrong. That's why labs spend so much on evaluation.",
+     "जो मॉडल 'पक्का लगे' वह भी ग़लत हो सकता है। इसीलिए लैब जाँच (evaluation) पर इतना ख़र्च करती हैं।",
+     "Jo model 'pakka lage' woh bhi galat ho sakta hai. Isiliye labs evaluation par itna kharcha karti hain."),
+    ("RAG lets a small model look things up instead of remembering everything, like an open-book exam.",
+     "RAG से छोटा मॉडल सब याद रखने के बजाय चीज़ें खोज सकता है, जैसे खुली किताब वाली परीक्षा।",
+     "RAG se chhota model sab yaad rakhne ke bajaye cheezein dhoondh sakta hai, jaise open-book exam."),
+]
+
+register({
+    "memo": {"en": "📌 Today's lab memo: {m}", "hi": "📌 आज का लैब मेमो: {m}", "hinglish": "📌 Aaj ka lab memo: {m}"},
+    "desk_title": {"en": "THE CEO DESK", "hi": "CEO की मेज़", "hinglish": "CEO KI DESK"},
+})
 
 
 class DisplayCheckScreen(Screen):
@@ -57,7 +118,28 @@ class HomeScreen(Screen):
     BINDINGS = [Binding("l", "app.cycle_lang", "language"), Binding("d", "app.cycle_depth", "depth"),
                 Binding("r", "app.toggle_roman", "romanize"), Binding("q", "app.quit", "quit"),
                 Binding("s", "story", "story"), Binding("b", "badges", "badges"), Binding("c", "compare", "compare"),
-                Binding("t", "teacher", "teacher")]
+                Binding("t", "teacher", "teacher"), Binding("o", "tour", "tour"), Binding("j", "journey", "journey"),
+                Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget")]
+
+    def action_tour(self):
+        from .tour import TourScreen
+        self.app.push_screen(TourScreen())
+
+    def action_journey(self):
+        from .journey import JourneyScreen
+        self.app.push_screen(JourneyScreen())
+
+    def action_course(self):
+        from .course import CourseScreen
+        self.app.push_screen(CourseScreen())
+
+    def action_incidents(self):
+        from .incidents import IncidentScreen
+        self.app.push_screen(IncidentScreen())
+
+    def action_budget(self):
+        from .budget import BudgetScreen
+        self.app.push_screen(BudgetScreen())
 
     def action_teacher(self):
         from .teacher import TeacherScreen
@@ -80,8 +162,13 @@ class HomeScreen(Screen):
         with Horizontal(id="hello-row"):
             yield Avatar(id="avatar")
             yield Static(id="hello")
-        yield Static(id="journey-title", classes="title")
-        yield OptionList(id="stages")
+        with Horizontal(id="home-cols"):
+            with Vertical(id="stage-col"):
+                yield Static(id="journey-title", classes="title")
+                yield OptionList(id="stages")
+            with Vertical(id="desk-col"):
+                yield Static(id="desk-title", classes="title")
+                yield OptionList(id="desk")
         yield Static(id="progress")
         yield Static(id="keys", classes="keys")
 
@@ -102,8 +189,22 @@ class HomeScreen(Screen):
         if s.romanize:
             top.append("   abc→अ", style="#f4a3c0")
         self.query_one("#topbar", Static).update(top)
-        self.query_one("#hello", Static).update(Text(tr("hello"), style="#e8e8f0"))
+        who = app.addr()
+        hello = Text(tr(greeting_key()) + (f", {who}" if who else "") + "! ", style="bold #ffd166")
+        hello.append(tr("hello"), style="#e8e8f0")
+        memo = MEMOS[dt.date.today().toordinal() % len(MEMOS)][{"en": 0, "hi": 1, "hinglish": 2}[s.lang]]
+        hello.append("\n" + tr("memo", m=app.roman(memo) if s.romanize else memo), style="#8ecae6")
+        self.query_one("#hello", Static).update(hello)
         self.query_one("#journey-title", Static).update(tr("journey"))
+        self.query_one("#desk-title", Static).update(tr("desk_title"))
+        desk = self.query_one("#desk", OptionList)
+        keep = desk.highlighted
+        desk.clear_options()
+        col = {"en": 2, "hi": 3, "hinglish": 4}[s.lang]
+        for item in DESK:
+            name = app.roman(item[col]) if s.romanize else item[col]
+            desk.add_option(Option(Text.assemble((f" {item[1]}  ", "bold #ffd166"), (name, "bold")), id=item[0]))
+        desk.highlighted = keep
         stages = self.query_one("#stages", OptionList)
         highlighted = stages.highlighted
         stages.clear_options()
@@ -126,6 +227,9 @@ class HomeScreen(Screen):
         self.query_one("#keys", Static).update(tr("keys_home"))
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected):
+        if event.option_list.id == "desk":
+            getattr(self, f"action_{event.option.id}")()
+            return
         lab = open_lab(event.option.id)
         if lab:
             self.app.push_screen(lab)

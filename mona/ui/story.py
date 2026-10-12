@@ -29,8 +29,21 @@ register({
                            "bade tak. Ghar lautne ke liye Esc."},
     "st_keys": {"en": "Enter open lab   ←/→ previous / next chapter   Esc home", "hi": "Enter लैब खोलें   ←/→ पिछला / अगला अध्याय   Esc घर",
                 "hinglish": "Enter lab kholo   ←/→ pichhla / agla chapter   Esc ghar"},
-    "bd_title": {"en": "Badges", "hi": "बैज", "hinglish": "Badges"},
-    "bd_keys": {"en": "Esc back", "hi": "Esc वापस", "hinglish": "Esc wapas"},
+    "bd_title": {"en": "Badges & CEO certificate", "hi": "बैज और CEO प्रमाणपत्र", "hinglish": "Badges aur CEO certificate"},
+    "bd_keys": {"en": "Esc back   F9 save the certificate", "hi": "Esc वापस   F9 प्रमाणपत्र सहेजें", "hinglish": "Esc wapas   F9 certificate save karo"},
+    "cert_left": {"en": "🎓 Your CEO certificate unlocks after all 12 stages. {n} to go, {addr}!",
+                  "hi": "🎓 आपका CEO प्रमाणपत्र सभी 12 चरणों के बाद खुलेगा। {n} बाकी, {addr}!",
+                  "hinglish": "🎓 Aapka CEO certificate saare 12 stages ke baad khulega. {n} baaki, {addr}!"},
+    "cert_head": {"en": "CERTIFICATE OF COMPLETION", "hi": "पूर्णता प्रमाणपत्र", "hinglish": "CERTIFICATE OF COMPLETION"},
+    "cert_body": {"en": "This certifies that\n\n{who}\n\nas CEO of MONA Labs, took a real language model apart, stage by stage:\n"
+                        "data, tokens, embeddings, attention, layers, sampling,\ntraining, chat tuning, evals, RAG and beyond.",
+                  "hi": "प्रमाणित किया जाता है कि\n\n{who}\n\nने MONA Labs के CEO के रूप में एक असली भाषा मॉडल को चरण-दर-चरण खोलकर समझा:\n"
+                        "डेटा, टोकन, एम्बेडिंग, अटेंशन, लेयर, सैंपलिंग,\nट्रेनिंग, चैट ट्यूनिंग, परीक्षा, RAG और आगे।",
+                  "hinglish": "Yeh pramaanit kiya jaata hai ki\n\n{who}\n\nne MONA Labs ke CEO ke roop mein ek asli language model ko\n"
+                              "stage-by-stage kholkar samjha: data, tokens, embeddings, attention, layers,\nsampling, training, chat tuning, "
+                              "evals, RAG aur aage."},
+    "cert_sign": {"en": "Signed: MONA (110,100,000 parameters)", "hi": "हस्ताक्षर: MONA (11,01,00,000 पैरामीटर)",
+                  "hinglish": "Signed: MONA (110,100,000 parameters)"},
 })
 
 # chapter: (stage id, {lang: story}, {lang: diary fact})
@@ -234,11 +247,48 @@ class BadgesScreen(Screen):
         self.query_one("#title", Static).update(tr("bd_title"))
         self.query_one("#keys", Static).update(tr("bd_keys"))
         out = Text()
-        all_badges = BADGES + [("Storyteller", "story", {"en": "Finish Story mode", "hi": "कहानी पूरी कीजिए", "hinglish": "Story mode poora karo"})]
+        all_badges = BADGES + [
+            ("Storyteller", "story", {"en": "Finish Story mode", "hi": "कहानी पूरी कीजिए", "hinglish": "Story mode poora karo"}),
+            ("Crisis Manager", "incidents", {"en": "Make 5 great calls in the Incident room", "hi": "इंसिडेंट रूम में 5 बढ़िया फ़ैसले कीजिए",
+                                             "hinglish": "Incident room mein 5 badhiya faisle karo"}),
+            ("Model Maker", "course", {"en": "Train your own model (all 6 steps)", "hi": "अपना मॉडल ट्रेन कीजिए (सभी 6 कदम)",
+                                       "hinglish": "Apna model train karo (saare 6 steps)"})]
         for name, stage, how in all_badges:
             have = name in st.badges
             out.append("🏅 " if have else "🔒 ", style="")
             out.append(f"{name:22s}", style="bold #ffd166" if have else "#5a5f7c")
             out.append(roman(how.get(lang, how["en"])) + "\n", style="#e8e8f0" if have else "#8a8fb0")
-        out.append(f"\n{len(st.badges)}/{len(all_badges)}", style="bold #06d6a0")
+        out.append(f"\n{len(st.badges)}/{len(all_badges)}\n\n", style="bold #06d6a0")
+        left = len([s for s in STAGES if s[0] not in st.completed])
+        if left:
+            out.append(tr("cert_left", n=left), style="bold #8ecae6")
+        else:
+            out.append_text(self.certificate())
         self.query_one("#list", Static).update(out)
+
+    def certificate(self):
+        """A framed certificate with the CEO's name; F9 saves it."""
+        import datetime as dt
+        from rich.cells import cell_len
+        tr = self.app.tr
+        who = self.app.state.user_name or self.app.addr() or "CEO"      # a certificate carries the real name if known
+        lines = ["", tr("cert_head"), ""] + tr("cert_body", who=who).split("\n") + ["", tr("cert_sign"),
+                                                                                   f"{dt.date.today():%d %B %Y}", ""]
+        width = max(cell_len(line) for line in lines) + 6
+        out = Text()
+        out.append("╔" + "═" * width + "╗\n", style="#ffd166")
+        for line in lines:
+            pad = width - cell_len(line)
+            out.append("║", style="#ffd166")
+            out.append(" " * (pad // 2) + line + " " * (pad - pad // 2),
+                       style="bold #ffd166" if line in (tr("cert_head"), who) else "#e8e8f0")
+            out.append("║\n", style="#ffd166")
+        out.append("╚" + "═" * width + "╝", style="#ffd166")
+        return out
+
+    def export(self):
+        left = len([s for s in STAGES if s[0] not in self.app.state.completed])
+        text = self.app.tr("cert_left", n=left) if left else self.certificate().plain
+        return ("MONA CEO certificate", "```\n" + text + "\n```",
+                "# Your MONA certificate: open the .md or .svg saved next to this file.\n"
+                "print(open(__file__[:-3] + '.md', encoding='utf-8').read())\n")

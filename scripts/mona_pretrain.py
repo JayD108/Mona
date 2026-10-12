@@ -51,6 +51,8 @@ p.add_argument("--ckpt-minutes", type=float, default=30)
 p.add_argument("--snapshot-every", type=float, default=0.5e9)
 p.add_argument("--stop-at", default=None, help="HH:MM local time: save and exit when reached")
 p.add_argument("--resume", action="store_true")
+p.add_argument("--temp-target", type=int, default=77, help="°C: pause between micro-batches to stay near this")
+p.add_argument("--min-duty", type=float, default=0.85, help="never pause more than this lets (0.85 = <=18%% slower)")
 args = p.parse_args()
 
 # Awadhi = public-domain Tulsidas VERSE only (~246K tokens; the copyrighted Gita Press commentary was removed
@@ -177,6 +179,7 @@ if args.stop_at:
 model.train()
 last_ckpt, t_last, tok_last = time.time(), time.time(), tokens_seen
 in_decay = False
+duty = 1.0          # share of time the GPU computes; lowered by the thermal limiter when it runs hot
 try:
     while step < total_steps:
         lr = lr_at(tokens_seen)
@@ -189,11 +192,19 @@ try:
 
         loss_sum = 0.0
         for _ in range(args.accum):
+            t0 = time.time()
             x, y = data.train_batch()
             with torch.autocast("cuda", dtype=torch.bfloat16, enabled=device == "cuda"):
                 _, loss = model(x, y)
             (loss / args.accum).backward()
-            loss_sum += loss.item()
+            loss_sum += loss.item()                     # .item() waits for the GPU, so t0..now = real work
+            if duty < 1.0:
+                time.sleep((time.time() - t0) * (1 - duty) / duty)
+        temp = gpu_temp()                               # thermal limiter: small steps, bounded slowdown
+        if temp > args.temp_target:
+            duty = max(args.min_duty, duty - 0.02)
+        elif 0 <= temp < args.temp_target - 3:
+            duty = min(1.0, duty + 0.02)
         grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0).item()
         optimizer.step()
         optimizer.zero_grad(set_to_none=True)
@@ -210,7 +221,7 @@ try:
                     ["step", "tokens", "lr", "loss", "grad_norm", "tokens_per_s", "gpu_temp_c"])
             print(f"step {step:6,}/{total_steps:,} | {tokens_seen / 1e9:6.3f}B tok | lr {lr:.2e} | "
                   f"loss {loss_sum / args.accum:.4f} | gnorm {grad_norm:5.2f} | {tps / 1e3:5.1f}K tok/s | "
-                  f"{gpu_temp()}°C | ETA {eta_h:5.1f} h", flush=True)
+                  f"{gpu_temp()}°C | duty {duty:.0%} | ETA {eta_h:5.1f} h", flush=True)
 
         if step % args.eval_every == 0 or step == total_steps:
             losses = evaluate()

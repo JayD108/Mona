@@ -8,6 +8,12 @@ from textual.binding import Binding
 from .screens import DisplayCheckScreen, HomeScreen
 from .state import DEPTHS, LANGS, State
 from .text import romanize, t
+from .welcome import WelcomeScreen, address
+
+# each lab's main explanation opens with a short line addressed to the CEO
+LAB_INTROS = {"lm_explain", "dat_explain", "tok_explain", "emb_explain", "att_explain", "lay_explain", "smp_explain",
+              "tm_explain", "ct_explain", "ev_explain", "rag_explain", "by_q_explain", "cmp_explain"}
+BRIEFING = {"en": "📋 {a}, here is your briefing:\n", "hi": "📋 {a}, आपके लिए ब्रीफ़िंग:\n", "hinglish": "📋 {a}, aapki briefing:\n"}
 
 CSS = """
 Screen { background: #14172b; color: #e8e8f0; }
@@ -19,9 +25,13 @@ Screen { background: #14172b; color: #e8e8f0; }
 #topbar { height: 3; padding: 0 1; background: #1b1f3b; }
 #hello-row { height: 6; margin: 1 1 0 1; }
 #avatar { width: 11; }
-#hello { padding: 1 2; border: round #8ecae6; height: 5; }
-#journey-title { margin: 1 2 0 2; }
-#stages { margin: 0 2; height: 1fr; border: round #3a3f5c; background: #14172b; }
+#hello { padding: 0 2; border: round #8ecae6; height: 6; width: 1fr; }
+#home-cols { height: 1fr; }
+#stage-col { width: 1fr; }
+#desk-col { width: 46; }
+#journey-title, #desk-title { margin: 1 2 0 2; }
+#stages, #desk { margin: 0 2; height: 1fr; border: round #3a3f5c; background: #14172b; }
+#stages:focus, #desk:focus { border: round #ffd166; }
 #progress { margin: 0 2 1 2; height: 1; }
 
 /* labs */
@@ -47,6 +57,25 @@ Input { margin: 1 1 0 1; border: tall #3a3f5c; }
 Input:focus { border: tall #ffd166; }
 
 #check-box { align: center middle; padding: 2 4; }
+#wel-box { align: center middle; padding: 1 4; }
+#wel-box #avatar { height: 5; }
+#wel-text { margin: 1 0; color: #e8e8f0; width: 90; }
+#wel-choices { width: 44; height: 5; border: round #8ecae6; margin: 1 0 0 0; }
+#wel-name { width: 44; }
+#wel-keys { margin: 1 0 0 0; }
+
+/* CEO desk screens: a list on the left, the briefing on the right */
+#tour-cols { height: 1fr; }
+#teams, #chapters, #incidents, #steps { width: 42; margin: 1 0 1 1; border: round #3a3f5c; background: #14172b; }
+#teams:focus, #chapters:focus, #incidents:focus, #steps:focus { border: round #ffd166; }
+#tour-right { width: 1fr; }
+
+/* F1 glossary popup */
+GlossaryScreen { align: center middle; background: rgba(10, 12, 30, 0.7); }
+#gl-box { width: 110; height: 32; border: round #ffd166; background: #1b1f3b; padding: 0 1; }
+#gl-cols { height: 1fr; }
+#gl-list { width: 32; border: round #3a3f5c; background: #14172b; }
+#gl-detail { width: 1fr; padding: 1 2; }
 #check-sample { text-style: bold; color: #ffd166; padding: 1 2; border: round #ffd166; width: auto; margin: 1 0; }
 #check-buttons { height: auto; margin: 1 0; }
 #check-buttons Button { margin-right: 2; }
@@ -58,7 +87,8 @@ class MonaApp(App):
     CSS = CSS
     TITLE = "MONA"
     BINDINGS = [Binding("f2", "cycle_lang", "language", show=False), Binding("f3", "cycle_depth", "depth", show=False),
-                Binding("f4", "toggle_roman", "romanize", show=False), Binding("f9", "export", "export", show=False)]
+                Binding("f4", "toggle_roman", "romanize", show=False), Binding("f9", "export", "export", show=False),
+                Binding("f7", "address", "address", show=False), Binding("f1", "glossary", "glossary", show=False)]
 
     def __init__(self, weights=None):
         super().__init__()
@@ -68,8 +98,18 @@ class MonaApp(App):
 
     # ── text helpers used by every screen ────────────────────────────────────
     def tr(self, key, **fmt):
-        text = t(key, self.state.lang, self.state.depth, **fmt)
+        who = self.addr()
+        shown = who or {"en": "friend", "hi": "दोस्त", "hinglish": "dost"}[self.state.lang]
+        if fmt:                                    # texts with other {fields} may also say {addr}
+            fmt.setdefault("addr", shown)
+        text = t(key, self.state.lang, self.state.depth, **fmt).replace("{addr}", shown)
+        if key in LAB_INTROS and who:
+            text = BRIEFING[self.state.lang].format(a=who) + text
         return self.roman(text) if self.state.romanize else text
+
+    def addr(self):
+        """How MONA addresses the user right now: 'Sir', 'मैम', 'Priya जी' … ('' if not chosen)."""
+        return address(self.state)
 
     def roman(self, text):
         return romanize(text)
@@ -90,6 +130,7 @@ class MonaApp(App):
         self.push_screen(HomeScreen())
         if not self.state.display_checked:
             self.push_screen(DisplayCheckScreen())
+        self.push_screen(WelcomeScreen())          # every launch: "how should I address you?" (Enter keeps it)
         self.load_engine()
 
     @work(thread=True)
@@ -131,6 +172,15 @@ class MonaApp(App):
             (out_dir / f"{stamp}.py").write_text(script, encoding="utf-8")
             saved += [str(out_dir / f"{stamp}.md"), str(out_dir / f"{stamp}.py")]
         self.notify("Saved: " + "  ".join(Path(s).name for s in saved) + f"  →  {out_dir}", timeout=6)
+
+    def action_address(self):
+        if not isinstance(self.screen, WelcomeScreen):
+            self.push_screen(WelcomeScreen())
+
+    def action_glossary(self):
+        from .glossary import GlossaryScreen
+        if not isinstance(self.screen, GlossaryScreen):
+            self.push_screen(GlossaryScreen())
 
     def action_toggle_roman(self):
         self.state.romanize = not self.state.romanize

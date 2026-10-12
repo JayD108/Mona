@@ -14,6 +14,8 @@ class State:
     depth: str = "student"
     romanize: bool = False          # show Hindi in Latin letters (for terminals that can't draw Devanagari)
     display_checked: bool = False
+    address: str = ""               # how MONA addresses the CEO: "sir" | "maam" | "name" ("" = not chosen yet)
+    user_name: str = ""
     completed: list = field(default_factory=list)   # stage ids
     badges: list = field(default_factory=list)
     records: dict = field(default_factory=dict)     # challenge high scores

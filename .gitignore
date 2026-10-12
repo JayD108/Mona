@@ -26,6 +26,9 @@
 /docs/*
 !/docs/MONA_PLAN.md
 !/docs/MONA_APP_PLAN.md
+!/docs/MONA_GUIDE.md
+!/docs/MONA_CEO_PLAN.md
+!/docs/img/
 
 __pycache__/
 *.pyc

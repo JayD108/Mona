@@ -33,22 +33,22 @@ S = {
         "hinglish": "Ek asli language model ko kholkar dekho ki woh kaise sochta hai.",
     },
     "hello": {
-        "en": {"simple": "Hi! I'm MONA. I guess the next word, one piece at a time. Want to see how?",
-               "student": "Namaste! I'm MONA, a 110-million-number language model. Pick a stage and look inside me.",
+        "en": {"simple": "I'm MONA, your lab's model. I guess the next word, one piece at a time. Pick a stage to see how, or try the CEO desk →",
+               "student": "I'm MONA, the 110-million-number language model your lab built from scratch. Pick a stage and look inside me.",
                "engineer": "MONA: 110M-param Llama-style decoder, 32K BPE, trained from scratch. Every view uses my real weights."},
-        "hi": {"simple": "नमस्ते! मैं MONA हूँ। मैं अगला शब्द, एक-एक टुकड़ा करके, अंदाज़ा लगाती हूँ। देखना चाहेंगे कैसे?",
-               "student": "नमस्ते! मैं MONA हूँ, 11 करोड़ संख्याओं से बना एक भाषा मॉडल। कोई चरण चुनिए और मेरे अंदर झाँकिए।",
+        "hi": {"simple": "मैं MONA हूँ, आपकी लैब का मॉडल। मैं अगला शब्द, एक-एक टुकड़ा करके, अंदाज़ा लगाती हूँ। कोई चरण चुनिए, या CEO की मेज़ देखिए →",
+               "student": "मैं MONA हूँ, 11 करोड़ संख्याओं से बना भाषा मॉडल, जिसे आपकी लैब ने शुरू से बनाया। कोई चरण चुनिए और मेरे अंदर झाँकिए।",
                "engineer": "MONA: 11 करोड़ पैरामीटर वाला Llama-शैली डिकोडर, 32K BPE, शुरू से प्रशिक्षित। हर दृश्य मेरे असली वज़न से बनता है।"},
-        "hinglish": {"simple": "Hi! Main MONA hoon. Main agla shabd guess karti hoon, ek-ek tukda karke. Dekhna hai kaise?",
-                     "student": "Namaste! Main MONA hoon, 11 crore numbers se bana language model. Koi stage chuno aur mere andar jhaanko.",
+        "hinglish": {"simple": "Main MONA hoon, aapki lab ka model. Main agla shabd guess karti hoon, ek-ek tukda karke. Koi stage chuno, ya CEO desk try karo →",
+                     "student": "Main MONA hoon, 11 crore numbers se bana language model jo aapki lab ne scratch se banaya. Koi stage chuno aur mere andar jhaanko.",
                      "engineer": "MONA: 110M params ka Llama-style decoder, 32K BPE, scratch se trained. Har view mere asli weights se banta hai."},
     },
     "journey": {"en": "THE JOURNEY OF A SENTENCE", "hi": "एक वाक्य का सफ़र", "hinglish": "EK SENTENCE KA SAFAR"},
     "progress": {"en": "your progress", "hi": "आपकी प्रगति", "hinglish": "aapki progress"},
     "keys_home": {
-        "en": "↑↓ choose  Enter open  S story mode  B badges  C vs big model  T teacher  L language  D depth  R romanize  Q quit",
-        "hi": "↑↓ चुनें  Enter खोलें  S कहानी  B बैज  C बड़ा मॉडल  T शिक्षक  L भाषा  D गहराई  R रोमन लिपि  Q बंद करें",
-        "hinglish": "↑↓ chuno  Enter kholo  S story  B badges  C bada model  T teacher  L bhasha  D depth  R roman  Q band karo",
+        "en": "↑↓ choose  Enter open  Tab stages ⇄ CEO desk  F1 explain a word  F7 how I address you  L language  D depth  R romanize  Q quit",
+        "hi": "↑↓ चुनें  Enter खोलें  Tab चरण ⇄ CEO मेज़  F1 शब्द का मतलब  F7 संबोधन बदलें  L भाषा  D गहराई  R रोमन  Q बंद करें",
+        "hinglish": "↑↓ chuno  Enter kholo  Tab stages ⇄ CEO desk  F1 word ka matlab  F7 address badlo  L bhasha  D depth  R roman  Q band karo",
     },
     "soon": {"en": "Coming soon: this stage is being built.", "hi": "जल्द आ रहा है: यह चरण बन रहा है।",
              "hinglish": "Jaldi aa raha hai: yeh stage ban raha hai."},
@@ -105,6 +105,7 @@ _ITRANS_FIX = [("||", "."), ("|", "."), ("j~n", "gy"), (".DH", "dh"), (".D", "d"
 
 
 def _roman_word(word):
+    word = word.replace("ॉ", "ो").replace("ॅ", "े")          # English loan vowels (डॉक्टर, सेंटर): no ITRANS letter
     s = transliterate(word, sanscript.DEVANAGARI, sanscript.ITRANS)
     if len(s) > 2:
         s = re.sub(r"(?<=[^aeiouAEIOU])a$", "", s)       # drop the silent final 'a' (भारत -> bhaarat -> bharat)
