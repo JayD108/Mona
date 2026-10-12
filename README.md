@@ -8,9 +8,6 @@
   English · हिंदी · Hinglish · Windows, macOS or Linux · any normal laptop, GPU optional · free and open source (MIT)
 </p>
 
-<p align="center">
-  <sub>The MONA home screen: a four-track learning path and hands-on experiments</sub>
-</p>
 
 MONA is an interactive AI learning lab in your terminal. She is a real language model: 110 million numbers
 trained from scratch on 2.5 billion tokens of English, हिंदी, Hinglish and Awadhi, on one laptop. Every view in
