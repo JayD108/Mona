@@ -1,9 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="Elegant White Calligraphic Mona Logo.png">
-    <source media="(prefers-color-scheme: light)" srcset="mona-logo-dark.png">
-    <img src="mona-logo-dark.png" alt="MONA icon" width="240">
-  </picture>
+  <img src="mona-logo.png" alt="MONA icon" width="240">
 </p>
 
 <p align="center"><b>Understand AI from the inside: look into a real language model while it thinks</b></p>
