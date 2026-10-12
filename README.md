@@ -1,9 +1,14 @@
-<img src="mona.png" alt="MONA icon" width="120" align="left">
+<p align="center">
+  <img src="mona.png" alt="MONA icon" width="160">
+</p>
 
-# MONA: understand AI from the inside
+<h1 align="center">MONA</h1>
+
+<p align="center"><b>understand AI from the inside</b></p>
 
 **An interactive AI learning lab in your terminal.** Look inside a real language model while it thinks,
 run experiments on it, investigate its mistakes, and train a model of your own.
+
 
 <br clear="left">
 
