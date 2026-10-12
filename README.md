@@ -9,7 +9,6 @@
 </p>
 
 <p align="center">
-  <br>
   <sub>The MONA home screen: a four-track learning path and hands-on experiments</sub>
 </p>
 
