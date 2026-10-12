@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Elegant Orange “Mona” Signature.png" alt="MONA icon" width="160">
+  <img src="Elegant White Calligraphic Mona Logo.png" alt="MONA icon" width="160">
 </p>
 
 <h1 align="center">MONA</h1>
