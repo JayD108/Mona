@@ -1,4 +1,4 @@
-"""The screens of the MONA app: display check, home (12 stages + the CEO desk)."""
+"""The screens of the MONA app: display check, and home (a 4-track learning path + "Explore further")."""
 import datetime as dt
 
 from rich.text import Text
@@ -13,20 +13,42 @@ from .text import READY, STAGES, register, stage_name
 from .welcome import greeting_key
 from .widgets import Avatar
 
-# The CEO desk: everything that isn't one of the 12 stages.  (id, key, en, hi, hinglish)
-DESK = [
-    ("tour", "O", "Lab tour: how a frontier lab works", "लैब टूर: बड़ी AI लैब कैसे काम करती है", "Lab tour: badi AI lab kaise kaam karti hai"),
-    ("journey", "J", "MONA's training journey", "MONA की ट्रेनिंग का सफ़र", "MONA ki training ka safar"),
-    ("course", "G", "Train your own model (guided)", "अपना मॉडल ट्रेन कीजिए (गाइड)", "Apna model train karo (guided)"),
-    ("incidents", "I", "Incident room: real crises", "इंसिडेंट रूम: असली संकट", "Incident room: asli crises"),
-    ("budget", "P", "Budget planner: size vs cost", "बजट प्लानर: आकार बनाम ख़र्च", "Budget planner: size vs kharcha"),
-    ("story", "S", "Story mode: follow your sentence", "कहानी: अपने वाक्य का पीछा कीजिए", "Story: apne sentence ke saath chalo"),
-    ("compare", "C", "MONA vs a big model", "MONA बनाम बड़ा मॉडल", "MONA vs bada model"),
-    ("teacher", "T", "Teacher mode", "शिक्षक मोड", "Teacher mode"),
-    ("badges", "B", "Badges & CEO certificate", "बैज और CEO प्रमाणपत्र", "Badges aur CEO certificate"),
+# The learning path: the 12 stages in four tracks.  (track title en, hi, hinglish, [stage ids])
+TRACKS = [
+    (("① FOUNDATIONS · how text becomes numbers", "① नींव · पाठ संख्या कैसे बनता है", "① FOUNDATIONS · text numbers kaise banta hai"),
+     ["lm", "data", "tokens", "embeddings"]),
+    (("② INSIDE THE MODEL · how it thinks", "② मॉडल के अंदर · यह कैसे सोचता है", "② MODEL KE ANDAR · yeh kaise sochta hai"),
+     ["attention", "layers", "next"]),
+    (("③ LEARNING · how it got good", "③ सीखना · यह अच्छा कैसे बना", "③ LEARNING · yeh achha kaise bana"),
+     ["training", "chat", "evals"]),
+    (("④ BEYOND · using and shrinking models", "④ आगे · मॉडल का इस्तेमाल और छोटा करना", "④ AAGE · models use karna aur chhota karna"),
+     ["rag", "beyond"]),
 ]
 
-# One lab memo per day on the home screen: small true facts that make people curious.
+# Explore further: hands-on work beyond the 12 stages.  (id or None for a heading, key, en, hi, hinglish)
+EXPLORE = [
+    (None, "", "🔍 INVESTIGATE", "🔍 जाँच", "🔍 INVESTIGATE"),
+    ("mysteries", "M", "Model mysteries: debug MONA", "मॉडल की पहेलियाँ: MONA को डीबग कीजिए", "Model mysteries: MONA ko debug karo"),
+    ("incidents", "I", "Training failures: what goes wrong", "ट्रेनिंग की गड़बड़ियाँ: क्या बिगड़ता है", "Training failures: kya bigadta hai"),
+    (None, "", "🛠  BUILD", "🛠  बनाइए", "🛠  BUILD"),
+    ("course", "G", "Train a model yourself", "ख़ुद एक मॉडल ट्रेन कीजिए", "Khud ek model train karo"),
+    ("journey", "J", "How MONA was trained (real logs)", "MONA कैसे ट्रेन हुई (असली लॉग)", "MONA kaise train hui (asli logs)"),
+    (None, "", "📈 SCALE", "📈 पैमाना", "📈 SCALE"),
+    ("budget", "P", "Scaling laws explorer", "स्केलिंग नियम: खोजिए", "Scaling laws explorer"),
+    ("tour", "O", "How AI labs build models", "AI लैब मॉडल कैसे बनाती हैं", "AI labs models kaise banati hain"),
+    ("compare", "C", "MONA vs a big model", "MONA बनाम बड़ा मॉडल", "MONA vs bada model"),
+    (None, "", "🎒 MORE", "🎒 और", "🎒 MORE"),
+    ("story", "S", "Follow one sentence through MONA", "एक वाक्य का MONA में सफ़र", "Ek sentence ka MONA mein safar"),
+    ("teacher", "T", "Teacher mode: lessons & quizzes", "शिक्षक मोड: पाठ और क्विज़", "Teacher mode: lessons aur quiz"),
+    ("badges", "B", "Progress & certificate", "प्रगति और प्रमाणपत्र", "Progress aur certificate"),
+]
+
+# The suggested order for "Next up": stages interleaved with hands-on work at the right moments.
+PATH = ["lm", "data", "tokens", "embeddings", "attention", "layers", "next", "course", "training", "chat", "evals",
+        "mysteries", "rag", "beyond", "budget"]
+PATH_NAMES = {item[0]: item[2:] for item in EXPLORE if item[0]}
+
+# One "did you know?" per day on the home screen: small true facts that make people curious.
 MEMOS = [
     ("MONA has 110 million numbers inside. GPT-3 has 175 billion: 1,600 times more.",
      "MONA के अंदर 11 करोड़ संख्याएँ हैं। GPT-3 में 17,500 करोड़: 1,600 गुना ज़्यादा।",
@@ -67,8 +89,12 @@ MEMOS = [
 ]
 
 register({
-    "memo": {"en": "📌 Today's lab memo: {m}", "hi": "📌 आज का लैब मेमो: {m}", "hinglish": "📌 Aaj ka lab memo: {m}"},
-    "desk_title": {"en": "THE CEO DESK", "hi": "CEO की मेज़", "hinglish": "CEO KI DESK"},
+    "memo": {"en": "💡 Did you know? {m}", "hi": "💡 क्या आप जानते हैं? {m}", "hinglish": "💡 Kya aap jaante ho? {m}"},
+    "next_up": {"en": "➜ Next up: {n}   (press N)", "hi": "➜ अगला: {n}   (N दबाइए)", "hinglish": "➜ Agla: {n}   (N dabao)"},
+    "all_done": {"en": "🎓 You've completed the whole path. Try the Model mysteries again, or train with new settings!",
+                 "hi": "🎓 आपने पूरा रास्ता तय कर लिया। मॉडल की पहेलियाँ फिर से आज़माइए, या नई सेटिंग से ट्रेन कीजिए!",
+                 "hinglish": "🎓 Aapne poora path complete kar liya. Model mysteries phir try karo, ya nayi settings se train karo!"},
+    "desk_title": {"en": "EXPLORE FURTHER", "hi": "और गहराई में", "hinglish": "AUR GEHRAI MEIN"},
 })
 
 
@@ -119,7 +145,22 @@ class HomeScreen(Screen):
                 Binding("r", "app.toggle_roman", "romanize"), Binding("q", "app.quit", "quit"),
                 Binding("s", "story", "story"), Binding("b", "badges", "badges"), Binding("c", "compare", "compare"),
                 Binding("t", "teacher", "teacher"), Binding("o", "tour", "tour"), Binding("j", "journey", "journey"),
-                Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget")]
+                Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget"),
+                Binding("m", "mysteries", "mysteries"), Binding("n", "next_up", "next")]
+
+    def action_mysteries(self):
+        from .mysteries import MysteryScreen
+        self.app.push_screen(MysteryScreen())
+
+    def next_up(self):
+        return next((sid for sid in PATH if sid not in self.app.state.completed), None)
+
+    def action_next_up(self):
+        sid = self.next_up()
+        if sid in PATH_NAMES:
+            getattr(self, f"action_{sid}")()
+        elif sid:
+            self.app.push_screen(open_lab(sid))
 
     def action_tour(self):
         from .tour import TourScreen
@@ -192,7 +233,15 @@ class HomeScreen(Screen):
         who = app.addr()
         hello = Text(tr(greeting_key()) + (f", {who}" if who else "") + "! ", style="bold #ffd166")
         hello.append(tr("hello"), style="#e8e8f0")
-        memo = MEMOS[dt.date.today().toordinal() % len(MEMOS)][{"en": 0, "hi": 1, "hinglish": 2}[s.lang]]
+        li = {"en": 0, "hi": 1, "hinglish": 2}[s.lang]
+        nxt = self.next_up()
+        if nxt:
+            stage = next((st for st in STAGES if st[0] == nxt), None)
+            name = f"{STAGES.index(stage)} · {stage_name(stage, s.lang)}" if stage else PATH_NAMES[nxt][li]
+            hello.append("\n" + tr("next_up", n=app.roman(name) if s.romanize else name), style="bold #06d6a0")
+        else:
+            hello.append("\n" + tr("all_done"), style="bold #06d6a0")
+        memo = MEMOS[dt.date.today().toordinal() % len(MEMOS)][li]
         hello.append("\n" + tr("memo", m=app.roman(memo) if s.romanize else memo), style="#8ecae6")
         self.query_one("#hello", Static).update(hello)
         self.query_one("#journey-title", Static).update(tr("journey"))
@@ -200,24 +249,36 @@ class HomeScreen(Screen):
         desk = self.query_one("#desk", OptionList)
         keep = desk.highlighted
         desk.clear_options()
-        col = {"en": 2, "hi": 3, "hinglish": 4}[s.lang]
-        for item in DESK:
-            name = app.roman(item[col]) if s.romanize else item[col]
-            desk.add_option(Option(Text.assemble((f" {item[1]}  ", "bold #ffd166"), (name, "bold")), id=item[0]))
-        desk.highlighted = keep
+        for item in EXPLORE:
+            name = item[2 + li]
+            name = app.roman(name) if s.romanize else name
+            if item[0] is None:                                      # a section heading
+                desk.add_option(Option(Text(name, style="bold #8ecae6"), disabled=True))
+            else:
+                mark = "✓" if item[0] in s.completed else " "
+                desk.add_option(Option(Text.assemble((f" {item[1]} ", "bold #ffd166"), (f"{mark} ", "#06d6a0"),
+                                                     (name, "bold")), id=item[0]))
+        desk.highlighted = keep if keep is not None else 1
         stages = self.query_one("#stages", OptionList)
         highlighted = stages.highlighted
         stages.clear_options()
-        for i, stage in enumerate(STAGES):
-            sid = stage[0]
-            mark = "✓" if sid in s.completed else ("●" if sid in READY else "○")
-            name = stage_name(stage, s.lang)
-            if s.romanize:
-                name = app.roman(name)
-            label = Text.assemble((f" {i:>2}  {mark}  ", "#ffd166" if sid in READY else "#5a5f7c"),
-                                  (name, "bold" if sid in READY else "#8a8fb0"))
-            stages.add_option(Option(label, id=sid))
-        stages.highlighted = highlighted if highlighted is not None else 2
+        target = None
+        for title, ids in TRACKS:
+            stages.add_option(Option(Text(app.roman(title[li]) if s.romanize else title[li], style="bold #8ecae6"),
+                                     disabled=True))
+            for sid in ids:
+                stage = next(st for st in STAGES if st[0] == sid)
+                i = STAGES.index(stage)
+                mark = "✓" if sid in s.completed else ("●" if sid in READY else "○")
+                name = stage_name(stage, s.lang)
+                if s.romanize:
+                    name = app.roman(name)
+                label = Text.assemble((f"  {i:>2}  {mark}  ", "#ffd166" if sid in READY else "#5a5f7c"),
+                                      (name, "bold" if sid in READY else "#8a8fb0"))
+                stages.add_option(Option(label, id=sid))
+                if sid == nxt:
+                    target = stages.option_count - 1
+        stages.highlighted = highlighted if highlighted is not None else (target if target is not None else 1)
         done = len([c for c in s.completed if c in {st[0] for st in STAGES}])   # stages only, not story
         bar = "█" * done + "░" * (len(STAGES) - done)
         badges = "   " + "  ".join(f"🏅 {b}" for b in s.badges) if s.badges else ""

@@ -1,7 +1,7 @@
-"""Lab tour: how a frontier AI lab works, team by team, and what MONA's own (tiny) lab did at each step.
+"""How AI labs build models: the life of a model, team by team, next to what MONA did at each step.
 
-Every team briefs the CEO in plain words: what big labs do, what MONA's lab did (real numbers), and
-the decision the CEO owns. Enter opens the matching stage so the CEO can see it for real.
+Each team is explained in plain words: what big labs do, what MONA's build did (real numbers), and the key
+question that team has to answer. Enter opens the matching stage to see it for real.
 """
 from rich.text import Text
 from textual.app import ComposeResult
@@ -15,19 +15,18 @@ from .text import register
 from .widgets import Avatar
 
 register({
-    "tour_title": {"en": "Lab tour: how a frontier AI lab works", "hi": "लैब टूर: बड़ी AI लैब कैसे काम करती है",
-                   "hinglish": "Lab tour: badi AI lab kaise kaam karti hai"},
+    "tour_title": {"en": "How AI labs build models", "hi": "AI लैब मॉडल कैसे बनाती हैं", "hinglish": "AI labs models kaise banati hain"},
     "tour_explain": {
         "en": "{addr}, every big AI lab (OpenAI, Google DeepMind, Anthropic, Meta…) is organised around the life of a model. "
-              "Walk the floor: each team will brief you. Your lab is tiny (one laptop), but it did every one of these jobs.",
+              "Pick a team to see what it does. MONA was built on one laptop, but every one of these jobs still had to be done.",
         "hi": "{addr}, हर बड़ी AI लैब (OpenAI, Google DeepMind, Anthropic, Meta…) एक मॉडल के जीवन के इर्द-गिर्द बनी होती है। "
-              "लैब में घूमिए: हर टीम आपको ब्रीफ़ करेगी। आपकी लैब छोटी है (एक लैपटॉप), पर इसने ये सारे काम किए।",
+              "कोई टीम चुनकर देखिए वह क्या करती है। MONA एक लैपटॉप पर बनी, पर ये सारे काम फिर भी करने पड़े।",
         "hinglish": "{addr}, har badi AI lab (OpenAI, Google DeepMind, Anthropic, Meta…) ek model ki life ke around bani hoti hai. "
-                    "Lab mein ghoomo: har team aapko brief karegi. Aapki lab chhoti hai (ek laptop), par isne yeh saare kaam kiye.",
+                    "Koi team chuno aur dekho woh kya karti hai. MONA ek laptop par bani, par yeh saare kaam phir bhi karne pade.",
     },
     "tour_big": {"en": "🏢 In a frontier lab", "hi": "🏢 बड़ी लैब में", "hinglish": "🏢 Badi lab mein"},
-    "tour_ours": {"en": "🧪 In your lab (MONA)", "hi": "🧪 आपकी लैब में (MONA)", "hinglish": "🧪 Aapki lab mein (MONA)"},
-    "tour_ceo": {"en": "🎯 Your decision as CEO", "hi": "🎯 CEO के रूप में आपका फ़ैसला", "hinglish": "🎯 CEO ke roop mein aapka faisla"},
+    "tour_ours": {"en": "🧪 How MONA did it", "hi": "🧪 MONA में कैसे हुआ", "hinglish": "🧪 MONA mein kaise hua"},
+    "tour_q": {"en": "🤔 The key question", "hi": "🤔 मुख्य सवाल", "hinglish": "🤔 Main sawaal"},
     "tour_open": {"en": "Enter: see it live in stage “{s}”", "hi": "Enter: चरण “{s}” में असली में देखिए",
                   "hinglish": "Enter: stage “{s}” mein live dekho"},
     "tour_keys": {"en": "↑↓ choose a team   Enter open its stage   Esc back   F1 explain a word",
@@ -35,7 +34,7 @@ register({
                   "hinglish": "↑↓ team chuno   Enter uska stage kholo   Esc wapas   F1 word ka matlab"},
 })
 
-# (id, icon, {lang: (team name, big lab, your lab, CEO decision)}, stage to open)
+# (id, icon, {lang: (team name, big labs, MONA, key question)}, stage to open)
 TEAMS = [
     ("cycle", "🔁", {
         "en": ("The life of a model (overview)",
@@ -46,7 +45,7 @@ TEAMS = [
                "MONA went through all 7 steps in a few days on one laptop: 1 size chosen with scaling laws → 2 4 languages cleaned → "
                "3 one RTX 5080 laptop GPU with guards → 4 2.5 billion tokens in ~30 hours → 5 127,000 chat examples → "
                "6 bits-per-byte tests and copyright scan → 7 release on Hugging Face.",
-               "Pick a team on the left. Each one needs a decision from you, just like in a real lab."),
+               "Pick a team on the left. Each one faces a hard trade-off; see how it was handled for MONA."),
         "hi": ("एक मॉडल का जीवन (झलक)",
                "1 रिसर्च नुस्ख़ा चुनती है → 2 डेटा टीम पाठ जुटाती और साफ़ करती है → 3 इंफ़्रास्ट्रक्चर हज़ारों GPU तैयार करता है → "
                "4 प्रीट्रेनिंग हफ़्तों या महीनों चलती है → 5 पोस्ट-ट्रेनिंग इसे सहायक बनाती है (SFT, फिर RLHF) → "
@@ -55,7 +54,7 @@ TEAMS = [
                "MONA कुछ ही दिनों में एक लैपटॉप पर सातों कदमों से गुज़री: 1 स्केलिंग नियमों से आकार चुना → 2 4 भाषाएँ साफ़ कीं → "
                "3 एक RTX 5080 लैपटॉप GPU, सुरक्षा गार्ड के साथ → 4 ~30 घंटे में 2.5 अरब टोकन → 5 1,27,000 चैट उदाहरण → "
                "6 bits-per-byte जाँच और कॉपीराइट स्कैन → 7 Hugging Face पर रिलीज़।",
-               "बाईं ओर कोई टीम चुनिए। असली लैब की तरह हर टीम को आपसे एक फ़ैसला चाहिए।"),
+               "बाईं ओर कोई टीम चुनिए। हर टीम के सामने एक कठिन चुनाव होता है; देखिए MONA में वह कैसे सुलझा।"),
         "hinglish": ("Ek model ki life (overview)",
                      "1 Research recipe chunti hai → 2 Data team text jutati aur saaf karti hai → 3 Infrastructure hazaron GPUs ready karta hai → "
                      "4 Pretraining hafton ya mahino chalti hai → 5 Post-training ise assistant banati hai (SFT, phir RLHF) → "
@@ -64,7 +63,7 @@ TEAMS = [
                      "MONA kuch hi dinon mein ek laptop par saaton steps se guzri: 1 scaling laws se size chuna → 2 4 languages saaf ki → "
                      "3 ek RTX 5080 laptop GPU, guards ke saath → 4 ~30 ghante mein 2.5 billion tokens → 5 1,27,000 chat examples → "
                      "6 bits-per-byte tests aur copyright scan → 7 Hugging Face par release.",
-                     "Left mein koi team chuno. Asli lab ki tarah har team ko aapse ek faisla chahiye.")}, "lm"),
+                     "Left mein koi team chuno. Har team ke saamne ek mushkil trade-off hota hai; dekho MONA mein woh kaise suljha.")}, "lm"),
     ("research", "🔬", {
         "en": ("1 · Research",
                "Scientists run hundreds of small 'pilot' models to find the best recipe: how big, how much data, which architecture. "
@@ -73,7 +72,7 @@ TEAMS = [
                "We measured three sizes on this laptop (42M, 72M, 110M parameters) and used the Chinchilla rule (~20 tokens per parameter) "
                "to pick 110M parameters and 2.5 billion tokens: the best model that fits two nights of training. "
                "Design: Llama-style (RMSNorm, RoPE, SwiGLU), the same family as today's open models.",
-               "How big should the model be for your budget? Try the Budget planner (P) on the CEO desk."),
+               "How big should a model be for a given amount of compute? Try the Scaling laws explorer (P)."),
         "hi": ("1 · रिसर्च",
                "वैज्ञानिक सैकड़ों छोटे 'पायलट' मॉडल चलाकर सबसे अच्छा नुस्ख़ा खोजते हैं: कितना बड़ा, कितना डेटा, कौन सा डिज़ाइन। "
                "स्केलिंग नियम पैसे ख़र्च करने से पहले ही बता देते हैं कि बड़ा मॉडल कितना अच्छा होगा। एक बड़ी ट्रेनिंग करोड़ों डॉलर की "
@@ -81,7 +80,7 @@ TEAMS = [
                "हमने इस लैपटॉप पर तीन आकार मापे (4.2, 7.2 और 11 करोड़ पैरामीटर) और Chinchilla नियम (~20 टोकन प्रति पैरामीटर) से "
                "11 करोड़ पैरामीटर और 2.5 अरब टोकन चुने: दो रातों की ट्रेनिंग में सबसे अच्छा मॉडल। "
                "डिज़ाइन: Llama-शैली (RMSNorm, RoPE, SwiGLU), आज के खुले मॉडलों का ही परिवार।",
-               "आपके बजट में मॉडल कितना बड़ा हो? CEO मेज़ पर बजट प्लानर (P) आज़माइए।"),
+               "तय कंप्यूट में मॉडल कितना बड़ा हो? स्केलिंग नियम (P) आज़माइए।"),
         "hinglish": ("1 · Research",
                      "Scientists sainkdon chhote 'pilot' models chalakar sabse achhi recipe dhoondhte hain: kitna bada, kitna data, kaunsa design. "
                      "Scaling laws paisa kharch karne se pehle hi bata dete hain ki bada model kitna achha hoga. Ek badi training crore-on dollars "
@@ -89,7 +88,7 @@ TEAMS = [
                      "Humne is laptop par teen sizes measure kiye (42M, 72M, 110M parameters) aur Chinchilla rule (~20 tokens per parameter) se "
                      "110M parameters aur 2.5 billion tokens chune: do raaton ki training mein sabse achha model. "
                      "Design: Llama-style (RMSNorm, RoPE, SwiGLU), aaj ke open models ki hi family.",
-                     "Aapke budget mein model kitna bada ho? CEO desk par Budget planner (P) try karo.")}, "layers"),
+                     "Fixed compute mein model kitna bada ho? Scaling laws explorer (P) try karo.")}, "layers"),
     ("data", "📚", {
         "en": ("2 · Data",
                "Often the biggest team. They collect trillions of tokens (web pages, books, code), remove spam, duplicates, "
@@ -121,22 +120,22 @@ TEAMS = [
                "and restarted automatically.",
                "One laptop GPU, guarded like a data centre: checkpoints every 30 minutes, a watchdog that restarts dead or "
                "hung training, a power guard that freezes training when the charger is unplugged, a heat limiter at 77°C, "
-               "and automatic start after a reboot. All of these were needed for real (see the Incident room, I).",
-               "Speed or safety? How hot is too hot? Face the real crises in the Incident room (I)."),
+               "and automatic start after a reboot. All of these were needed for real (see Training failures, I).",
+               "Speed or safety? How hot is too hot? Work through the real failures in Training failures (I)."),
         "hi": ("3 · इंफ़्रास्ट्रक्चर",
                "इंजीनियर हज़ारों GPU जोड़ते हैं, उन्हें ठंडा रखते हैं और डेटा पहुँचाते हैं, और ध्यान रखते हैं कि एक मशीन का क्रैश हफ़्तों का काम न "
                "खो दे। इतने बड़े पैमाने पर ख़राबी आम है: रोज़ GPU टूटते हैं, इसलिए सब कुछ चेकपॉइंट होता है और अपने-आप दोबारा शुरू होता है।",
                "एक लैपटॉप GPU, डेटा सेंटर की तरह सुरक्षित: हर 30 मिनट चेकपॉइंट, रुकी या अटकी ट्रेनिंग दोबारा चलाने वाला वॉचडॉग, चार्जर हटने पर "
-               "ट्रेनिंग रोकने वाला पावर गार्ड, 77°C पर हीट लिमिटर, और रीबूट के बाद अपने-आप शुरू। ये सब सच में काम आए (इंसिडेंट रूम, I देखिए)।",
-               "रफ़्तार या सुरक्षा? कितनी गर्मी ज़्यादा है? इंसिडेंट रूम (I) में असली संकटों का सामना कीजिए।"),
+               "ट्रेनिंग रोकने वाला पावर गार्ड, 77°C पर हीट लिमिटर, और रीबूट के बाद अपने-आप शुरू। ये सब सच में काम आए (ट्रेनिंग की गड़बड़ियाँ, I देखिए)।",
+               "रफ़्तार या सुरक्षा? कितनी गर्मी ज़्यादा है? ट्रेनिंग की गड़बड़ियाँ (I) में असली समस्याएँ सुलझाइए।"),
         "hinglish": ("3 · Infrastructure",
                      "Engineers hazaron GPUs jodte hain, unhe thanda rakhte hain aur data pahunchaate hain, aur dhyaan rakhte hain ki ek machine ka "
                      "crash hafton ka kaam na kho de. Itne bade scale par failure normal hai: roz GPUs toot-te hain, isliye sab kuch checkpoint "
                      "hota hai aur apne-aap restart hota hai.",
                      "Ek laptop GPU, data centre ki tarah guarded: har 30 minute checkpoint, ruki ya atki training restart karne wala watchdog, "
                      "charger hatne par training freeze karne wala power guard, 77°C par heat limiter, aur reboot ke baad auto-start. "
-                     "Yeh sab sach mein kaam aaye (Incident room, I dekho).",
-                     "Speed ya safety? Kitni garmi zyada hai? Incident room (I) mein asli crises ka saamna karo.")}, "training"),
+                     "Yeh sab sach mein kaam aaye (Training failures, I dekho).",
+                     "Speed ya safety? Kitni garmi zyada hai? Training failures (I) mein asli problems suljhao.")}, "training"),
     ("pretrain", "🏋️", {
         "en": ("4 · Pretraining",
                "The big run: the model reads trillions of tokens and learns to guess the next one. It runs for weeks to months "
@@ -270,10 +269,10 @@ class TourScreen(Screen):
     def show(self):
         app, tr = self.app, self.app.tr
         _, icon, d, stage = self.current()
-        name, big, ours, ceo = d[app.state.lang]
+        name, big, ours, question = d[app.state.lang]
         out = Text(f"{icon} {name}\n\n", style="bold #ffd166")
         for head, body, colour in ((tr("tour_big"), big, "#8ecae6"), (tr("tour_ours"), ours, "#06d6a0"),
-                                   (tr("tour_ceo"), ceo, "#f4a3c0")):
+                                   (tr("tour_q"), question, "#f4a3c0")):
             out.append(head + "\n", style=f"bold {colour}")
             out.append(body + "\n\n", style="#e8e8f0")
         from .text import STAGES, stage_name

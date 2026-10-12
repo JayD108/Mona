@@ -1,4 +1,4 @@
-"""Budget planner: the CEO picks a compute budget and a model size; scaling laws predict the rest.
+"""Scaling laws explorer: pick a compute budget and a model size; scaling laws predict the rest.
 
 Uses the two rules real labs use before spending money:
   compute  C ≈ 6 × N × D            (N parameters, D training tokens)
@@ -16,21 +16,21 @@ from .text import register
 from .widgets import Avatar
 
 register({
-    "bud_title": {"en": "Budget planner: how big should your model be?", "hi": "बजट प्लानर: आपका मॉडल कितना बड़ा हो?",
-                  "hinglish": "Budget planner: aapka model kitna bada ho?"},
+    "bud_title": {"en": "Scaling laws: how big should a model be?", "hi": "स्केलिंग नियम: मॉडल कितना बड़ा हो?",
+                  "hinglish": "Scaling laws: model kitna bada ho?"},
     "bud_explain": {
-        "en": "{addr}, every lab has a fixed amount of computing to spend. Spend it on a bigger brain (more parameters) or on "
+        "en": "{addr}, every training run has a fixed amount of compute (FLOPs). Spend it on a bigger brain (more parameters) or on "
               "more reading (more tokens)? Choose a budget with ↑↓ and a model size with ←→. The bars predict quality "
               "(lower = better), using the same formula real labs use.",
-        "hi": "{addr}, हर लैब के पास ख़र्च करने के लिए तय कंप्यूटिंग होती है। उसे बड़े दिमाग़ (ज़्यादा पैरामीटर) पर ख़र्च करें या ज़्यादा पढ़ाई "
+        "hi": "{addr}, हर ट्रेनिंग के पास तय कंप्यूट (FLOPs) होता है। उसे बड़े दिमाग़ (ज़्यादा पैरामीटर) पर ख़र्च करें या ज़्यादा पढ़ाई "
               "(ज़्यादा टोकन) पर? ↑↓ से बजट और ←→ से मॉडल का आकार चुनिए। पट्टियाँ गुणवत्ता का अनुमान दिखाती हैं (कम = बेहतर), उसी "
               "सूत्र से जो असली लैब इस्तेमाल करती हैं।",
-        "hinglish": "{addr}, har lab ke paas kharch karne ke liye fixed computing hoti hai. Use bade dimaag (zyada parameters) par kharch "
+        "hinglish": "{addr}, har training ke paas fixed compute (FLOPs) hota hai. Use bade dimaag (zyada parameters) par kharch "
                     "karein ya zyada padhai (zyada tokens) par? ↑↓ se budget aur ←→ se model size chuno. Bars quality predict karti hain "
                     "(kam = behtar), usi formula se jo asli labs use karti hain.",
     },
-    "bud_budget": {"en": "Budget", "hi": "बजट", "hinglish": "Budget"},
-    "bud_size": {"en": "Your model", "hi": "आपका मॉडल", "hinglish": "Aapka model"},
+    "bud_budget": {"en": "Compute", "hi": "कंप्यूट", "hinglish": "Compute"},
+    "bud_size": {"en": "Model size", "hi": "मॉडल का आकार", "hinglish": "Model size"},
     "bud_tokens": {"en": "It can read {d} tokens  ({r} tokens per parameter)", "hi": "यह {d} टोकन पढ़ सकता है  ({r} टोकन प्रति पैरामीटर)",
                    "hinglish": "Yeh {d} tokens padh sakta hai  ({r} tokens per parameter)"},
     "bud_time": {"en": "Time: {h} H100-GPU-hours ≈ ${c} in the cloud  ·  on MONA's laptop: {l}",
@@ -59,7 +59,7 @@ register({
                  "hinglish": "Dhyaan do: formula 2022 ki ek study (English web text) se hai, isliye numbers direction batate hain, exact nahi. "
                              "Modern chhote models aksar jaan-boojhkar 'best' point se kahin zyada train hote hain: crore-on users ke liye "
                              "chhota model chalana sasta hai."},
-    "bud_keys": {"en": "↑↓ budget   ←→ model size   Esc back   F1 explain a word", "hi": "↑↓ बजट   ←→ मॉडल का आकार   Esc वापस   F1 शब्द का मतलब",
+    "bud_keys": {"en": "↑↓ compute   ←→ model size   Esc back   F1 explain a word", "hi": "↑↓ बजट   ←→ मॉडल का आकार   Esc वापस   F1 शब्द का मतलब",
                  "hinglish": "↑↓ budget   ←→ model size   Esc wapas   F1 word ka matlab"},
 })
 
@@ -70,7 +70,7 @@ LAPTOP = 2.2e13        # MONA's laptop, measured: 6 × 85M × 43K tokens/s
 
 BUDGETS = [  # (FLOPs, en, hi, hinglish)
     (7e17, "One laptop, one night", "एक लैपटॉप, एक रात", "Ek laptop, ek raat"),
-    (1.65e18, "Your lab: MONA's two nights", "आपकी लैब: MONA की दो रातें", "Aapki lab: MONA ki do raatein"),
+    (1.65e18, "MONA: two nights on a laptop", "MONA: लैपटॉप पर दो रातें", "MONA: laptop par do raatein"),
     (1.9e21, "A university: 8 GPUs for a week", "एक यूनिवर्सिटी: 8 GPU एक हफ़्ते", "Ek university: 8 GPUs ek hafte"),
     (3.1e23, "GPT-3's budget (2020)", "GPT-3 का बजट (2020)", "GPT-3 ka budget (2020)"),
     (6.3e24, "Llama-3-70B's budget (2024)", "Llama-3-70B का बजट (2024)", "Llama-3-70B ka budget (2024)"),

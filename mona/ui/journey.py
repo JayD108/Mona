@@ -21,11 +21,10 @@ register({
     "jr_title": {"en": "MONA's journey: from nothing to a released model", "hi": "MONA का सफ़र: शून्य से रिलीज़ तक",
                  "hinglish": "MONA ka safar: zero se release tak"},
     "jr_explain": {
-        "en": "{addr}, this is the real diary of your lab's first model. Every date, number and sentence below comes from "
-              "MONA's own logs. Walk through it chapter by chapter.",
-        "hi": "{addr}, यह आपकी लैब के पहले मॉडल की असली डायरी है। नीचे की हर तारीख़, संख्या और वाक्य MONA के अपने लॉग से है। "
+        "en": "{addr}, this is MONA's real training diary, from first idea to release. Every date, number and sentence below comes from its own logs. Watch a model being made, chapter by chapter.",
+        "hi": "{addr}, यह MONA की असली ट्रेनिंग डायरी है, पहले विचार से रिलीज़ तक। नीचे की हर तारीख़, संख्या और वाक्य MONA के अपने लॉग से है। "
               "अध्याय दर अध्याय चलिए।",
-        "hinglish": "{addr}, yeh aapki lab ke pehle model ki asli diary hai. Neeche ki har date, number aur sentence MONA ke apne logs "
+        "hinglish": "{addr}, yeh MONA ki asli training diary hai, pehle idea se release tak. Neeche ki har date, number aur sentence MONA ke apne logs "
                     "se hai. Chapter by chapter chalo.",
     },
     "jr_loss": {"en": "Loss at this moment: {l}  (10.4 = random guessing; lower is better)",

@@ -1,7 +1,7 @@
-"""Incident room: the real crises from MONA's training, replayed as CEO decisions.
+"""Training failures: real problems from MONA's training run, and how to handle them.
 
-Every incident really happened while MONA was being built. The CEO picks 1, 2 or 3; each answer gets
-honest feedback, then the screen shows what the lab actually did and the lesson big labs learn the same way.
+Every case really happened while MONA was being built. The learner picks what they would do (1, 2 or 3),
+gets honest feedback, then sees what was actually done and the engineering lesson behind it.
 """
 from rich.text import Text
 from textual.app import ComposeResult
@@ -15,29 +15,26 @@ from .text import register
 from .widgets import Avatar
 
 register({
-    "inc_title": {"en": "Incident room: real crises, your call", "hi": "इंसिडेंट रूम: असली संकट, आपका फ़ैसला",
-                  "hinglish": "Incident room: asli crises, aapka faisla"},
+    "inc_title": {"en": "Training failures: what goes wrong, and what to do", "hi": "ट्रेनिंग की गड़बड़ियाँ: क्या बिगड़ता है, और क्या करें",
+                  "hinglish": "Training failures: kya bigadta hai, aur kya karein"},
     "inc_explain": {
-        "en": "{addr}, every incident here really happened while MONA was trained. The alarm is ringing and the team is "
-              "waiting for you. Press 1, 2 or 3 to decide. Then see what we actually did.",
-        "hi": "{addr}, यहाँ की हर घटना MONA की ट्रेनिंग के दौरान सच में हुई। अलार्म बज रहा है और टीम आपका इंतज़ार कर रही है। फ़ैसला करने "
-              "के लिए 1, 2 या 3 दबाइए। फिर देखिए हमने असल में क्या किया।",
-        "hinglish": "{addr}, yahan ki har incident MONA ki training ke dauran sach mein hui. Alarm baj raha hai aur team aapka wait kar "
-                    "rahi hai. Decide karne ke liye 1, 2 ya 3 dabao. Phir dekho humne asal mein kya kiya.",
+        "en": "{addr}, training a model is mostly about what goes wrong. Each problem here really happened while MONA was trained. Read the symptom, choose what you would do (1, 2 or 3), then see what was done and why.",
+        "hi": "{addr}, मॉडल ट्रेन करना ज़्यादातर गड़बड़ियाँ सँभालना है। यहाँ की हर समस्या MONA की ट्रेनिंग के दौरान सच में हुई। लक्षण पढ़िए, चुनिए आप क्या करते (1, 2 या 3), फिर देखिए क्या किया गया और क्यों।",
+        "hinglish": "{addr}, model train karna zyadatar gadbadiyan sambhalna hai. Yahan ki har problem MONA ki training ke dauran sach mein hui. Symptom padho, chuno aap kya karte (1, 2 ya 3), phir dekho kya kiya gaya aur kyun.",
     },
-    "inc_choose": {"en": "Your call, {addr}: press 1, 2 or 3", "hi": "आपका फ़ैसला, {addr}: 1, 2 या 3 दबाइए",
-                   "hinglish": "Aapka faisla, {addr}: 1, 2 ya 3 dabao"},
-    "inc_good": {"en": "✅ Great call, {addr}!", "hi": "✅ बढ़िया फ़ैसला, {addr}!", "hinglish": "✅ Badhiya faisla, {addr}!"},
+    "inc_choose": {"en": "What would you do, {addr}? Press 1, 2 or 3", "hi": "आप क्या करते, {addr}? 1, 2 या 3 दबाइए",
+                   "hinglish": "Aap kya karte, {addr}? 1, 2 ya 3 dabao"},
+    "inc_good": {"en": "✅ Sound engineering, {addr}!", "hi": "✅ सही इंजीनियरिंग, {addr}!", "hinglish": "✅ Sahi engineering, {addr}!"},
     "inc_ok": {"en": "🤔 Possible, but there's a better move.", "hi": "🤔 हो सकता है, पर बेहतर रास्ता है।",
                "hinglish": "🤔 Ho sakta hai, par behtar raasta hai."},
     "inc_bad": {"en": "⚠️ Risky call.", "hi": "⚠️ जोखिम भरा फ़ैसला।", "hinglish": "⚠️ Risky faisla."},
-    "inc_real": {"en": "What we actually did:", "hi": "हमने असल में क्या किया:", "hinglish": "Humne asal mein kya kiya:"},
-    "inc_lesson": {"en": "The lesson big labs learn too:", "hi": "बड़ी लैब भी यही सीखती हैं:", "hinglish": "Badi labs bhi yahi seekhti hain:"},
-    "inc_score": {"en": "Crisis score: {a} great calls out of {b} answered", "hi": "संकट स्कोर: {b} में से {a} बढ़िया फ़ैसले",
-                  "hinglish": "Crisis score: {b} mein se {a} badhiya faisle"},
-    "inc_badge": {"en": "🏅 Badge: Crisis Manager. Your lab is in safe hands, {addr}.",
-                  "hi": "🏅 बैज: Crisis Manager। आपकी लैब सुरक्षित हाथों में है, {addr}।",
-                  "hinglish": "🏅 Badge: Crisis Manager. Aapki lab safe haathon mein hai, {addr}."},
+    "inc_real": {"en": "What was actually done:", "hi": "असल में क्या किया गया:", "hinglish": "Asal mein kya kiya gaya:"},
+    "inc_lesson": {"en": "The general lesson:", "hi": "आम सबक़:", "hinglish": "General sabak:"},
+    "inc_score": {"en": "{a} of {b} answers matched good practice", "hi": "{b} में से {a} जवाब अच्छे अभ्यास से मेल खाए",
+                  "hinglish": "{b} mein se {a} answers good practice se match hue"},
+    "inc_badge": {"en": "🏅 Badge: Run Rescuer. You think like an ML engineer, {addr}.",
+                  "hi": "🏅 बैज: Run Rescuer। आप ML इंजीनियर की तरह सोचते हैं, {addr}।",
+                  "hinglish": "🏅 Badge: Run Rescuer. Aap ML engineer ki tarah sochte ho, {addr}."},
     "inc_keys": {"en": "↑↓ incident   1 2 3 decide   Esc back", "hi": "↑↓ घटना   1 2 3 फ़ैसला   Esc वापस",
                  "hinglish": "↑↓ incident   1 2 3 faisla   Esc wapas"},
 })
@@ -359,7 +356,7 @@ class IncidentScreen(Screen):
                        if next(x for x in INCIDENTS if x[0] == k)[3]["en"][2][v][1] == "good")
             out.append(tr("inc_score", a=good, b=len(self.answers)), style="bold #ffd166")
             if len(self.answers) == len(INCIDENTS):
-                app.state.complete("incidents", badge="Crisis Manager" if good >= 5 else None)
+                app.state.complete("incidents", badge="Run Rescuer" if good >= 5 else None)
                 if good >= 5:
                     out.append("\n" + tr("inc_badge"), style="bold #ffd166")
         self.query_one("#case", Static).update(app.roman(out.plain) if app.state.romanize else out)

@@ -1,6 +1,7 @@
-"""The CEO welcome: on every launch MONA asks how to address the user (Sir / Ma'am / their name).
+"""The welcome screen: what MONA is, and how the learner would like to be addressed (Sir / Ma'am / their name).
 
-The last choice is already highlighted, so one Enter keeps it. F7 opens this screen again from anywhere.
+Asked on every launch (the project owner's choice); the last answer is already highlighted, so one Enter
+keeps it. F7 opens this screen again from anywhere.
 """
 import datetime as dt
 
@@ -16,18 +17,22 @@ from .text import register
 from .widgets import Avatar
 
 register({
-    "wel_title": {"en": "MONA LABS  ·  CEO entrance", "hi": "MONA LABS  ·  CEO प्रवेश", "hinglish": "MONA LABS  ·  CEO entrance"},
+    "wel_title": {"en": "MONA  ·  understand AI from the inside", "hi": "MONA  ·  AI को अंदर से समझिए",
+                  "hinglish": "MONA  ·  AI ko andar se samjho"},
     "wel_first": {
-        "en": "Welcome! From today you are the CEO of an AI lab. Your lab has built one model: me, MONA.\n"
-              "I'll show you every step of how a real language model is made, the same way big labs make theirs.",
-        "hi": "स्वागत है! आज से आप एक AI लैब के CEO हैं। आपकी लैब ने एक मॉडल बनाया है: मैं, MONA।\n"
-              "मैं आपको दिखाऊँगी कि असली भाषा मॉडल कैसे बनता है, बिल्कुल वैसे जैसे बड़ी लैब बनाती हैं।",
-        "hinglish": "Welcome! Aaj se aap ek AI lab ke CEO hain. Aapki lab ne ek model banaya hai: main, MONA.\n"
-                    "Main aapko dikhaungi ki asli language model kaise banta hai, bilkul waise jaise badi labs banati hain.",
+        "en": "Hi, I'm MONA: a real language model, 110 million numbers trained from scratch, and I'm fully open.\n"
+              "Here you can 👀 look inside me while I think, 🧪 run experiments on me, 🔍 investigate my mistakes,\n"
+              "and 🛠 train a small model of your own. Everything you see uses my real weights.",
+        "hi": "नमस्ते, मैं MONA हूँ: एक असली भाषा मॉडल, 11 करोड़ संख्याएँ, शुरू से ट्रेन की गई, और पूरी तरह खुली।\n"
+              "यहाँ आप 👀 सोचते समय मेरे अंदर झाँक सकते हैं, 🧪 मुझ पर प्रयोग कर सकते हैं, 🔍 मेरी ग़लतियों की जाँच कर सकते हैं,\n"
+              "और 🛠 अपना एक छोटा मॉडल ट्रेन कर सकते हैं। जो भी दिखेगा, मेरे असली वज़न से बनेगा।",
+        "hinglish": "Hi, main MONA hoon: ek asli language model, 11 crore numbers, scratch se trained, aur poori tarah open.\n"
+                    "Yahan aap 👀 sochte waqt mere andar jhaank sakte ho, 🧪 mujh par experiments kar sakte ho, 🔍 meri galtiyon ki\n"
+                    "jaanch kar sakte ho, aur 🛠 apna ek chhota model train kar sakte ho. Jo bhi dikhega, mere asli weights se banega.",
     },
-    "wel_back": {"en": "{greet}! Welcome back to your lab.", "hi": "{greet}! आपकी लैब में फिर से स्वागत है।",
-                 "hinglish": "{greet}! Aapki lab mein phir se welcome."},
-    "wel_ask": {"en": "How should I address you?", "hi": "मैं आपको किस नाम से बुलाऊँ?", "hinglish": "Main aapko kaise bulaun?"},
+    "wel_back": {"en": "{greet}! Good to see you again. Ready to look inside?", "hi": "{greet}! फिर से मिलकर अच्छा लगा। अंदर झाँकने के लिए तैयार?",
+                 "hinglish": "{greet}! Phir se milkar achha laga. Andar jhaankne ke liye ready?"},
+    "wel_ask": {"en": "What should I call you?", "hi": "मैं आपको क्या कहकर बुलाऊँ?", "hinglish": "Main aapko kya kehkar bulaun?"},
     "wel_sir": {"en": "Sir", "hi": "सर", "hinglish": "Sir"},
     "wel_maam": {"en": "Ma'am", "hi": "मैम", "hinglish": "Ma'am"},
     "wel_name": {"en": "By my name…", "hi": "मेरे नाम से…", "hinglish": "Mere naam se…"},

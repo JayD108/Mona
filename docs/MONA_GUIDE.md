@@ -12,9 +12,10 @@ MONA is a **small language model built from scratch**: 110 million numbers (para
 2.5 billion tokens of English, Hindi, Hinglish and Awadhi text. Nothing was borrowed from another model.
 That includes the data cleaning, the tokenizer, the architecture, pretraining, chat tuning and evaluation,
 all written and run on one laptop GPU. MONA is not meant to compete with ChatGPT. It is a **specimen**.
-The **MONA app** is a playful terminal program that opens the model up and lets anyone see, step by
-step, how a real LLM reads, thinks, learns and answers. It works in English, हिंदी or Hinglish, at three
-depths (Simple / Student / Engineer).
+The **MONA app** is an interactive AI learning lab in the terminal: **understand AI from the inside**.
+Learners look inside the model while it thinks, run experiments on it, investigate its mistakes, read
+the real code behind each idea (F8), and train a small model of their own. It works in English, हिंदी
+or Hinglish, at three depths (Simple / Student / Engineer).
 
 > Big models (GPT, Llama, Gemma) are built the same way, just 100–10,000× larger. Every idea you see
 > in MONA is one of theirs too.
@@ -300,7 +301,8 @@ mona/                      ← what `pip install` puts on your computer (code on
 │   └── rag.py             BM25 search library
 └── ui/                    the terminal app (Textual)
     ├── app.py  screens.py  text.py (EN/हिं/Hinglish)  state.py  widgets.py
-    ├── welcome.py (CEO greeting)  tour.py  journey.py  incidents.py  budget.py  course.py  glossary.py
+    ├── welcome.py  mysteries.py  course.py  codeview.py (F8)  glossary.py (F1)
+    ├── journey.py  incidents.py  budget.py  tour.py
     ├── story.py  teacher.py  exports.py
     └── labs/              one file per stage (12 stages + compare)
 ```
@@ -323,47 +325,58 @@ directly.
 
 ## 11. The MONA app
 
-| # | Stage | What you do |
-|---|---|---|
-| 0 | What is a language model? | Play "guess the next word" against MONA |
-| 1 | Data | Be the data curator: keep or drop real documents, see the cleaning rules |
-| 2 | Tokens | Peek at tokens, replay BPE merges, race languages by token cost |
-| 3 | Embeddings | Find word neighbours; see that similar words get similar numbers |
-| 4 | Attention | See which earlier words each word looks at, per layer and head |
-| 5 | Layers | Watch the guess form layer by layer (logit lens) |
-| 6 | Next word & sampling | Turn the temperature / top-k / top-p knobs |
-| 7 | Training | Time machine: MONA at 0, 0.5 B, 1 B … tokens, plus the real loss curves |
-| 8 | Chat tuning | Base MONA vs MONA-Chat on the same question; see the chat template and loss mask |
-| 9 | Evals | Bits per byte, multiple choice, why benchmarks mislead |
-| 10 | RAG | Give MONA a library (Tulsidas verse, Wikipedia) and watch it look things up |
-| 11 | Beyond | Quantization (shrink MONA), tool use, KV-cache speed-up |
+The home screen has two columns. On the left is **the learning path**: the 12 stages in four tracks. On
+the right is **Explore further**: hands-on work. The greeting box suggests **Next up**; press **N** to go
+there. The suggested order mixes the hands-on course in at the right moment (after stage 6, before
+training).
 
-**You are the CEO.** On every launch MONA asks how to address you: Sir, Ma'am or your name. Your last
-choice is already selected, so Enter keeps it. She then uses that everywhere: the greeting, a "briefing"
-line at the top of every stage, and in Hindi as "सर / मैम / Asha जी". The home screen also shows a
-**lab memo of the day**: one surprising, true fact.
+**The learning path**
 
-**The CEO desk** (right side of the home screen, or press the key):
+| Track | # | Stage | What you do |
+|---|---|---|---|
+| ① Foundations: how text becomes numbers | 0 | What is a language model? | Play "guess the next word" against MONA |
+| | 1 | Data | Be the data curator: keep or drop real documents, see the cleaning rules |
+| | 2 | Tokens | Peek at tokens, replay BPE merges, race languages by token cost |
+| | 3 | Embeddings | Find word neighbours; see that similar words get similar numbers |
+| ② Inside the model: how it thinks | 4 | Attention | See which earlier words each word looks at, per layer and head |
+| | 5 | Layers | Watch the guess form layer by layer (logit lens) |
+| | 6 | Next word & sampling | Turn the temperature / top-k / top-p knobs |
+| ③ Learning: how it got good | 7 | Training | Time machine: MONA at 0, 0.5 B, 1 B … tokens, plus the real loss curves |
+| | 8 | Chat tuning | Base MONA vs MONA-Chat on the same question; see the chat template and loss mask |
+| | 9 | Evals | Bits per byte, multiple choice, why benchmarks mislead |
+| ④ Beyond: using and shrinking models | 10 | RAG | Give MONA a library (Tulsidas verse, Wikipedia) and watch it look things up |
+| | 11 | Beyond | Quantization (shrink MONA), tool use, KV-cache speed-up |
+
+**Explore further**
 
 | Key | Screen | What it teaches |
 |---|---|---|
-| O | Lab tour | How a frontier lab works: 7 teams (Research, Data, Infrastructure, Pretraining, Post-training, Evals & Safety, Launch). Each one briefs you on what big labs do, what MONA's lab did, and your decision |
-| J | MONA's journey | 17 chapters from MANAS v1 to release, with real dates, the loss at each moment, and what MONA wrote then |
-| G | Train your own model | A guided 6-step course that really trains a ~1M-parameter model (same code as MONA) in ~2 minutes, then tests it against MONA |
-| I | Incident room | 6 real crises from MONA's build as decisions (heat, copyright, false watchdog alarm, charger, bad Hinglish, stuck downloads), with feedback, what we did, and the lesson |
-| P | Budget planner | Scaling laws: pick a budget and a size, see the U-shaped quality curve, cost, and famous models |
-| S | Story mode | Your sentence travels through every stage |
+| M | Model mysteries | Debugging. 5 cases (repetition loops, questions answered with questions, confident wrong facts, weak Awadhi, token costs). Run up to 3 experiments on the real model, then name the cause; the answer explains the mechanism and the code |
+| I | Training failures | 6 real problems from MONA's run (heat, copyright, false watchdog alarm, charger, bad Hinglish, stuck downloads): what would you do, what was done, and the general lesson |
+| G | Train a model yourself | 7 steps that really train a ~1M-parameter model (same code as MONA) in ~2 minutes, test it against MONA, then a controlled **learning-rate experiment** (3 runs, overlaid curves) |
+| J | How MONA was trained | 17 chapters from MANAS v1 to release, with real dates, the loss at each moment, and what MONA wrote then |
+| P | Scaling laws explorer | Pick a compute budget and a size; see the U-shaped quality curve, time, cost, and famous models |
+| O | How AI labs build models | The 7 teams of a frontier lab, what each does, what MONA's build did, and the key question each faces |
 | C | Compare | MONA vs a big model in Ollama |
+| S | Follow one sentence | Your sentence travels through every stage |
 | T | Teacher mode | 45-minute lesson plans and printable quizzes |
-| B | Badges & certificate | Badges, plus a framed CEO certificate with your name after all 12 stages |
+| B | Progress & certificate | Badges, plus a certificate of completion with your name after all 12 stages |
+
+**Personal, not corporate.** On every launch MONA asks what to call you (your name, Sir or Ma'am). The
+last answer is pre-selected, so Enter keeps it. She uses it in the greeting and at the top of each stage
+("💡 Asha, here's the idea:"), in Hindi as "Asha जी". The home screen also shows one **"Did you know?"**
+fact a day.
 
 **Global keys:**
-- F1 explain any word (glossary with everyday comparisons)
-- F2 language (EN / हिं / Hinglish)
-- F3 depth (Simple / Student / Engineer)
-- F4 romanized Hindi
-- F7 change how MONA addresses you
-- F9 export: a screenshot, a Markdown report, and a Python script that reproduces the experiment
+- **F1** explain any word (glossary with everyday comparisons)
+- **F2** language (EN / हिं / Hinglish)
+- **F3** depth (Simple / Student / Engineer)
+- **F4** romanized Hindi
+- **F7** change your name / form of address
+- **F8 show the code**: the real MONA source behind the current screen, read live with `inspect`, with a plain-language walkthrough. Examples: Attention → `Attention.forward` + `apply_rope`, Next word → `shape` + `MONA.generate`, Evals → `bits_per_byte`
+- **F9** export: a screenshot, a Markdown report, and a Python script that reproduces the experiment
+
+Product direction and the full idea list: [`PRODUCT_BRAINSTORM.md`](PRODUCT_BRAINSTORM.md).
 
 ---
 

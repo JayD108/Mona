@@ -10,10 +10,10 @@ from .state import DEPTHS, LANGS, State
 from .text import romanize, t
 from .welcome import WelcomeScreen, address
 
-# each lab's main explanation opens with a short line addressed to the CEO
+# each lab's main explanation opens with a short line addressed to the learner (by their chosen name)
 LAB_INTROS = {"lm_explain", "dat_explain", "tok_explain", "emb_explain", "att_explain", "lay_explain", "smp_explain",
               "tm_explain", "ct_explain", "ev_explain", "rag_explain", "by_q_explain", "cmp_explain"}
-BRIEFING = {"en": "📋 {a}, here is your briefing:\n", "hi": "📋 {a}, आपके लिए ब्रीफ़िंग:\n", "hinglish": "📋 {a}, aapki briefing:\n"}
+BRIEFING = {"en": "💡 {a}, here's the idea:\n", "hi": "💡 {a}, बात यह है:\n", "hinglish": "💡 {a}, baat yeh hai:\n"}
 
 CSS = """
 Screen { background: #14172b; color: #e8e8f0; }
@@ -23,9 +23,9 @@ Screen { background: #14172b; color: #e8e8f0; }
 .keys { dock: bottom; height: 1; color: #8a8fb0; background: #1b1f3b; padding: 0 1; }
 
 #topbar { height: 3; padding: 0 1; background: #1b1f3b; }
-#hello-row { height: 6; margin: 1 1 0 1; }
+#hello-row { height: 7; margin: 1 1 0 1; }
 #avatar { width: 11; }
-#hello { padding: 0 2; border: round #8ecae6; height: 6; width: 1fr; }
+#hello { padding: 0 2; border: round #8ecae6; height: 7; width: 1fr; }
 #home-cols { height: 1fr; }
 #stage-col { width: 1fr; }
 #desk-col { width: 46; }
@@ -59,12 +59,12 @@ Input:focus { border: tall #ffd166; }
 #check-box { align: center middle; padding: 2 4; }
 #wel-box { align: center middle; padding: 1 4; }
 #wel-box #avatar { height: 5; }
-#wel-text { margin: 1 0; color: #e8e8f0; width: 90; }
+#wel-text { margin: 1 0; color: #e8e8f0; width: 120; }
 #wel-choices { width: 44; height: 5; border: round #8ecae6; margin: 1 0 0 0; }
 #wel-name { width: 44; }
 #wel-keys { margin: 1 0 0 0; }
 
-/* CEO desk screens: a list on the left, the briefing on the right */
+/* explore screens: a list on the left, the details on the right */
 #tour-cols { height: 1fr; }
 #teams, #chapters, #incidents, #steps { width: 42; margin: 1 0 1 1; border: round #3a3f5c; background: #14172b; }
 #teams:focus, #chapters:focus, #incidents:focus, #steps:focus { border: round #ffd166; }
@@ -76,6 +76,15 @@ GlossaryScreen { align: center middle; background: rgba(10, 12, 30, 0.7); }
 #gl-cols { height: 1fr; }
 #gl-list { width: 32; border: round #3a3f5c; background: #14172b; }
 #gl-detail { width: 1fr; padding: 1 2; }
+
+/* F8 code view */
+CodeScreen { align: center middle; background: rgba(10, 12, 30, 0.7); }
+#cv-box { width: 96%; height: 92%; border: round #ffd166; background: #1b1f3b; padding: 0 1; }
+#cv-cols { height: 1fr; }
+#cv-list { width: 34; border: round #3a3f5c; background: #14172b; }
+#cv-right { width: 1fr; padding: 0 1; }
+#cases { width: 42; margin: 1 0 1 1; border: round #3a3f5c; background: #14172b; }
+#cases:focus { border: round #ffd166; }
 #check-sample { text-style: bold; color: #ffd166; padding: 1 2; border: round #ffd166; width: auto; margin: 1 0; }
 #check-buttons { height: auto; margin: 1 0; }
 #check-buttons Button { margin-right: 2; }
@@ -88,7 +97,8 @@ class MonaApp(App):
     TITLE = "MONA"
     BINDINGS = [Binding("f2", "cycle_lang", "language", show=False), Binding("f3", "cycle_depth", "depth", show=False),
                 Binding("f4", "toggle_roman", "romanize", show=False), Binding("f9", "export", "export", show=False),
-                Binding("f7", "address", "address", show=False), Binding("f1", "glossary", "glossary", show=False)]
+                Binding("f7", "address", "address", show=False), Binding("f1", "glossary", "glossary", show=False),
+                Binding("f8", "code", "code", show=False)]
 
     def __init__(self, weights=None):
         super().__init__()
@@ -181,6 +191,15 @@ class MonaApp(App):
         from .glossary import GlossaryScreen
         if not isinstance(self.screen, GlossaryScreen):
             self.push_screen(GlossaryScreen())
+
+    def action_code(self):
+        """F8: the real code behind whatever is on screen."""
+        from .codeview import DEFAULT, SCREEN_CODE, CodeScreen
+        screen = self.screen
+        if isinstance(screen, CodeScreen):
+            return
+        keys = screen.code_targets() if hasattr(screen, "code_targets") else SCREEN_CODE.get(type(screen).__name__, DEFAULT)
+        self.push_screen(CodeScreen(keys))
 
     def action_toggle_roman(self):
         self.state.romanize = not self.state.romanize

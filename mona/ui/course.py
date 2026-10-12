@@ -1,4 +1,4 @@
-"""Train your own model: a guided, 6-step course. The CEO really trains a tiny language model, on this computer.
+"""Train a model yourself: a guided course. The learner really trains a tiny language model, on this computer.
 
 Every step is the same as MONA's, only smaller, and shows the real command used for the full-size MONA.
 The work runs in a background thread, so the screen stays alive while the model learns.
@@ -22,11 +22,11 @@ register({
                  "hinglish": "Apna model train karo, step by step"},
     "co_explain": {
         "en": "{addr}, today you train a real language model yourself, on this computer, in about 2 minutes. It's built exactly "
-              "like MONA, just 100× smaller. Choose a step and press Enter to run it. Go in order: 1 → 6.",
+              "like MONA, just 100× smaller. Choose a step and press Enter to run it. Go in order: 1 → 7.",
         "hi": "{addr}, आज आप ख़ुद एक असली भाषा मॉडल ट्रेन करेंगे, इसी कंप्यूटर पर, लगभग 2 मिनट में। यह बिल्कुल MONA जैसा बना है, बस 100 गुना "
-              "छोटा। कोई कदम चुनिए और चलाने के लिए Enter दबाइए। क्रम से चलिए: 1 → 6।",
+              "छोटा। कोई कदम चुनिए और चलाने के लिए Enter दबाइए। क्रम से चलिए: 1 → 7।",
         "hinglish": "{addr}, aaj aap khud ek asli language model train karoge, isi computer par, lagbhag 2 minute mein. Yeh bilkul MONA "
-                    "jaisa bana hai, bas 100 guna chhota. Koi step chuno aur chalane ke liye Enter dabao. Order mein chalo: 1 → 6.",
+                    "jaisa bana hai, bas 100 guna chhota. Koi step chuno aur chalane ke liye Enter dabao. Order mein chalo: 1 → 7.",
     },
     "co_run": {"en": "▶ Press Enter to run this step", "hi": "▶ यह कदम चलाने के लिए Enter दबाइए", "hinglish": "▶ Yeh step chalane ke liye Enter dabao"},
     "co_busy": {"en": "⏳ Working…", "hi": "⏳ काम चल रहा है…", "hinglish": "⏳ Kaam chal raha hai…"},
@@ -82,6 +82,19 @@ register({
                      "चलाती है। आपका मॉडल यहाँ सहेजा गया: {p}",
                "hinglish": "🏅 Badge: Model Maker. Aapne data → tokenizer → model → training → generation → evaluation kiya, {addr}: wahi "
                            "pipeline jo har badi lab chalati hai. Aapka model yahan save hua: {p}"},
+    "co_r7": {"en": "Same model, same data, same seed. Only the learning rate changes ({n} steps each):",
+              "hi": "वही मॉडल, वही डेटा, वही seed। सिर्फ़ लर्निंग रेट बदला ({n} कदम हर बार):",
+              "hinglish": "Wahi model, wahi data, wahi seed. Sirf learning rate badla ({n} steps har baar):"},
+    "co_r7_run": {"en": "training with learning rate {lr}…", "hi": "लर्निंग रेट {lr} से ट्रेनिंग…", "hinglish": "learning rate {lr} se training…"},
+    "co_r7_end": {"en": "Final test loss (lower = better):", "hi": "आख़िरी टेस्ट लॉस (कम = बेहतर):", "hinglish": "Final test loss (kam = behtar):"},
+    "co_r7_why": {"en": "Too small: every step is timid, so it learns slowly. Too big: steps overshoot, the loss jumps around or "
+                        "gets stuck. Somewhere in between is best, and finding it is a real part of every lab's work. MONA "
+                        "uses 6e-4, a value known to work at this size (GPT-3's 125M-parameter model used it too).",
+                  "hi": "बहुत छोटा: हर कदम डरपोक, इसलिए धीमी सीख। बहुत बड़ा: कदम आगे निकल जाते हैं, लॉस उछलता है या अटक जाता है। बीच में कहीं "
+                        "सबसे अच्छा होता है, और उसे खोजना हर लैब के काम का असली हिस्सा है। MONA 6e-4 इस्तेमाल करती है, जो इस आकार पर काम करने वाला जाना-माना मान है (GPT-3 के 12.5 करोड़ पैरामीटर वाले मॉडल ने भी यही लिया)।",
+                  "hinglish": "Bahut chhota: har step darpok, isliye slow learning. Bahut bada: steps aage nikal jaate hain, loss uchhalta hai "
+                              "ya atak jaata hai. Beech mein kahin best hota hai, aur use dhoondhna har lab ke kaam ka asli hissa hai. MONA "
+                              "6e-4 use karti hai, jo is size par kaam karne wali jaani-maani value hai (GPT-3 ke 125M model ne bhi yahi li)."},
     "co_r6c": {"en": "Next: a base model only continues text. To make it answer questions, labs do chat tuning: see stage 8.",
                "hi": "आगे: बेस मॉडल सिर्फ़ पाठ आगे बढ़ाता है। सवालों के जवाब दिलवाने के लिए लैब चैट ट्यूनिंग करती हैं: चरण 8 देखिए।",
                "hinglish": "Aage: base model sirf text aage badhata hai. Sawaalon ke jawab dilwane ke liye labs chat tuning karti hain: stage 8 dekho."},
@@ -112,6 +125,9 @@ STEPS = {
          "too.", "python -m scripts.mona_chat --weights runs/mona_m_chat/model.pt"),
         ("6 · Test it", "A fair exam on the hidden 10% it never saw: bits per byte. It works across tokenizers, so you can "
          "compare your model with MONA directly.", "python -m scripts.mona_eval runs/mona_m/final.pt"),
+        ("7 · Experiment: learning rate", "Science means changing ONE thing and measuring. Train the same tiny model three "
+         "times, identical except for the learning rate (how big each correction step is), and compare the loss curves.",
+         "python -m scripts.mona_pretrain --name test --lr 3e-4   (MONA used 6e-4, the usual value at this size)"),
     ],
     "hi": [
         ("1 · डेटा जुटाइए", "हर मॉडल सीखने के लिए पाठ से शुरू होता है। बड़ी लैब खरबों शब्द जुटाती हैं; आप लगभग पाँच लाख अक्षर असली पाठ लेंगे "
@@ -130,6 +146,9 @@ STEPS = {
          "python -m scripts.mona_chat --weights runs/mona_m_chat/model.pt"),
         ("6 · परीक्षा लीजिए", "छिपे 10% पर निष्पक्ष परीक्षा जो इसने कभी नहीं देखा: bits per byte। यह हर टोकनाइज़र पर काम करता है, इसलिए आप अपने "
          "मॉडल की MONA से सीधी तुलना कर सकते हैं।", "python -m scripts.mona_eval runs/mona_m/final.pt"),
+        ("7 · प्रयोग: लर्निंग रेट", "विज्ञान यानी एक चीज़ बदलकर नापना। वही छोटा मॉडल तीन बार ट्रेन कीजिए, सिर्फ़ लर्निंग रेट (हर सुधार कदम "
+         "कितना बड़ा हो) अलग रखकर, और लॉस कर्व की तुलना कीजिए।",
+         "python -m scripts.mona_pretrain --name test --lr 3e-4   (MONA ने 6e-4 इस्तेमाल किया, इस आकार का आम मान)"),
     ],
     "hinglish": [
         ("1 · Data jutao", "Har model seekhne ke liye text se shuru hota hai. Badi labs trillions words jutaati hain; aap lagbhag paanch "
@@ -148,6 +167,9 @@ STEPS = {
          "python -m scripts.mona_chat --weights runs/mona_m_chat/model.pt"),
         ("6 · Test lo", "Chhupe 10% par fair exam jo isne kabhi nahi dekha: bits per byte. Yeh har tokenizer par kaam karta hai, isliye aap "
          "apne model ki MONA se seedhi comparison kar sakte ho.", "python -m scripts.mona_eval runs/mona_m/final.pt"),
+        ("7 · Experiment: learning rate", "Science matlab EK cheez badlo aur naapo. Wahi chhota model teen baar train karo, "
+         "sirf learning rate (har correction step kitna bada ho) alag rakhkar, aur loss curves compare karo.",
+         "python -m scripts.mona_pretrain --name test --lr 3e-4   (MONA ne 6e-4 use kiya, is size ki common value)"),
     ],
 }
 TRAIN_STEPS = 300
@@ -265,7 +287,7 @@ class CourseScreen(Screen):
         self.busy = False
         self.done.add(n)
         self.refresh_texts()
-        if n < 6:
+        if n < 7:
             box = self.query_one("#steps", OptionList)
             if box.highlighted == n - 1:
                 box.highlighted = n                        # move on (go back to step 5 to try more beginnings)
@@ -334,6 +356,8 @@ class CourseScreen(Screen):
                     txt = M.to_text(M.sample(self.model, self.tok, p, 40, device=self.device))
                     out.append("  “" + p + flat(txt) + "”\n", style="italic #e8e8f0")
                 out.append("\n" + tr("co_r5b"), style="#c9cce0")
+            elif n == 7:
+                out = self.lr_experiment(M, call)
             else:
                 after = M.bits_per_byte(self.model, self.tok, self.test_text, device=self.device)
                 rows = [(tr("co_untrained"), self.bpb_before, "#f4a3c0"), (tr("co_trained"), after, "#ffd166")]
@@ -356,6 +380,38 @@ class CourseScreen(Screen):
         except Exception as e:                                  # never crash the app: show what went wrong
             call(self.set_out, n, Text(f"⚠ {type(e).__name__}: {e}", style="bold #f4a3c0"))
             call(self._unbusy)
+
+    def lr_experiment(self, M, call):
+        """Train three fresh copies of the tiny model, differing only in learning rate, and overlay their curves."""
+        import torch
+        tr = self.app.tr
+        steps, runs = 150, []
+        colours = {3e-2: "#f4a3c0", 3e-3: "#06d6a0", 3e-4: "#8ecae6"}
+        for lr in colours:
+            model = M.make_model(self.device)                     # same seed every time: identical start
+            torch.manual_seed(0)                                  # identical batches too
+            losses = []
+            for step, loss in M.train(model, self.ids, steps=steps, lr=lr, device=self.device, every=5):
+                losses.append(loss)
+                if step % 25 == 0:
+                    call(self.set_out, 7, Text(tr("co_r7_run", lr=f"{lr:g}") + f"  {step}/{steps}", style="bold #ffd166"))
+            runs.append((lr, losses, M.test_loss(model, self.test_ids, device=self.device)))
+        out = Text(tr("co_r7", n=steps) + "\n\n", style="bold #8ecae6")
+        hi = max(max(l) for _, l, _ in runs)
+        lo = min(min(l) for _, l, _ in runs)
+        width = 48
+        for lr, losses, _ in runs:                                # one strip per run, all on the same scale
+            vals = [losses[min(int(i * len(losses) / width), len(losses) - 1)] for i in range(width)]
+            out.append(f"  lr {lr:<7g}", style=f"bold {colours[lr]}")
+            for v in vals:
+                out.append(" ▁▂▃▄▅▆▇█"[min(8, max(0, round((v - lo) / ((hi - lo) or 1) * 8)))], style=colours[lr])
+            out.append(f"  {losses[0]:.2f} → {losses[-1]:.2f}\n")
+        out.append("\n" + tr("co_r7_end") + "\n", style="bold #8ecae6")
+        best = min(runs, key=lambda r: r[2])[0]
+        for lr, _, test in runs:
+            out.append(f"  lr {lr:<7g} {test:.3f}{'  ★' if lr == best else ''}\n", style=f"bold {colours[lr]}")
+        out.append("\n" + tr("co_r7_why"), style="#c9cce0")
+        return out
 
     def _unbusy(self):
         self.busy = False

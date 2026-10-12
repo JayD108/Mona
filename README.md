@@ -1,19 +1,22 @@
-# MONA: run your own AI lab, in your terminal
+# MONA: understand AI from the inside
 
-**What if you were the CEO of an AI lab?**
-Your lab has just built its first language model, **MONA**. She has 110 million numbers inside, read
-2.5 billion words in English, हिंदी, Hinglish and Awadhi, and was trained from scratch on one laptop.
-Now she's waiting to show you how she works, from the inside.
+**An interactive AI learning lab in your terminal.** Look inside a real language model while it thinks,
+run experiments on it, investigate its mistakes, and train a model of your own.
 
-<p align="center"><img src="docs/img/home.svg" alt="The MONA home screen: 12 stages and the CEO desk" width="900"></p>
+MONA is a real language model: 110 million numbers trained from scratch on 2.5 billion tokens of English,
+हिंदी, Hinglish and Awadhi, on one laptop. Every view in the app uses her **real weights**, and every
+concept is one keypress (**F8**) away from the actual code that implements it.
+
+<p align="center"><img src="docs/img/home.svg" alt="The MONA home screen: a four-track learning path and hands-on experiments" width="900"></p>
 
 In your first 10 minutes you will:
 
-- 🧠 **play "guess the next word" against MONA** and find out it's the *only* thing a language model ever does
+- 🧠 **play "guess the next word" against MONA** and discover it's the *only* thing a language model ever does
 - 🧩 **watch your own sentence get cut into tokens** and see why Hindi costs some AI models 4× more than English
 - 👀 **look inside her attention**: which earlier words each word is "looking at", layer by layer
-- 🏋️ **train your own tiny model** on your own laptop in about 2 minutes, and watch it go from gibberish to almost-language
-- 🚨 **handle real crises** from MONA's training: a GPU at 83°C, copyrighted data found mid-run, a charger slipping out at 7 AM
+- 🔍 **debug a model**: find out *why* MONA repeats herself, answers questions with questions, or states wrong facts with confidence
+- 🛠 **train your own tiny model** on your laptop in about 2 minutes, then run a real experiment: change the learning rate and compare
+- 🔧 **press F8 on any screen** and read the 10–20 lines of real code behind what you're seeing
 
 No account, no cloud, no cost. Everything runs on your computer, in **English, हिंदी or Hinglish**, at three
 depths: **Simple** (school students), **Student** (college) and **Engineer** (developers).
@@ -62,56 +65,59 @@ Hindi in Latin letters (press **R** / **F4**) until it's fixed.
 
 ## What's inside
 
-When MONA starts, she asks how to address you (**Sir**, **Ma'am** or your name) and greets you like the
-CEO you are. Then you choose where to go.
+MONA greets you by name (or Sir / Ma'am, your choice) and suggests where to go next. Press **N** at any
+time to continue the learning path.
 
-### The journey of a sentence: 12 stages
+### The learning path: 12 stages in four tracks
 
-| # | Stage | You'll find out… |
-|---|---|---|
-| 0 | What is a language model? | why "guess the next word" is enough to write essays |
-| 1 | Data | what MONA read, and why cleaning data is most of the work |
-| 2 | Tokens | how text becomes numbers, and why "strawberry" is hard to spell for an AI |
-| 3 | Embeddings | how words become points on a map, with similar words close together |
-| 4 | Attention | how "it" finds out what it refers to |
-| 5 | Layers | how a guess forms, layer by layer (the "logit lens") |
-| 6 | Next word | what temperature, top-k and top-p really do |
-| 7 | Training | a time machine through MONA's real training, from random noise to sentences |
-| 8 | Chat tuning | how a text-continuer becomes an assistant |
-| 9 | Evals | how to tell if a model is any good, and why benchmarks can lie |
-| 10 | RAG | give MONA a library and watch her look things up |
-| 11 | Beyond | shrinking models (quantization), tools, and the KV-cache speed trick |
+| Track | # | Stage | You'll find out… |
+|---|---|---|---|
+| ① Foundations | 0 | What is a language model? | why "guess the next word" is enough to write essays |
+| | 1 | Data | what MONA read, and why cleaning data is most of the work |
+| | 2 | Tokens | how text becomes numbers, and why "strawberry" is hard to spell for an AI |
+| | 3 | Embeddings | how words become points on a map, with similar words close together |
+| ② Inside the model | 4 | Attention | how "it" finds out what it refers to |
+| | 5 | Layers | how a guess forms, layer by layer (the "logit lens") |
+| | 6 | Next word | what temperature, top-k and top-p really do |
+| ③ Learning | 7 | Training | a time machine through MONA's real training, from random noise to sentences |
+| | 8 | Chat tuning | how a text-continuer becomes an assistant |
+| | 9 | Evals | how to tell if a model is any good, and why benchmarks can lie |
+| ④ Beyond | 10 | RAG | give MONA a library and watch her look things up |
+| | 11 | Beyond | shrinking models (quantization), tools, and the KV-cache speed trick |
 
-### The CEO desk
+### Explore further
 
 | Key | | |
 |---|---|---|
-| **O** | 🏢 Lab tour | How a frontier lab (OpenAI, Google DeepMind, Anthropic, Meta…) works, team by team, and what your lab did at each step |
-| **J** | 📖 MONA's journey | The real story of MONA's training, start to finish, with the loss and what she wrote at every stage |
-| **G** | 🏋️ Train your own model | A guided 6-step course: data → tokenizer → model → training → writing → exam. You really train it |
-| **I** | 🚨 Incident room | Six real crises from MONA's training. You decide, then see what actually happened |
-| **P** | 💰 Budget planner | Choose a budget and a model size; scaling laws predict the result. Compare with GPT-3 and Llama |
-| **S** | 📜 Story mode | Follow *your* sentence through every stage |
-| **C** | ⚖️ MONA vs a big model | Same question, side by side with a big local model (Ollama) |
+| **M** | 🔍 Model mysteries | Five debugging cases. MONA does something strange; you run experiments on the real model, collect evidence, and name the cause. Then see the mechanism and the code |
+| **I** | 🧯 Training failures | Real problems from MONA's training run (overheating GPU, copyrighted data found mid-run, a watchdog crying wolf…). What would you do? |
+| **G** | 🛠 Train a model yourself | Seven steps: data → tokenizer → model → training → writing → exam → **a learning-rate experiment**. You really train it |
+| **J** | 📖 How MONA was trained | Her real training diary from her logs: loss, incidents and what she wrote at every stage |
+| **P** | 📈 Scaling laws explorer | Pick a compute budget and a model size; see the U-shaped quality curve and compare with GPT-3 and Llama |
+| **O** | 🏢 How AI labs build models | The life of a model, team by team (research, data, infrastructure, pretraining, post-training, evals, launch), next to what MONA did |
+| **C** | ⚖️ MONA vs a big model | The same question, side by side with a big local model (Ollama) |
+| **S** | 📜 Follow one sentence | Your sentence travels through every stage |
 | **T** | 🍎 Teacher mode | 45-minute lesson plans and printable quizzes for every stage |
-| **B** | 🎓 Badges & certificate | Finish all 12 stages to unlock your CEO certificate |
+| **B** | 🎓 Progress & certificate | Badges, and a certificate of completion after all 12 stages |
 
 **Anywhere:**
 
 | Key | What it does |
 |---|---|
+| **N** (home) | Next step on the learning path |
 | **F1** | Explain any word in plain language |
+| **F8** | Show the real code behind this screen, with a plain-language walkthrough |
 | **F2** | Language (EN / हिं / Hinglish) |
 | **F3** | Depth (Simple / Student / Engineer) |
 | **F4** | Romanized Hindi |
-| **F7** | Change how MONA addresses you |
+| **F7** | Change your name / how MONA addresses you |
 | **F9** | Save a screenshot, a report, and a Python script that repeats the experiment |
 
 <table>
-<tr><td><img src="docs/img/course.svg" alt="Training your own model in the guided course"></td>
-<td><img src="docs/img/incident.svg" alt="The incident room"></td></tr>
-<tr><td><img src="docs/img/journey.svg" alt="MONA's training journey"></td>
-<td><img src="docs/img/budget.svg" alt="The budget planner"></td></tr>
+<tr><td><img src="docs/img/mystery.svg" alt="A model mystery: evidence from experiments on the real model"></td>
+<td><img src="docs/img/code.svg" alt="F8: the real attention code with a walkthrough"></td></tr>
+<tr><td><img src="docs/img/course.svg" alt="The learning-rate experiment in the guided course"></td>
+<td><img src="docs/img/journey.svg" alt="MONA's training diary"></td></tr>
 </table>
 
 ---
@@ -148,19 +154,28 @@ a file of about 220 MB. GPT-3 has 175 *billion*. Stages 3–5 show what those nu
 
 MONA took about 30 hours on a laptop GPU. That's roughly **one hour on a single data-centre GPU (H100),
 about $3**. GPT-3 needed about 190,000 times more compute. Today's frontier models need thousands of GPUs
-for months. Try it yourself in the budget planner (**P**).
+for months. Try it yourself in the scaling laws explorer (**P**).
+</details>
+
+<details><summary><b>Why does a model repeat itself?</b></summary>
+
+If it always picks the single most likely word, a phrase it has just written becomes even more likely,
+and it falls into a loop. Sampling with temperature and top-p breaks the loop. Prove it yourself in the
+first model mystery (**M**), then read `MONA.generate` with **F8**.
 </details>
 
 <details><summary><b>Why do models make things up?</b></summary>
 
-Because they predict *likely* words, not *true* ones. A confident-sounding guess is still a guess. Stage 9
-shows how labs measure this, and stage 10 (RAG) shows one fix: let the model look things up first.
+Because they predict *likely* words, not *true* ones. A confident-sounding guess is still a guess. The
+"confident, fluent, and wrong" model mystery (**M**) lets you see it happen token by token, and stage 10
+(RAG) shows one fix: let the model look things up first.
 </details>
 
 <details><summary><b>Can I really train my own model?</b></summary>
 
 Yes. Press **G**. In about 2 minutes you build a ~1-million-parameter model with the same code as MONA,
-train it on real text, watch its loss fall, and test it against MONA on a fair exam. It's saved to
+train it on real text, watch its loss fall, and test it against MONA on a fair exam. Then run a real
+experiment: train it three times with different learning rates and compare. Your model is saved to
 `~/mona_exports/my_first_model.pt`.
 </details>
 
@@ -219,13 +234,13 @@ Details: [`docs/MONA_GUIDE.md`](docs/MONA_GUIDE.md) §8.
 ```
 mona/        the library: model, tokenizer, data, config, paths, first-run download
   engine/    the "glass box": tokens, probabilities, attention, logit lens, RAG, mini-training
-  ui/        the terminal app (Textual): welcome, home, CEO desk, story, teacher, export
+  ui/        the terminal app (Textual): home + learning path, mysteries, course, code view (F8), story, teacher
     labs/    one file per stage (12 stages + compare)
 pipeline/    ① download  ② clean  ③ tokenizer  ④ tokenize  ⑥ chat data
 scripts/     ⑤ pretrain  ⑦ chat tuning  ⑧ eval  ⑨ chat  status  run_all (queue)  ⑩ release
 ops/         unattended-training guards
 learn/       runnable lessons
-docs/        MONA_GUIDE.md (start here) · MONA_PLAN.md (numbers) · MONA_APP_PLAN.md · MONA_CEO_PLAN.md
+docs/        MONA_GUIDE.md (start here) · PRODUCT_BRAINSTORM.md (product direction) · MONA_PLAN.md · MONA_APP_PLAN.md
 ```
 
 Not in this repo (many GB, local only): `data/`, `models/`, `runs/`.

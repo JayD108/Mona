@@ -126,9 +126,9 @@ register({
                  "hinglish": "Ek token, {c} characters! Naya record. (Best ab tak: {b})"},
     "ch_b_one": {"en": "One token, {c} characters. Your record: {b}.", "hi": "एक टोकन, {c} अक्षर। आपका रिकॉर्ड: {b}।",
                  "hinglish": "Ek token, {c} characters. Aapka record: {b}."},
-    "tok_keys": {"en": "Esc back   F5 Peek  F6 Merge  F7 Race  F8 Challenge   F2 language  F3 depth  F4 romanize",
-                 "hi": "Esc वापस   F5 झाँकें  F6 जोड़  F7 दौड़  F8 चुनौती   F2 भाषा  F3 गहराई  F4 रोमन",
-                 "hinglish": "Esc wapas   F5 Peek  F6 Merge  F7 Race  F8 Challenge   F2 bhasha  F3 depth  F4 roman"},
+    "tok_keys": {"en": "Esc back   F5 Peek  F6 Merge  F7 Race  F10 Challenge   F2 language  F3 depth  F4 romanize",
+                 "hi": "Esc वापस   F5 झाँकें  F6 जोड़  F7 दौड़  F10 चुनौती   F2 भाषा  F3 गहराई  F4 रोमन",
+                 "hinglish": "Esc wapas   F5 Peek  F6 Merge  F7 Race  F10 Challenge   F2 bhasha  F3 depth  F4 roman"},
 })
 
 RACE = [("English", "India is a vast country where many languages are spoken."),
@@ -160,7 +160,7 @@ class RaceView(Static, can_focus=True):
 
 class TokensLab(Screen):
     BINDINGS = [Binding("escape", "app.pop_screen", "back"), Binding("f5", "tab('peek')"), Binding("f6", "tab('merge')"),
-                Binding("f7", "tab('race')"), Binding("f8", "tab('challenge')")]
+                Binding("f7", "tab('race')"), Binding("f10", "tab('challenge')")]
     EXAMPLE = "भारत एक विशाल देश है और"
 
     def compose(self) -> ComposeResult:

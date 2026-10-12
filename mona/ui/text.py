@@ -28,27 +28,33 @@ READY = {"lm", "data", "tokens", "embeddings", "next", "attention", "training", 
 
 S = {
     "tagline": {
-        "en": "Open up a real language model and see how it thinks.",
-        "hi": "एक असली भाषा मॉडल को खोलकर देखिए कि वह कैसे सोचता है।",
-        "hinglish": "Ek asli language model ko kholkar dekho ki woh kaise sochta hai.",
+        "en": "Understand AI from the inside: look, experiment, build.",
+        "hi": "AI को अंदर से समझिए: देखिए, प्रयोग कीजिए, बनाइए।",
+        "hinglish": "AI ko andar se samjho: dekho, experiment karo, banao.",
     },
     "hello": {
-        "en": {"simple": "I'm MONA, your lab's model. I guess the next word, one piece at a time. Pick a stage to see how, or try the CEO desk →",
-               "student": "I'm MONA, the 110-million-number language model your lab built from scratch. Pick a stage and look inside me.",
-               "engineer": "MONA: 110M-param Llama-style decoder, 32K BPE, trained from scratch. Every view uses my real weights."},
-        "hi": {"simple": "मैं MONA हूँ, आपकी लैब का मॉडल। मैं अगला शब्द, एक-एक टुकड़ा करके, अंदाज़ा लगाती हूँ। कोई चरण चुनिए, या CEO की मेज़ देखिए →",
-               "student": "मैं MONA हूँ, 11 करोड़ संख्याओं से बना भाषा मॉडल, जिसे आपकी लैब ने शुरू से बनाया। कोई चरण चुनिए और मेरे अंदर झाँकिए।",
-               "engineer": "MONA: 11 करोड़ पैरामीटर वाला Llama-शैली डिकोडर, 32K BPE, शुरू से प्रशिक्षित। हर दृश्य मेरे असली वज़न से बनता है।"},
-        "hinglish": {"simple": "Main MONA hoon, aapki lab ka model. Main agla shabd guess karti hoon, ek-ek tukda karke. Koi stage chuno, ya CEO desk try karo →",
-                     "student": "Main MONA hoon, 11 crore numbers se bana language model jo aapki lab ne scratch se banaya. Koi stage chuno aur mere andar jhaanko.",
-                     "engineer": "MONA: 110M params ka Llama-style decoder, 32K BPE, scratch se trained. Har view mere asli weights se banta hai."},
+        "en": {"simple": "I guess the next word, one piece at a time. Follow the path on the left to see how, step by step.",
+               "student": "I'm a 110-million-number language model, trained from scratch and fully open. Follow the path, "
+                          "or jump to an experiment on the right.",
+               "engineer": "MONA: 110M-param Llama-style decoder, 32K BPE, trained from scratch. Every view uses my real weights; "
+                           "F8 shows the code behind it."},
+        "hi": {"simple": "मैं अगला शब्द, एक-एक टुकड़ा करके, अंदाज़ा लगाती हूँ। कैसे, यह बाईं ओर के रास्ते पर कदम-दर-कदम देखिए।",
+               "student": "मैं 11 करोड़ संख्याओं वाला भाषा मॉडल हूँ, शुरू से ट्रेन किया हुआ और पूरी तरह खुला। रास्ते पर चलिए, "
+                          "या दाईं ओर किसी प्रयोग पर जाइए।",
+               "engineer": "MONA: 11 करोड़ पैरामीटर वाला Llama-शैली डिकोडर, 32K BPE, शुरू से प्रशिक्षित। हर दृश्य मेरे असली वज़न से बनता है; "
+                           "F8 उसके पीछे का कोड दिखाता है।"},
+        "hinglish": {"simple": "Main agla shabd guess karti hoon, ek-ek tukda karke. Kaise, yeh left wale path par step-by-step dekho.",
+                     "student": "Main 11 crore numbers wala language model hoon, scratch se trained aur poori tarah open. Path par chalo, "
+                                "ya right mein kisi experiment par jao.",
+                     "engineer": "MONA: 110M params ka Llama-style decoder, 32K BPE, scratch se trained. Har view mere asli weights se banta "
+                                 "hai; F8 uske peeche ka code dikhata hai."},
     },
-    "journey": {"en": "THE JOURNEY OF A SENTENCE", "hi": "एक वाक्य का सफ़र", "hinglish": "EK SENTENCE KA SAFAR"},
+    "journey": {"en": "THE LEARNING PATH", "hi": "सीखने का रास्ता", "hinglish": "LEARNING PATH"},
     "progress": {"en": "your progress", "hi": "आपकी प्रगति", "hinglish": "aapki progress"},
     "keys_home": {
-        "en": "↑↓ choose  Enter open  Tab stages ⇄ CEO desk  F1 explain a word  F7 how I address you  L language  D depth  R romanize  Q quit",
-        "hi": "↑↓ चुनें  Enter खोलें  Tab चरण ⇄ CEO मेज़  F1 शब्द का मतलब  F7 संबोधन बदलें  L भाषा  D गहराई  R रोमन  Q बंद करें",
-        "hinglish": "↑↓ chuno  Enter kholo  Tab stages ⇄ CEO desk  F1 word ka matlab  F7 address badlo  L bhasha  D depth  R roman  Q band karo",
+        "en": "↑↓ choose  Enter open  N next up  Tab path ⇄ explore  F1 explain a word  F8 show the code  F7 your name  L/D/R language/depth/roman  Q quit",
+        "hi": "↑↓ चुनें  Enter खोलें  N अगला  Tab रास्ता ⇄ और  F1 शब्द का मतलब  F8 कोड देखें  F7 आपका नाम  L/D/R भाषा/गहराई/रोमन  Q बंद",
+        "hinglish": "↑↓ chuno  Enter kholo  N agla  Tab path ⇄ explore  F1 word ka matlab  F8 code dekho  F7 aapka naam  L/D/R bhasha/depth/roman  Q band",
     },
     "soon": {"en": "Coming soon: this stage is being built.", "hi": "जल्द आ रहा है: यह चरण बन रहा है।",
              "hinglish": "Jaldi aa raha hai: yeh stage ban raha hai."},
