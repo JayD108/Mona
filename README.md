@@ -10,7 +10,7 @@
 
 
 MONA is an interactive AI learning lab in your terminal. She is a real language model: 110 million numbers
-trained from scratch on 2.5 billion tokens of English, हिंदी, Hinglish and Awadhi, on one laptop. Every view in
+trained from scratch on 2.5 billion tokens of English, हिंदी, Hinglish and Awadhi, on a consumer laptop(my ROG STRIX SCAR 16 5080).Every view in
 the app uses her **real weights**, and every concept is one keypress (**F8**) away from the actual code that
 implements it. No account, no cloud, no cost.
 
