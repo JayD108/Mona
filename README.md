@@ -1,10 +1,9 @@
-<img src="mona.png" alt="MONA icon" width="120" align="right">
+<img src="mona.png" alt="MONA icon" width="120" align="left">
 MONA: understand AI from the inside
 An interactive AI learning lab in your terminal. Look inside a real language model while it thinks, run experiments on it, investigate its mistakes, and train a model of your own.
 
 MONA is a real language model: 110 million numbers trained from scratch on 2.5 billion tokens of English, हिंदी, Hinglish and Awadhi, on one laptop. Every view in the app uses her real weights, and every concept is one keypress (F8) away from the actual code that implements it.
 
-<p align="center"> <img src="docs/img/home.svg" alt="The MONA home screen: a four-track learning path and hands-on experiments" width="900"> </p>
 In your first 10 minutes you will:
 
 🧠 play "guess the next word" against MONA and discover it's the only thing a language model ever does
@@ -34,7 +33,9 @@ Windows Terminal → Settings → your profile → Appearance → Font face: Nir
 pip may install the CPU build of PyTorch. For the GPU build, install PyTorch first from pytorch.org, then MONA. Everything works without a GPU too.
 
 </details>
+
 What's inside
+<p align="center"> <img src="docs/img/home.svg" alt="The MONA home screen: a four-track learning path and hands-on experiments" width="900"> </p>
 MONA greets you by name (or Sir / Ma'am, your choice) and suggests where to go next. Press N at any time to continue the learning path.
 
 The learning path: 12 stages in four tracks
