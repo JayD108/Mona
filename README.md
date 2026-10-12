@@ -1,14 +1,3 @@
-I've fixed the layout. The full README is below and also attached as a file; nothing is committed.
-
-I'm assuming you edited the README on GitHub and pasted the result; I haven't previewed my version on GitHub.
-
-**What I think broke it:**
-1. **Left icon:** with `align="left"`, the icon pushes everything beside it, including the bullet list, so text wraps around it unevenly. I kept it on the left and added `<br clear="left">` after the first paragraph. The title and tagline now sit beside the icon, and everything after starts cleanly below it.
-2. **Dropdowns on one line:** your paste shows `</details> <details> <summary>…` joined together. If your file really has them like that, the Markdown inside won't render. In the version below, each `<details>`, `<summary>` and `</details>` is on its own line with blank lines around it.
-
-I kept your choice of placing the home-screen image under **What's inside**. Copy everything inside the box below as it is:
-
-````markdown
 <img src="mona.png" alt="MONA icon" width="120" align="left">
 
 # MONA: understand AI from the inside
@@ -310,5 +299,3 @@ Coding assisted by Claude (Anthropic).
 MONA grew out of **MANAS v1**, a 10.8M-parameter character-level model of Tulsidas's Awadhi
 ([huggingface.co/JayF14/MANAS](https://huggingface.co/JayF14/MANAS)).
 ````
-
-If the header still looks off, the alternative is to put the icon on the right (`align="right"`). Headers placed that way usually stay tidy.
