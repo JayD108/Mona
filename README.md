@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Elegant White Calligraphic Mona Logo.png" alt="MONA icon" width="160">
+  <img src="Elegant White Calligraphic Mona Logo.png" alt="MONA icon" width="240">
 </p>
 
 <p align="center"><b>Understand AI from the inside: look into a real language model while it thinks</b></p>
