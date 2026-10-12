@@ -4,17 +4,26 @@
 
 <h1 align="center">MONA</h1>
 
-<p align="center"><b>understand AI from the inside</b></p>
+<p align="center"><b>Understand AI from the inside: look into a real language model while it thinks</b></p>
 
-**An interactive AI learning lab in your terminal.** Look inside a real language model while it thinks,
-run experiments on it, investigate its mistakes, and train a model of your own.
+<p align="center">
+  English · हिंदी · Hinglish · Windows, macOS or Linux · any normal laptop, GPU optional · free and open source (MIT)
+</p>
 
+<p align="center">
+  <img src="docs/img/home.svg" alt="The MONA home screen: a four-track learning path and hands-on experiments" width="900">
+  <br>
+  <sub>The MONA home screen: a four-track learning path and hands-on experiments</sub>
+</p>
 
-<br clear="left">
+MONA is an interactive AI learning lab in your terminal. She is a real language model: 110 million numbers
+trained from scratch on 2.5 billion tokens of English, हिंदी, Hinglish and Awadhi, on one laptop. Every view in
+the app uses her **real weights**, and every concept is one keypress (**F8**) away from the actual code that
+implements it. No account, no cloud, no cost.
 
-MONA is a real language model: 110 million numbers trained from scratch on 2.5 billion tokens of English,
-हिंदी, Hinglish and Awadhi, on one laptop. Every view in the app uses her **real weights**, and every
-concept is one keypress (**F8**) away from the actual code that implements it.
+---
+
+## What will I do?
 
 In your first 10 minutes you will:
 
@@ -25,14 +34,22 @@ In your first 10 minutes you will:
 - 🛠 **train your own tiny model** on your laptop in about 2 minutes, then run a real experiment: change the learning rate and compare
 - 🔧 **press F8 on any screen** and read the 10–20 lines of real code behind what you're seeing
 
-No account, no cloud, no cost. Everything runs on your computer, in **English, हिंदी or Hinglish**, at three
-depths: **Simple** (school students), **Student** (college) and **Engineer** (developers).
+Everything works at three depths: **Simple** (school students), **Student** (college) and **Engineer** (developers).
+
+---
+
+## What you need
+
+| | |
+|:---|:---|
+| **Python** | 3.10 or newer |
+| **Computer** | Any normal laptop. MONA runs on the CPU; a GPU is optional |
+| **Download** | About 0.5 GB on the first run (MONA's brain and a small demo library), saved in `~/.mona` |
+| **System** | Windows, macOS or Linux, in a terminal |
 
 ---
 
 ## Install
-
-You need **Python 3.10+**. A GPU is optional: MONA runs on any normal laptop CPU.
 
 ```bash
 pip install git+https://github.com/JayD108/Mona.git
@@ -42,8 +59,7 @@ mona
 The first run downloads MONA's brain and a small demo library (~0.5 GB, only once) from
 Hugging Face ([`JayF14/MONA`](https://huggingface.co/JayF14/MONA)) into `~/.mona`.
 
-<details>
-<summary><b>From source</b> (to read and change the code)</summary>
+**From source** (to read and change the code):
 
 ```bash
 git clone https://github.com/JayD108/Mona.git
@@ -52,32 +68,9 @@ pip install -e .
 mona                # or: python -m mona
 ```
 
-</details>
-
-<details>
-<summary><b>Hindi letters look broken?</b></summary>
-
-Windows Terminal → Settings → your profile → Appearance → Font face: **Nirmala UI** (or Mangal).
-macOS Terminal and most Linux terminals work as they are. MONA checks this on first run and can show
-Hindi in Latin letters (press **R** / **F4**) until it's fixed.
-
-</details>
-
-<details>
-<summary><b>Using an NVIDIA GPU?</b></summary>
-
-`pip` may install the CPU build of PyTorch. For the GPU build, install PyTorch first from
-[pytorch.org](https://pytorch.org/get-started/locally/), then MONA. Everything works without a GPU too.
-
-</details>
-
 ---
 
-## What's inside
-
-<p align="center">
-  <img src="docs/img/home.svg" alt="The MONA home screen: a four-track learning path and hands-on experiments" width="900">
-</p>
+## Using it
 
 MONA greets you by name (or Sir / Ma'am, your choice) and suggests where to go next. Press **N** at any
 time to continue the learning path.
@@ -101,8 +94,8 @@ time to continue the learning path.
 
 ### Explore further
 
-| Key | | |
-|:---:|:---:|:---|
+| Key | Screen | What it is |
+|:---:|:---|:---|
 | **M** | 🔍 Model mysteries | Five debugging cases. MONA does something strange; you run experiments on the real model, collect evidence, and name the cause. Then see the mechanism and the code |
 | **I** | 🧯 Training failures | Real problems from MONA's training run (overheating GPU, copyrighted data found mid-run, a watchdog crying wolf…). What would you do? |
 | **G** | 🛠 Train a model yourself | Seven steps: data → tokenizer → model → training → writing → exam → **a learning-rate experiment**. You really train it |
@@ -114,7 +107,7 @@ time to continue the learning path.
 | **T** | 🍎 Teacher mode | 45-minute lesson plans and printable quizzes for every stage |
 | **B** | 🎓 Progress & certificate | Badges, and a certificate of completion after all 12 stages |
 
-**Anywhere:**
+### Keys that work anywhere
 
 | Key | What it does |
 |:---:|:---|
@@ -129,14 +122,37 @@ time to continue the learning path.
 
 <table>
   <tr>
-    <td width="50%" valign="top"><img src="docs/img/mystery.svg" alt="A model mystery: evidence from experiments on the real model"></td>
-    <td width="50%" valign="top"><img src="docs/img/code.svg" alt="F8: the real attention code with a walkthrough"></td>
+    <td width="50%" valign="top" align="center">
+      <img src="docs/img/mystery.svg" alt="A model mystery: evidence from experiments on the real model"><br>
+      <sub>A model mystery: evidence from experiments on the real model</sub>
+    </td>
+    <td width="50%" valign="top" align="center">
+      <img src="docs/img/code.svg" alt="F8: the real attention code with a walkthrough"><br>
+      <sub>F8: the real attention code with a walkthrough</sub>
+    </td>
   </tr>
   <tr>
-    <td width="50%" valign="top"><img src="docs/img/course.svg" alt="The learning-rate experiment in the guided course"></td>
-    <td width="50%" valign="top"><img src="docs/img/journey.svg" alt="MONA's training diary"></td>
+    <td width="50%" valign="top" align="center">
+      <img src="docs/img/course.svg" alt="The learning-rate experiment in the guided course"><br>
+      <sub>The learning-rate experiment in the guided course</sub>
+    </td>
+    <td width="50%" valign="top" align="center">
+      <img src="docs/img/journey.svg" alt="MONA's training diary"><br>
+      <sub>MONA's training diary</sub>
+    </td>
   </tr>
 </table>
+
+---
+
+## Something went wrong?
+
+**Hindi letters look broken.** Windows Terminal → Settings → your profile → Appearance → Font face:
+**Nirmala UI** (or Mangal). macOS Terminal and most Linux terminals work as they are. MONA checks this on
+first run and can show Hindi in Latin letters (press **R** / **F4**) until it's fixed.
+
+**My NVIDIA GPU isn't used.** `pip` may install the CPU build of PyTorch. For the GPU build, install PyTorch
+first from [pytorch.org](https://pytorch.org/get-started/locally/), then MONA. Everything works without a GPU too.
 
 ---
 
@@ -219,23 +235,28 @@ experiment: train it three times with different learning rates and compare. Your
 
 | | |
 |:---|:---|
-| Architecture | Llama-style decoder: RMSNorm, RoPE, SwiGLU, flash attention, tied embeddings |
-| Size | 110.1M parameters · 12 layers · width 768 · 12 heads · context 1,024 tokens |
-| Tokenizer | byte-level BPE, 32,768 pieces, fair to Hindi (1.33 tokens/word) |
-| Pretraining | 2.5B tokens (55% English, 40% Hindi, 5% Hinglish, plus Awadhi verse) · ~30 h on an RTX 5080 Laptop GPU |
-| Chat tuning | 127,025 conversations → **MONA-Chat** |
-| Weights | [huggingface.co/JayF14/MONA](https://huggingface.co/JayF14/MONA) (MIT) |
+| **Architecture** | Llama-style decoder: RMSNorm, RoPE, SwiGLU, flash attention, tied embeddings |
+| **Size** | 110.1M parameters · 12 layers · width 768 · 12 heads · context 1,024 tokens |
+| **Tokenizer** | byte-level BPE, 32,768 pieces, fair to Hindi (1.33 tokens/word) |
+| **Pretraining** | 2.5B tokens (55% English, 40% Hindi, 5% Hinglish, plus Awadhi verse) · ~30 h on an RTX 5080 Laptop GPU |
+| **Chat tuning** | 127,025 conversations → **MONA-Chat** |
+| **Weights** | [huggingface.co/JayF14/MONA](https://huggingface.co/JayF14/MONA) (MIT) |
 
 MONA is small. She writes fluent-looking text but often gets facts wrong. That's exactly what makes her a
 good specimen: you can see *why*.
 
-**The whole project explained in one place: [`docs/MONA_GUIDE.md`](docs/MONA_GUIDE.md).**
+The whole project explained in one place: [`docs/MONA_GUIDE.md`](docs/MONA_GUIDE.md).
 
 ---
 
 ## Build MONA yourself
 
-Every step that made MONA is in this repository. Run them from the repo root:
+Every step that made MONA is in this repository. Install the training extras first, then run the steps
+from the repo root:
+
+```bash
+pip install -e ".[train]"
+```
 
 | Step | Command |
 |:---|:---|
@@ -252,8 +273,7 @@ Every step that made MONA is in this repository. Run them from the repo root:
 | ⑨ Chat | `python -m scripts.mona_chat --weights runs/mona_m_chat/model.pt` |
 | ⑩ Release | `python -m scripts.mona_release` (checks → licence-clean bundle → Hugging Face; `--dry-run` only checks) |
 
-Install the training extras first: `pip install -e ".[train]"`. Short, runnable lessons are in `learn/`:
-BPE from scratch, attention, RoPE, scaling laws and loss masking.
+Short, runnable lessons are in `learn/`: BPE from scratch, attention, RoPE, scaling laws and loss masking.
 
 **Training unattended for days** (Windows): `ops/MONA_resume.cmd` starts three guards and runs the whole
 queue (pretrain → chat data → chat tuning → eval → release) via `python -m scripts.mona_run_all`:
@@ -282,25 +302,18 @@ Not in this repo (many GB, local only): `data/`, `models/`, `runs/`.
 
 ---
 
-## Data and licences
+## Credits and license
 
-FineWeb-Edu (ODC-By) · AI4Bharat Sangraha (CC-BY-4.0; Wikipedia-derived parts CC BY-SA) ·
+**Data:** FineWeb-Edu (ODC-By) · AI4Bharat Sangraha (CC-BY-4.0; Wikipedia-derived parts CC BY-SA) ·
 smol-smoltalk (Apache-2.0) · Aya (Apache-2.0) · Tulsidas's verse (public domain).
 
 **Copyright:** only Tulsidas's public-domain verse is used. A modern Hindi commentary (Gita Press, likely
 still under copyright) was found in the early training data. It was removed at 0.8B tokens and is never
 distributed. The release script scans everything it publishes and refuses to upload if it finds any of it.
 
-## License
+**License:** MIT (see [`LICENSE`](LICENSE)). Datasets keep their own licences (above).
 
-MIT (see [`LICENSE`](LICENSE)). Datasets keep their own licences (above).
+**Acknowledgement:** Coding assisted by Claude (Anthropic).
 
-## Acknowledgement
-
-Coding assisted by Claude (Anthropic).
-
-## Origin
-
-MONA grew out of **MANAS v1**, a 10.8M-parameter character-level model of Tulsidas's Awadhi
+**Origin:** MONA grew out of **MANAS v1**, a 10.8M-parameter character-level model of Tulsidas's Awadhi
 ([huggingface.co/JayF14/MANAS](https://huggingface.co/JayF14/MANAS)).
-````
