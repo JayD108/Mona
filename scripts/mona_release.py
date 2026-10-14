@@ -181,7 +181,7 @@ tags: [education, multilingual, hindi, hinglish, awadhi, from-scratch, small-lan
 
 MONA is a **110M-parameter Llama-style language model trained from scratch on one laptop GPU** for
 **English, Hindi, Hinglish and Awadhi** (Tulsidas). It was built to **teach how LLMs work**: the
-companion terminal app lets anyone look inside it, stage by stage, in English, हिंदी or Hinglish.
+companion terminal app lets anyone look inside it, stage by stage, in English (the model itself reads and writes English, Hindi, Hinglish and Awadhi).
 
 - Code, app and full build story: https://github.com/JayD108/Mona
 - `pip install` the repo, then run `mona`: the app downloads these files on first run.
@@ -194,7 +194,7 @@ companion terminal app lets anyone look inside it, stage by stage, in English, �
 | Tokenizer | byte-level BPE, 32,768 tokens, trained on a balanced EN / HI / Hinglish / Awadhi sample (Hindi 1.33 tokens/word) |
 | Context | 1,024 tokens |
 | Pretraining | 2.5B tokens, AdamW, bf16, WSD learning-rate schedule (peak 6e-4), ~19 h on an RTX 5080 Laptop GPU |
-| Chat tuning | supervised fine-tuning with loss masking on ~100K conversations |
+| Chat tuning | supervised fine-tuning with loss masking on ~125K conversations |
 
 ## Evaluation (held-out text, bits per byte, lower is better)
 | English | Hindi | Hinglish |

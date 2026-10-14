@@ -14,8 +14,8 @@ That includes the data cleaning, the tokenizer, the architecture, pretraining, c
 all written and run on one laptop GPU. MONA is not meant to compete with ChatGPT. It is a **specimen**.
 The **MONA app** is an interactive AI learning lab in the terminal: **understand AI from the inside**.
 Learners look inside the model while it thinks, run experiments on it, investigate its mistakes, read
-the real code behind each idea (F8), and train a small model of their own. It works in English, हिंदी
-or Hinglish, at three depths (Simple / Student / Engineer).
+the real code behind each idea (F8), and train a small model of their own. The app is in English, at two depths
+(Simple / Engineer); MONA herself works in English, हिंदी, Hinglish and Awadhi.
 
 > Big models (GPT, Llama, Gemma) are built the same way, just 100–10,000× larger. Every idea you see
 > in MONA is one of theirs too.
@@ -28,7 +28,7 @@ or Hinglish, at three depths (Simple / Student / Engineer).
  raw text ──► clean ──► tokenizer ──► token shards ──► PRETRAIN ──► base model (MONA)
  (Hugging Face)                                         2.5B tokens          │
                                                                              ▼
-                          chat examples (127K) ──────────────────────► CHAT TUNE ──► MONA-Chat
+                          chat examples (125K) ──────────────────────► CHAT TUNE ──► MONA-Chat
                                                                              │
                                                                              ▼
                                                      EVALUATE ──► RELEASE (Hugging Face + pip)
@@ -43,7 +43,7 @@ or Hinglish, at three depths (Simple / Student / Engineer).
 | ② | Clean | `pipeline/mona_clean.py` | `data/mona_clean/<lang>/` | ~30 min |
 | ③ | Train tokenizer | `pipeline/mona_tokenizer.py` | `models/mona/tokenizer.json` | ~15 min |
 | ④ | Tokenize | `pipeline/mona_tokenize.py` | `data/mona_tokens/*.bin` | ~40 min |
-| ⑤ | Pretrain | `scripts/mona_pretrain.py` | `runs/mona_m/final.pt` | ~2 nights |
+| ⑤ | Pretrain | `scripts/mona_pretrain.py` | `runs/mona_m/final.pt` | ~19 h (one long night + a day) |
 | ⑥ | Build chat data | `pipeline/mona_build_sft.py` | `data/mona_sft/train.jsonl` | ~5 min |
 | ⑦ | Chat tuning (SFT) | `scripts/mona_sft.py` | `runs/mona_m_chat/model.pt` | ~1 h |
 | ⑧ | Evaluate | `scripts/mona_eval.py` | `runs/mona_m/eval.txt` | ~5 min |
@@ -63,7 +63,7 @@ Steps ⑤ to ⑨ run **by themselves** as a job queue (`scripts/mona_run_all.py`
 | Hindi | AI4Bharat Sangraha, verified Hindi | CC-BY-4.0 | 0.97 B |
 | Hinglish | Sangraha synthetic, romanized Hindi (`hin_Latn`) | CC-BY-4.0 | 0.13 B |
 | Awadhi | Tulsidas's verse (Ramcharitmanas etc.) | **public domain** | 0.25 M |
-| Chat (SFT) | smol-smoltalk, Aya, Hindi Wikipedia-derived Q&A | Apache-2.0 / CC BY-SA | 127K conversations |
+| Chat (SFT) | smol-smoltalk, Aya, Hindi Wikipedia-derived Q&A | Apache-2.0 / CC BY-SA | 124,485 conversations (+2,540 held out) |
 
 ### Copyright rule
 
@@ -171,6 +171,7 @@ decay is where loss drops sharply, and the data mix is "annealed" there (more of
 | Start | about 10.4 (random guessing over 32K tokens) |
 | 0.8 B tokens | about 3.45 |
 | 1.58 B tokens | about 3.25 |
+| **2.5 B tokens (final)** | **3.07** training loss; held-out: English 3.15, Hindi 3.06, Hinglish 2.90, Awadhi 5.44 |
 
 Losses per language on held-out text are logged every 250 steps (`runs/mona_m/eval_log.csv`). At every
 evaluation MONA also writes four sample sentences (`runs/mona_m/samples.txt`). That file is MONA's
@@ -193,7 +194,7 @@ questions. **Supervised fine-tuning** teaches a *format*: conversations written 
 
 - **Loss masking:** MONA is graded only on the assistant's words, never on the question
   (lesson: `learn/06_loss_masking.py`).
-- **Data:** 127,025 conversations.
+- **Data:** 124,485 training conversations (2,540 more are held out for validation).
 
   | Source | Conversations |
   |---|---|
@@ -211,7 +212,7 @@ questions. **Supervised fine-tuning** teaches a *format*: conversations written 
 
 ## 8. Running unattended: the guards
 
-Training takes about 30 hours on a laptop, so it has to survive heat, a loose charger, crashes and
+Training took about 19 hours on a laptop, so it has to survive heat, a loose charger, crashes and
 reboots without anyone watching. The approach was reused from the earlier APALA project.
 
 | Guard | File | What it does |
@@ -244,7 +245,7 @@ reboots without anyone watching. The approach was reused from the earlier APALA 
 
 `scripts/mona_eval.py` writes `runs/mona_m/eval.txt`:
 - **Bits per byte (bpb)** per language: how surprised the model is by new text. Lower is better. Unlike loss,
-  bpb is fair across tokenizers, so MONA can be compared with MANAS v1 and other models.
+  bpb is fair across tokenizers, so MONA can be compared with other models. (The MANAS v1 row in `eval.txt` is indicative only: it was scored on different Awadhi text, and MONA saw the Awadhi verse about 3 times in training, so treat that comparison with care.)
 - **Multiple-choice by likelihood:** which answer does MONA find most probable?
 - **Chat checks:** does MONA-Chat answer in the right language, and know its name?
 
@@ -369,9 +370,7 @@ fact a day.
 
 **Global keys:**
 - **F1** explain any word (glossary with everyday comparisons)
-- **F2** language (EN / हिं / Hinglish)
-- **F3** depth (Simple / Student / Engineer)
-- **F4** romanized Hindi
+- **F3** depth (Simple / Engineer)
 - **F7** change your name / form of address
 - **F8 show the code**: the real MONA source behind the current screen, read live with `inspect`, with a plain-language walkthrough. Examples: Attention → `Attention.forward` + `apply_rope`, Next word → `shape` + `MONA.generate`, Evals → `bits_per_byte`
 - **F9** export: a screenshot, a Markdown report, and a Python script that reproduces the experiment

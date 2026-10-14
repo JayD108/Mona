@@ -3,12 +3,28 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mona"
+# "mona" is already taken on PyPI (an unrelated project), so the published name differs from the command.
+#   pip install mona-llm   ->   mona
+name = "mona-llm"
 version = "0.1.0"
-description = "MONA: open up a real language model and see how it thinks (English, Hindi, Hinglish)."
+description = "MONA: understand AI from the inside. An interactive learning lab in your terminal (English UI; MONA reads Hindi, Hinglish and Awadhi too)."
 readme = "README.md"
 license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
+authors = [{ name = "Mrittunjay Dubey" }]
+keywords = ["llm", "education", "terminal", "transformer", "hindi", "tokenizer", "attention", "learning"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Natural Language :: Hindi",
+    "Programming Language :: Python :: 3",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "torch>=2.4",
     "tokenizers>=0.20",
@@ -16,10 +32,18 @@ dependencies = [
     "textual>=8.0",
     "rich",
     "indic-transliteration",
+    "regex",              # tokenizer-style word splitting (labs, cleaning)
+    "pyarrow",            # reads the demo data (Data and RAG stages)
+    "huggingface_hub",    # first-run download of the weights
 ]
 
 [project.optional-dependencies]
-train = ["pyarrow", "regex", "huggingface_hub", "matplotlib"]
+train = ["matplotlib"]    # extras for rebuilding MONA from scratch (see README, "Build MONA yourself")
+
+[project.urls]
+Homepage = "https://github.com/JayD108/Mona"
+Weights = "https://huggingface.co/JayF14/MONA"
+Issues = "https://github.com/JayD108/Mona/issues"
 
 [project.scripts]
 mona = "mona.ui.app:main"

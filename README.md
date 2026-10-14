@@ -18,8 +18,9 @@ In your first 10 minutes you will:
 - 🛠 **train your own tiny model** on your laptop in about 2 minutes, then run a real experiment: change the learning rate and compare
 - 🔧 **press F8 on any screen** and read the 10–20 lines of real code behind what you're seeing
 
-No account, no cloud, no cost. Everything runs on your computer, in **English, हिंदी or Hinglish**, at three
-depths: **Simple** (school students), **Student** (college) and **Engineer** (developers).
+No account, no cloud, no cost. Everything runs on your computer. The app is in English, at two depths:
+**Simple** (plain words, no maths) and **Engineer** (the formulas, shapes and code). MONA herself speaks English,
+हिंदी, Hinglish and Awadhi, and you can test her in all of them.
 
 ---
 
@@ -49,9 +50,9 @@ mona                # or: python -m mona
 <details>
 <summary><b>Hindi letters look broken?</b></summary>
 
-Windows Terminal → Settings → your profile → Appearance → Font face: **Nirmala UI** (or Mangal).
-macOS Terminal and most Linux terminals work as they are. MONA checks this on first run and can show
-Hindi in Latin letters (press **R** / **F4**) until it's fixed.
+The app itself is English, but MONA's Hindi examples (Tokens, RAG) use Devanagari. On Windows Terminal set
+Settings → your profile → Appearance → Font face: **Nirmala UI** (or Mangal). macOS Terminal and most Linux
+terminals work as they are.
 </details>
 
 <details>
@@ -107,9 +108,7 @@ time to continue the learning path.
 | **N** (home) | Next step on the learning path |
 | **F1** | Explain any word in plain language |
 | **F8** | Show the real code behind this screen, with a plain-language walkthrough |
-| **F2** | Language (EN / हिं / Hinglish) |
-| **F3** | Depth (Simple / Student / Engineer) |
-| **F4** | Romanized Hindi |
+| **F3** | Depth (Simple / Engineer) |
 | **F7** | Change your name / how MONA addresses you |
 | **F9** | Save a screenshot, a report, and a Python script that repeats the experiment |
 
@@ -152,7 +151,7 @@ a file of about 220 MB. GPT-3 has 175 *billion*. Stages 3–5 show what those nu
 
 <details><summary><b>How much does it cost to train a model?</b></summary>
 
-MONA took about 30 hours on a laptop GPU. That's roughly **one hour on a single data-centre GPU (H100),
+MONA took about 19 hours on a laptop GPU. That's roughly **one hour on a single data-centre GPU (H100),
 about $3**. GPT-3 needed about 190,000 times more compute. Today's frontier models need thousands of GPUs
 for months. Try it yourself in the scaling laws explorer (**P**).
 </details>
@@ -188,8 +187,8 @@ experiment: train it three times with different learning rates and compare. Your
 | Architecture | Llama-style decoder: RMSNorm, RoPE, SwiGLU, flash attention, tied embeddings |
 | Size | 110.1M parameters · 12 layers · width 768 · 12 heads · context 1,024 tokens |
 | Tokenizer | byte-level BPE, 32,768 pieces, fair to Hindi (1.33 tokens/word) |
-| Pretraining | 2.5B tokens (55% English, 40% Hindi, 5% Hinglish, plus Awadhi verse) · ~30 h on an RTX 5080 Laptop GPU |
-| Chat tuning | 127,025 conversations → **MONA-Chat** |
+| Pretraining | 2.5B tokens (55% English, 40% Hindi, 5% Hinglish, plus Awadhi verse) · ~19 h on an RTX 5080 Laptop GPU |
+| Chat tuning | 124,485 conversations (+2,540 held out) → **MONA-Chat** |
 | Weights | [huggingface.co/JayF14/MONA](https://huggingface.co/JayF14/MONA) (MIT) |
 
 MONA is small. She writes fluent-looking text but often gets facts wrong. That's exactly what makes her a
