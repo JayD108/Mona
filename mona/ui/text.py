@@ -52,7 +52,7 @@ S = {
     "journey": {"en": "THE LEARNING PATH", "hi": "सीखने का रास्ता", "hinglish": "LEARNING PATH"},
     "progress": {"en": "your progress", "hi": "आपकी प्रगति", "hinglish": "aapki progress"},
     "keys_home": {
-        "en": "↑↓ choose  Enter open  N next up  Tab path ⇄ explore  F1 explain a word  F8 show the code  F7 your name  D depth  Q quit",
+        "en": "↑↓ choose  Enter open  N next up  Tab path ⇄ explore  E example  Ctrl+P search  F1 explain  F8 code  F7 your name  D depth  Q quit",
         "hi": "↑↓ चुनें  Enter खोलें  N अगला  Tab रास्ता ⇄ और  F1 शब्द का मतलब  F8 कोड देखें  F7 आपका नाम  L/D/R भाषा/गहराई/रोमन  Q बंद",
         "hinglish": "↑↓ chuno  Enter kholo  N agla  Tab path ⇄ explore  F1 word ka matlab  F8 code dekho  F7 aapka naam  L/D/R bhasha/depth/roman  Q band",
     },

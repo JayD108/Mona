@@ -33,6 +33,25 @@ async def _run():
         assert app.gb is not None, "model did not load"
         assert app.state.lang == "en" and app.state.depth in ("simple", "engineer")
         home = app.screen
+        for _ in range(60):                               # the Brain strip runs one real forward pass
+            if getattr(home, "reading", None) is not None:
+                break
+            await pilot.pause(0.5)
+        r = home.reading
+        assert r is not None and len(r.confidence) == 12 and 1 <= r.lock_layer <= 12
+        assert abs(sum(g.prob for g in r.final) - 1) < 1 and r.tokens_per_second > 0
+        await pilot.press("e")                            # next example sentence
+        await pilot.pause(1.5)
+        await pilot.press("ctrl+p")                       # command palette opens a stage
+        await pilot.pause(0.5)
+        for ch in "layers":
+            await pilot.press(ch)
+        await pilot.pause(0.8)
+        await pilot.press("enter")
+        await pilot.pause(1.0)
+        assert type(app.screen).__name__ == "LayersLab", type(app.screen).__name__
+        await pilot.press("escape")
+        await pilot.pause(0.3)
         for depth in ("simple", "engineer"):              # every screen, at both depths
             app.state.depth = depth
             for sid in STAGES:

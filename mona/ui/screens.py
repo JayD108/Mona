@@ -5,10 +5,12 @@ from rich.text import Text
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
+from textual import work
 from textual.screen import Screen
 from textual.widgets import Button, OptionList, Static
 from textual.widgets.option_list import Option
 
+from . import brain
 from .text import READY, STAGES, register, stage_name
 from .welcome import greeting_key
 from .widgets import Avatar
@@ -88,30 +90,51 @@ MEMOS = [
      "RAG se chhota model sab yaad rakhne ke bajaye cheezein dhoondh sakta hai, jaise open-book exam."),
 ]
 
-# What you'll find out: shown in the Preview box under the lists.
-BLURBS = {
-    "lm": "Why \"guess the next word\" is the only thing a language model does, and why that is enough to write essays. You play the game against MONA.",
-    "data": "What MONA read, and why cleaning data is most of the work. You decide which documents to keep and which to drop.",
-    "tokens": "How your sentence is cut into pieces and turned into numbers, and why Hindi costs some models four times more than English.",
-    "embeddings": "How words become points on a map, with similar words close together. Find neighbours and play odd-one-out.",
-    "attention": "How a word looks back at earlier words to work out what it means, for example how \"it\" finds \"the cat\".",
-    "layers": "Watch MONA's guess take shape layer by layer, from a blurry first idea to the final answer.",
-    "next": "What temperature, top-k and top-p really do to the choice of the next word. Turn the knobs and see.",
-    "training": "A time machine through MONA's real training: from random noise to sentences, with the real loss curve.",
-    "chat": "How a text-continuer becomes an assistant: the chat template, and what the loss mask hides from the model.",
-    "evals": "How to tell whether a model is any good, and why benchmark scores can mislead.",
-    "rag": "Give MONA a library and watch her look things up instead of guessing. Answers with and without it, side by side.",
-    "beyond": "Shrinking a model (quantization), letting it use tools, and the KV-cache trick that makes writing fast.",
-    "mysteries": "Five debugging cases. MONA does something strange; you run experiments, collect evidence and name the cause.",
-    "incidents": "Real problems from MONA's training run: an overheating GPU, copyrighted data, a watchdog crying wolf. What would you do?",
-    "course": "Train your own tiny model in about two minutes, then change the learning rate and compare what happens.",
-    "journey": "MONA's real training diary: the loss, the incidents and what she wrote at every stage.",
-    "budget": "Pick a compute budget and a model size and see the U-shaped quality curve, next to GPT-3 and Llama.",
-    "tour": "The life of a model, team by team, next to what MONA's own build did.",
-    "compare": "Ask MONA and a big local model (Ollama) the same question, side by side.",
-    "story": "Type a sentence and follow it through every stage of the model.",
-    "teacher": "45-minute lesson plans and printable quizzes for every stage.",
-    "badges": "Your badges, and a certificate of completion after all 12 stages.",
+# The mission briefing under the lists: (objective, experiment, what you unlock) for the highlighted item.
+MISSIONS = {
+    "lm": ("Discover that guessing the next word is the only thing a language model does.",
+           "Play 5 rounds against MONA and compare your guesses with hers.", "Understand next-token prediction."),
+    "data": ("See what MONA read, and why cleaning data is most of the work.",
+             "Keep or drop real documents using MONA's own cleaning rules.", "Understand training data and filtering."),
+    "tokens": ("Learn how text becomes the numbers a model reads.",
+               "Cut your own sentence into tokens, replay BPE merges, race languages by token cost.", "Understand tokenization."),
+    "embeddings": ("See how words become points, with similar words close together.",
+                   "Find a word's neighbours and play odd-one-out.", "Understand embeddings."),
+    "attention": ("Discover how tokens exchange information.",
+                  "Change the input and inspect an attention head.", "Understand self-attention."),
+    "layers": ("Watch a guess form as it passes through the layers.",
+               "Move along a sentence and read MONA's guess after every layer (the logit lens).", "Understand how depth builds an answer."),
+    "next": ("Learn how the next token is chosen from the probabilities.",
+             "Turn temperature, top-k and top-p and watch the writing change.", "Understand sampling."),
+    "training": ("See how MONA went from random noise to sentences.",
+                 "Ask MONA's saved checkpoints the same prompt and study the real loss curve.", "Understand pretraining."),
+    "chat": ("See how a text-continuer becomes an assistant.",
+             "Compare base MONA and MONA-Chat on one question; inspect the chat template and loss mask.", "Understand fine-tuning."),
+    "evals": ("Learn how to tell whether a model is any good.",
+              "Take a mini exam, make your own, and read the surprise meter.", "Understand evaluation, and why benchmarks mislead."),
+    "rag": ("Let MONA look things up instead of guessing.",
+            "Ask one question with and without the library and compare the answers.", "Understand retrieval-augmented generation."),
+    "beyond": ("Learn how models are shrunk, given tools and made fast.",
+               "Quantize MONA, call a tool, and time the KV-cache.", "Understand quantization, tool use and caching."),
+    "mysteries": ("Investigate a model that misbehaves.",
+                  "Run up to three experiments, name the cause, then read the code.", "Learn to debug a model."),
+    "incidents": ("Learn what really goes wrong in a training run.",
+                  "Choose what you would do in six real incidents from MONA's own run.", "Understand running training in practice."),
+    "course": ("Train your own small model.",
+               "Train it, test it against MONA, then compare three learning rates.", "Understand training by changing one variable."),
+    "journey": ("Follow MONA's real training diary.",
+                "Step through the chapters with the real loss and the real samples.", "Understand the whole build, start to finish."),
+    "budget": ("See how compute and model size trade off.",
+               "Pick a budget and a model size and read the loss curve.", "Understand scaling laws."),
+    "tour": ("See how frontier labs are organised.",
+             "Walk through the seven teams and compare with MONA's own build.", "Understand how models are built at scale."),
+    "compare": ("Compare MONA with a much bigger model.",
+                "Ask both the same question and compare answers, speed and token counts.", "Understand what scale buys."),
+    "story": ("Follow one sentence through the model.",
+              "Type a sentence and watch it pass through every stage.", "See the whole pipeline in one view."),
+    "teacher": ("Teach this to a class.",
+                "Open a 45-minute lesson plan and a printable quiz.", "Run a lesson."),
+    "badges": ("Review your progress.", "Check your badges and your certificate.", "See what you have completed."),
 }
 
 register({
@@ -171,7 +194,8 @@ class HomeScreen(Screen):
                 Binding("s", "story", "story"), Binding("b", "badges", "badges"), Binding("c", "compare", "compare"),
                 Binding("t", "teacher", "teacher"), Binding("o", "tour", "tour"), Binding("j", "journey", "journey"),
                 Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget"),
-                Binding("m", "mysteries", "mysteries"), Binding("n", "next_up", "next")]
+                Binding("m", "mysteries", "mysteries"), Binding("n", "next_up", "next"),
+                Binding("e", "brain_next", "next example")]
 
     def action_mysteries(self):
         from .mysteries import MysteryScreen
@@ -225,24 +249,50 @@ class HomeScreen(Screen):
 
     def compose(self) -> ComposeResult:
         with Vertical(id="main"):
-            yield Static(id="hello")
+            with Horizontal(id="top-row"):
+                yield Static(id="hello")
+                yield Static(id="brain")
             with Horizontal(id="home-cols"):
                 with Vertical(id="stage-col"):
                     yield OptionList(id="stages")
                 with Vertical(id="desk-col"):
                     yield OptionList(id="desk")
-            yield Static(id="preview")
-            yield Static(id="progress")
+            yield Static(id="mission")
+            yield Static(id="telemetry")
         yield Static(id="keys", classes="keys")
 
     def on_mount(self):
+        self.reading, self.example_i = None, 0
         self.query_one("#main").border_title = "MONA  ·  understand AI from the inside"
         self.query_one("#stages").border_title = "Learning path"
         self.query_one("#desk").border_title = "Explore further"
-        self.query_one("#preview").border_title = "Preview"
-        self.query_one("#progress").border_title = "Progress"
+        self.query_one("#mission").border_title = "Mission"
+        self.query_one("#brain").border_title = "Model activity"
+        self.query_one("#telemetry").border_title = "Telemetry"
         self.refresh_texts()
         self.query_one("#stages").focus()
+        if self.app.gb is not None:
+            self.run_brain()
+
+    # ── MONA's Brain: one real forward pass, shown compactly ──────────────────
+    def on_engine_ready(self):
+        self.run_brain()
+
+    def action_brain_next(self):
+        self.example_i = (self.example_i + 1) % len(brain.EXAMPLES)
+        self.run_brain()
+
+    @work(thread=True, exclusive=True, group="brain")
+    def run_brain(self):
+        gb = self.app.gb
+        if gb is None:
+            return
+        reading = brain.read(gb, brain.EXAMPLES[self.example_i])
+        self.app.call_from_thread(self._brain_ready, reading)
+
+    def _brain_ready(self, reading):
+        self.reading = reading
+        self.refresh_texts()
 
     def refresh_texts(self):
         app, s = self.app, self.app.state
@@ -250,17 +300,12 @@ class HomeScreen(Screen):
         who = app.addr()
         hello = Text(tr(greeting_key()) + (f", {who}" if who else "") + "! ", style="bold #f9e2af")
         hello.append(tr("hello"), style="#cdd6f4")
-        nxt = self.next_up()
-        if nxt:
-            stage = next((st for st in STAGES if st[0] == nxt), None)
-            name = f"{STAGES.index(stage)} · {stage_name(stage, 'en')}" if stage else PATH_NAMES[nxt][0]
-            hello.append("\n" + tr("next_up", n=name), style="bold #a6e3a1")
-        else:
-            hello.append("\n" + tr("all_done"), style="bold #a6e3a1")
-        hello.append("\n" + tr("memo", m=MEMOS[dt.date.today().toordinal() % len(MEMOS)][0]), style="#89dceb")
+        hello.append("\n\n" + tr("memo", m=MEMOS[dt.date.today().toordinal() % len(MEMOS)][0]), style="#89dceb")
         box = self.query_one("#hello", Static)
         box.update(hello)
         box.border_title = f"Hello  ·  {tr('depth_name')} mode"
+        self.query_one("#brain", Static).update(brain.render(getattr(self, "reading", None)))
+        nxt = self.next_up()
         desk = self.query_one("#desk", OptionList)
         keep = desk.highlighted
         desk.clear_options()
@@ -290,22 +335,32 @@ class HomeScreen(Screen):
                     target = stages.option_count - 1
         stages.highlighted = highlighted if highlighted is not None else (target if target is not None else 1)
         done = len([c for c in s.completed if c in {st[0] for st in STAGES}])   # stages only, not story
-        bar = "━" * (done * 4) + "─" * ((len(STAGES) - done) * 4)
-        badges = "   " + "  ".join(f"🏅 {b}" for b in s.badges) if s.badges else ""
-        self.query_one("#progress", Static).update(
-            Text.assemble((bar[:done * 4], "bold #a6e3a1"), (bar[done * 4:], "#45475a"), (f"  {done}/{len(STAGES)} stages", "#9399b2"), (badges, "#f9e2af")))
+        self.query_one("#telemetry", Static).update(
+            brain.telemetry(app.gb, getattr(self, "reading", None), done, len(STAGES), s.badges))
         self.query_one("#keys", Static).update(tr("keys_home"))
-        self.show_preview()
+        self.show_mission()
 
     def on_option_list_option_highlighted(self, event: OptionList.OptionHighlighted):
-        self.show_preview(event.option.id)
+        self.show_mission(event.option.id)
 
-    def show_preview(self, oid=None):
-        """The Preview box: one friendly line about whatever the cursor is on."""
+    def show_mission(self, oid=None):
+        """The mission briefing: objective, experiment and what you unlock, for whatever the cursor is on."""
         if oid is None:
             lst = self.query_one("#stages", OptionList)
             oid = lst.get_option_at_index(lst.highlighted).id if lst.highlighted is not None else None
-        self.query_one("#preview", Static).update(Text(BLURBS.get(oid, ""), style="#bac2de"))
+        if oid not in MISSIONS:
+            return
+        objective, experiment, unlock = MISSIONS[oid]
+        stage = next((st for st in STAGES if st[0] == oid), None)
+        name = stage_name(stage, "en") if stage else PATH_NAMES[oid][0]
+        head = "NEXT MISSION" if oid == self.next_up() else "MISSION"
+        out = Text(f"{head}: {name.upper()}\n", style="bold #f9e2af")
+        for label, body in (("OBJECTIVE", objective), ("EXPERIMENT", experiment), ("UNLOCK", unlock)):
+            out.append(f"{label} ", style="bold #89dceb")
+            out.append(f"— {body}\n", style="#cdd6f4")
+        out.append("ENTER → BEGIN", style="bold #a6e3a1")
+        out.append("     F8 source code     F1 explain a word     E next example sentence", style="#9399b2")
+        self.query_one("#mission", Static).update(out)
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected):
         if event.option_list.id == "desk":

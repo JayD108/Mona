@@ -5,6 +5,7 @@ from textual import work
 from textual.app import App
 from textual.binding import Binding
 
+from .palette import MonaCommands
 from .screens import HomeScreen
 from .state import DEPTHS, State
 from .text import romanize, t
@@ -45,19 +46,25 @@ TabbedContent Tabs { background: #1e1e2e; }
 Tab { color: #9399b2; }
 Tab.-active { color: #f9e2af; text-style: bold underline; }
 
+/* Colour language: cyan = navigation and information, green = done or succeeded, amber = key ideas and
+   warnings, red only for real errors. */
 /* home */
 #main { height: 1fr; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
         border-title-style: bold; padding: 0 1; }
-#hello { height: auto; min-height: 5; margin: 1 0 1 0; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+#top-row { height: 11; }
+#hello { width: 1fr; height: 100%; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+         border-title-style: bold; padding: 0 2; }
+#brain { width: 66; height: 100%; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
          border-title-style: bold; padding: 0 2; }
 #home-cols { height: 1fr; }
 #stage-col { width: 1fr; background: #1e1e2e; }
 #desk-col { width: 50; background: #1e1e2e; }
 #stages, #desk { height: 1fr; }
-#preview { height: auto; min-height: 3; max-height: 5; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
-           border-title-style: bold; padding: 0 2; color: #bac2de; }
-#progress { height: 3; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
-            border-title-style: bold; padding: 0 2; }
+#mission { height: auto; min-height: 7; max-height: 8; border: round #89dceb; border-title-align: center;
+           border-title-color: #f9e2af; border-title-style: bold; padding: 0 2; }
+#telemetry { height: auto; min-height: 4; max-height: 5; border: round #89dceb; border-title-align: center;
+             border-title-color: #f9e2af; border-title-style: bold; padding: 0 2; }
+CommandPalette { background: rgba(10, 12, 30, 0.7); border: none; padding: 0; }
 
 /* labs */
 .lab-head { height: 6; margin: 1 1 0 1; }
@@ -118,6 +125,7 @@ CodeScreen { align: center middle; background: rgba(10, 12, 30, 0.7); }
 class MonaApp(App):
     CSS = CSS
     TITLE = "MONA"
+    COMMANDS = App.COMMANDS | {MonaCommands}      # Ctrl+P: search every lesson, experiment and command
     BINDINGS = [Binding("f3", "cycle_depth", "depth", show=False), Binding("f9", "export", "export", show=False),
                 Binding("f7", "address", "address", show=False), Binding("f1", "glossary", "glossary", show=False),
                 Binding("f8", "code", "code", show=False)]
