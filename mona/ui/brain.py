@@ -38,19 +38,25 @@ class BrainReading:
         return self.n_tokens / self.seconds if self.seconds > 0 else None
 
 
-def read(gb, sentence, top=5):
-    """Run the real model on `sentence` and summarise the pass. Call from a worker thread."""
-    t0 = time.perf_counter()
-    trace = gb.trace(sentence, lens_top=top)
-    seconds = time.perf_counter() - t0
+def summarize(trace, seconds):
+    """Turn a real `GlassBox.trace` into a BrainReading."""
     last = [layer[-1] for layer in trace.layer_guesses]            # per layer: top-k guesses at the last position
     ids = [g[0].token.id for g in last]
     lock = len(ids)
     while lock > 1 and ids[lock - 2] == ids[-1]:
         lock -= 1
-    return BrainReading(sentence=sentence, n_tokens=len(trace.tokens),
+    return BrainReading(sentence="", n_tokens=len(trace.tokens),
                         confidence=[g[0].prob for g in last], guesses=[g[0].token.text for g in last],
                         lock_layer=lock, final=trace.final, seconds=seconds)
+
+
+def read(gb, sentence, top=5):
+    """Run the real model on `sentence` and summarise the pass. Call from a worker thread."""
+    t0 = time.perf_counter()
+    trace = gb.trace(sentence, lens_top=top)
+    reading = summarize(trace, time.perf_counter() - t0)
+    reading.sentence = sentence
+    return reading
 
 
 def render(reading):

@@ -87,15 +87,36 @@ TabbedContent { height: 1fr; }
 TabPane { padding: 0 1; }
 
 #check-box { align: center middle; padding: 2 4; }
-#wel-box { align: center middle; padding: 1 4; }
+#wel-box { align: center middle; padding: 0 4; }
 #wel-logo { width: 90; height: 5; content-align: center middle; }
 #wel-tag { width: 90; height: 1; margin: 1 0 0 0; content-align: center middle; }
-#wel-text { width: 90; height: auto; margin: 1 0 0 0; padding: 1 3; color: #cdd6f4; border: round #89dceb;
-            border-title-align: center; border-title-color: #f9e2af; border-title-style: bold; }
 #wel-ask { width: 90; margin: 1 0 0 0; content-align: center middle; }
 #wel-choices { width: 44; height: 6; margin: 0 23; }
 #wel-name { width: 44; margin: 1 23 0 23; }
 #wel-keys { width: 90; margin: 1 0 0 0; content-align: center middle; }
+#wel-text { width: 90; height: auto; min-height: 7; margin: 1 0 0 0; padding: 1 3; color: #cdd6f4; border: round #89dceb;
+            border-title-align: center; border-title-color: #f9e2af; border-title-style: bold;
+            border-subtitle-align: center; border-subtitle-color: #9399b2; }
+#wel-status { width: 90; height: 1; margin: 1 0 0 0; content-align: center middle; }
+#wel-hw { width: 90; height: 1; content-align: center middle; }
+#wel-begin-ask { width: 90; margin: 1 0 0 0; content-align: center middle; }
+#wel-begin { width: 70; height: 4; margin: 0 10; }
+
+/* talk with MONA */
+#chat-box { height: 1fr; }
+#chat-note { height: auto; margin: 0 1; }
+#chat-scroll { height: 1fr; margin: 1 1 0 1; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+               border-title-style: bold; padding: 0 2; }
+#chat-log { height: auto; }
+#chat-status { height: 1; margin: 0 2; }
+#chat-input { margin: 0 1 1 1; }
+
+/* inside MONA (the zoom lesson) */
+#zoom-box { height: 1fr; align: center top; }
+#zoom-stage { width: 100; height: 19; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+              border-title-style: bold; padding: 0 1; background: #1e1e2e; }
+#zoom-say { width: 100; height: auto; min-height: 5; max-height: 7; margin: 1 0 0 0; padding: 0 2; border: round #cba6f7;
+            border-title-align: center; border-title-color: #cba6f7; border-title-style: bold; color: #cdd6f4; }
 
 /* explore screens: a list on the left, the details on the right */
 #tour-cols { height: 1fr; }
@@ -178,7 +199,7 @@ class MonaApp(App):
                     "IncidentScreen": "Training failures", "CourseScreen": "Train a model yourself",
                     "JourneyScreen": "How MONA was trained", "BudgetScreen": "Scaling laws explorer",
                     "TourScreen": "How AI labs build models", "StoryScreen": "Follow one sentence",
-                    "TeacherScreen": "Teacher mode", "BadgesScreen": "Progress & certificate"}
+                    "TeacherScreen": "Teacher mode", "BadgesScreen": "Progress & certificate", "ChatScreen": "Talk with MONA", "ZoomScreen": "Inside MONA"}
 
     def push_screen(self, screen, *args, **kwargs):
         if not isinstance(screen, str):
@@ -236,7 +257,7 @@ class MonaApp(App):
 
     def action_address(self):
         if not isinstance(self.screen, WelcomeScreen):
-            self.push_screen(WelcomeScreen())
+            self.push_screen(WelcomeScreen(name_only=True))
 
     def action_glossary(self):
         from .glossary import GlossaryScreen

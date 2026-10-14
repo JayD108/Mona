@@ -19,7 +19,7 @@ from mona.ui.app import MonaApp  # noqa: E402
 from mona.ui.screens import open_lab  # noqa: E402
 
 STAGES = ["lm", "data", "tokens", "embeddings", "attention", "layers", "next", "training", "chat", "evals", "rag", "beyond"]
-EXPLORE = ["mysteries", "incidents", "course", "journey", "budget", "tour", "compare", "story", "teacher", "badges"]
+EXPLORE = ["talk", "zoom", "mysteries", "incidents", "course", "journey", "budget", "tour", "compare", "story", "teacher", "badges"]
 
 
 async def _run():
@@ -80,10 +80,10 @@ async def _welcome_animation():
     async with app.run_test(size=(150, 46)) as pilot:
         await pilot.pause(0.3)
         welcome = app.screen
-        assert type(welcome).__name__ == "WelcomeScreen" and not welcome.ready      # animating, choices hidden
+        assert type(welcome).__name__ == "WelcomeScreen" and welcome.phase == "logo"   # logo animating, choices hidden
         await pilot.press("space")                                                   # any key skips the animation
         await pilot.pause(0.3)
-        assert welcome.ready
+        assert welcome.phase == "name"
         await pilot.press("escape")                                                  # now Esc leaves the screen
         await pilot.pause(0.3)
         assert type(app.screen).__name__ == "HomeScreen"
@@ -97,7 +97,74 @@ def test_welcome_animation_can_be_skipped():
     asyncio.run(_welcome_animation())
 
 
+async def _wait(pilot, cond, seconds, step=0.4):
+    for _ in range(int(seconds / step)):
+        if cond():
+            return True
+        await pilot.pause(step)
+    return cond()
+
+
+async def _intro_to_chat():
+    """Name -> MONA writes her own welcome (real generation) -> Talk with MONA -> one real reply."""
+    os.environ["MONA_REDUCED_MOTION"] = "1"
+    app = MonaApp()
+    async with app.run_test(size=(150, 46)) as pilot:
+        await pilot.pause(0.5)
+        welcome = app.screen
+        assert type(welcome).__name__ == "WelcomeScreen" and welcome.phase == "name"
+        await pilot.press("enter")                                    # "Sir"
+        assert await _wait(pilot, lambda: welcome.phase == "begin", 120), "MONA never finished her welcome"
+        assert len(welcome.written) > 60
+        await pilot.press("enter")                                    # "Talk with MONA"
+        await pilot.pause(0.5)
+        chat = app.screen
+        assert type(chat).__name__ == "ChatScreen"
+        assert await _wait(pilot, lambda: not chat.query_one("#chat-input").disabled, 90), "chat model did not load"
+        for ch in "hello":
+            await pilot.press(ch)
+        await pilot.press("enter")
+        assert await _wait(pilot, lambda: len(chat.history) == 2 and not chat.busy, 120), "no reply"
+        assert chat.history[-1]["content"].strip()
+        await pilot.press("escape")
+        await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "HomeScreen"
+
+
+async def _zoom_lesson():
+    """The whole lesson plays through: 7 scenes, then back to the home screen with the lesson marked done."""
+    os.environ["MONA_REDUCED_MOTION"] = "1"
+    app = MonaApp()
+    async with app.run_test(size=(150, 46)) as pilot:
+        await pilot.pause(0.5)
+        await pilot.press("escape")
+        assert await _wait(pilot, lambda: app.gb is not None, 90)
+        app.screen.action_zoom()
+        await pilot.pause(0.5)
+        zoom = app.screen
+        assert type(zoom).__name__ == "ZoomScreen"
+        assert await _wait(pilot, lambda: zoom.D is not None, 30), "zoom data did not load"
+        await pilot.pause(1.0)
+        for scene in range(6):                                        # Enter dives into the next scene
+            await pilot.press("enter")
+            assert await _wait(pilot, lambda: zoom.trans is None and zoom.i == scene + 1, 5), f"stuck at scene {scene}"
+            await pilot.pause(0.3)
+        await pilot.press("enter")                                    # the last scene: leave
+        await pilot.pause(0.5)
+        assert type(app.screen).__name__ == "HomeScreen" and "zoom" in app.state.completed
+
+
+def test_intro_writes_welcome_then_chat():
+    asyncio.run(_intro_to_chat())
+
+
+def test_zoom_lesson_plays_through():
+    asyncio.run(_zoom_lesson())
+
+
 if __name__ == "__main__":
     test_welcome_animation_can_be_skipped()
+    test_intro_writes_welcome_then_chat()
+    test_zoom_lesson_plays_through()
     test_every_screen_opens()
-    print("ok: welcome animation skips; every screen opened at both depths")
+    print("ok: welcome skips; MONA writes her welcome and chats; zoom lesson plays; every screen opens at both depths")

@@ -90,6 +90,8 @@ time to continue the learning path.
 
 | Key | | |
 |---|---|---|
+| **K** | 💬 Talk with MONA | A real chat with MONA-Chat, running on your own computer, one token at a time |
+| **Z** | 🔬 Inside MONA | An animated dive from the whole model, through a block and its attention heads, down to a single neuron, using her real numbers |
 | **M** | 🔍 Model mysteries | Five debugging cases. MONA does something strange; you run experiments on the real model, collect evidence, and name the cause. Then see the mechanism and the code |
 | **I** | 🧯 Training failures | Real problems from MONA's training run (overheating GPU, copyrighted data found mid-run, a watchdog crying wolf…). What would you do? |
 | **G** | 🛠 Train a model yourself | Seven steps: data → tokenizer → model → training → writing → exam → **a learning-rate experiment**. You really train it |

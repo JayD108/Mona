@@ -29,6 +29,9 @@ TRACKS = [
 
 # Explore further: hands-on work beyond the 12 stages.  (id or None for a heading, key, en, hi, hinglish)
 EXPLORE = [
+    (None, "", "💬 TALK AND WATCH", "💬 TALK AND WATCH", "💬 TALK AND WATCH"),
+    ("talk", "K", "Talk with MONA", "Talk with MONA", "Talk with MONA"),
+    ("zoom", "Z", "Inside MONA: model to neuron", "Inside MONA: model to neuron", "Inside MONA: model to neuron"),
     (None, "", "🔍 INVESTIGATE", "🔍 जाँच", "🔍 INVESTIGATE"),
     ("mysteries", "M", "Model mysteries: debug MONA", "मॉडल की पहेलियाँ: MONA को डीबग कीजिए", "Model mysteries: MONA ko debug karo"),
     ("incidents", "I", "Training failures: what goes wrong", "ट्रेनिंग की गड़बड़ियाँ: क्या बिगड़ता है", "Training failures: kya bigadta hai"),
@@ -46,7 +49,7 @@ EXPLORE = [
 ]
 
 # The suggested order for "Next up": stages interleaved with hands-on work at the right moments.
-PATH = ["lm", "data", "tokens", "embeddings", "attention", "layers", "next", "course", "training", "chat", "evals",
+PATH = ["zoom", "lm", "data", "tokens", "embeddings", "attention", "layers", "next", "course", "training", "chat", "evals",
         "mysteries", "rag", "beyond", "budget"]
 PATH_NAMES = {item[0]: item[2:] for item in EXPLORE if item[0]}
 
@@ -92,6 +95,10 @@ MEMOS = [
 
 # The mission briefing under the lists: (objective, experiment, what you unlock) for the highlighted item.
 MISSIONS = {
+    "talk": ("Have a real conversation with MONA.",
+             "Ask her anything and watch her write, token by token, on your own computer.", "See what a small model can and cannot do."),
+    "zoom": ("See how a language model is built, from the whole thing down to a single neuron.",
+             "Watch an animated dive through MONA with her real numbers at every step.", "Understand what is inside every model."),
     "lm": ("Discover that guessing the next word is the only thing a language model does.",
            "Play 5 rounds against MONA and compare your guesses with hers.", "Understand next-token prediction."),
     "data": ("See what MONA read, and why cleaning data is most of the work.",
@@ -195,7 +202,16 @@ class HomeScreen(Screen):
                 Binding("t", "teacher", "teacher"), Binding("o", "tour", "tour"), Binding("j", "journey", "journey"),
                 Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget"),
                 Binding("m", "mysteries", "mysteries"), Binding("n", "next_up", "next"),
-                Binding("e", "brain_next", "next example")]
+                Binding("e", "brain_next", "next example"),
+                Binding("k", "talk", "talk with MONA"), Binding("z", "zoom", "inside MONA")]
+
+    def action_talk(self):
+        from .chat import ChatScreen
+        self.app.push_screen(ChatScreen())
+
+    def action_zoom(self):
+        from .zoom import ZoomScreen
+        self.app.push_screen(ZoomScreen())
 
     def action_mysteries(self):
         from .mysteries import MysteryScreen
