@@ -6,6 +6,7 @@ Everything returned here is computed from MONA's real weights (nothing is invent
   * all 2,048 feed-forward neurons of one block, for the last word
   * one neuron taken apart: its inputs, weights, weighted sum, and the bend (SiLU) that turns it into its output
 """
+import math
 import time
 
 import numpy as np
@@ -46,6 +47,9 @@ def compute(gb, sentence=SENTENCE, ffn_layer=FFN_LAYER):
     with torch.no_grad():
         x = m.embed(ids)
         for li, block in enumerate(m.blocks):
+            if li == ffn_layer:                                     # what RMSNorm does to a real vector
+                xin = x[0, -1].clone()
+                xnorm = block.attn_norm(x)[0, -1].clone()
             a = block.attn
             q, k, v = a.qkv(block.attn_norm(x)).view(1, T, 3, a.n_heads, a.head_dim).permute(2, 0, 3, 1, 4)
             q, k = apply_rope(q, cos, sin), apply_rope(k, cos, sin)
@@ -69,13 +73,25 @@ def compute(gb, sentence=SENTENCE, ffn_layer=FFN_LAYER):
                   silu=float(F.silu(torch.tensor(pre))), up=float(up_pre[n]), out=float(acts_np[n]))
     assert abs(neuron["out"] - neuron["silu"] * neuron["up"]) < 1e-3 * (1 + abs(neuron["out"]))
 
+    rms = float(xin.pow(2).mean().sqrt())
+    angles = lambda i: [round(math.degrees(math.atan2(float(m.rope_sin[p, i]), float(m.rope_cos[p, i]))), 1) for p in range(8)]
+    rope = dict(theta=m.cfg.rope_theta, fast=angles(0), slow=angles(m.cfg.d_model // m.cfg.n_heads // 2 - 1))
+
+    # writing, one word at a time: MONA's real next-word loop (the same code the Next-word lab uses)
+    prompt = "The cat sat on the"
+    steps = [dict(text=st.token.text, prob=st.prob, alts=[(g.token.text, g.prob) for g in st.alternatives])
+             for st in gb.generate(prompt, n=4, temperature=0.8, top_p=0.9, seed=25, show=5)]
+
     block0 = m.blocks[0]
     count = lambda mod: sum(p.numel() for p in mod.parameters())
     params = dict(total=m.num_params(), embed=m.embed.weight.numel(), blocks=sum(count(b) for b in m.blocks),
                   block=count(block0), attn=count(block0.attn), ffn=count(block0.ffn),
                   norms=count(block0.attn_norm) + count(block0.ffn_norm), n_layers=len(m.blocks),
-                  n_heads=m.cfg.n_heads, hidden=m.cfg.ffn_hidden, width=m.cfg.d_model)
+                  n_heads=m.cfg.n_heads, hidden=m.cfg.ffn_hidden, width=m.cfg.d_model,
+                  context=m.cfg.context, vocab=m.cfg.vocab_size)
     return dict(sentence=sentence, tokens=tokens, brain=brain, final=trace.final,
                 head=dict(layer=layer, head=head, target=target, matrix=att[layer, head].numpy(), p=float(att[layer, head, -1, target])),
                 weights=m.blocks[ffn_layer].ffn.up.weight[:256, :32].detach().numpy().astype(float),
-                heads_here=heads_here, ffn_layer=ffn_layer, acts=acts_np, neuron=neuron, params=params)
+                heads_here=heads_here, ffn_layer=ffn_layer, acts=acts_np, neuron=neuron, params=params,
+                rms_in=[float(v) for v in xin[:6]], rms_out=[float(v) for v in xnorm[:6]], rms=rms, rope=rope,
+                prompt=prompt, steps=steps)

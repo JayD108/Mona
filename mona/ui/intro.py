@@ -49,7 +49,8 @@ def write_welcome(model, tok, on_status, on_text, cancel=None):
             break
         torch.manual_seed(random.randrange(1 << 30))
         on_status("writing", draft)
-        text, _, _ = chatmodel.stream_reply(model, tok, history, on_text, cancel=cancel, max_new=90, temperature=0.5)
+        text, _, _ = chatmodel.stream_reply(model, tok, history, on_text, cancel=cancel, max_new=90, temperature=0.5,
+                                           system=chatmodel.TRAINED_SYSTEM)
         on_status("metamorphosing", draft)
         text = clean(text)
         if acceptable(text):

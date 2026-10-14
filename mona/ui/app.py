@@ -112,10 +112,10 @@ TabPane { padding: 0 1; }
 #chat-input { margin: 0 1 1 1; }
 
 /* inside MONA (the zoom lesson) */
-#zoom-box { height: 1fr; align: center top; }
-#zoom-stage { width: 100; height: 19; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
-              border-title-style: bold; padding: 0 1; background: #1e1e2e; }
-#zoom-say { width: 100; height: auto; min-height: 5; max-height: 7; margin: 1 0 0 0; padding: 0 2; border: round #cba6f7;
+#zoom-box { height: 1fr; }
+#zoom-stage { width: 1fr; height: 1fr; min-height: 19; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+              border-title-style: bold; padding: 0; background: #1e1e2e; content-align: center middle; overflow: hidden; }
+#zoom-say { width: 1fr; height: auto; min-height: 6; max-height: 9; margin: 1 0 0 0; padding: 0 2; border: round #cba6f7;
             border-title-align: center; border-title-color: #cba6f7; border-title-style: bold; color: #cdd6f4; }
 
 /* explore screens: a list on the left, the details on the right */

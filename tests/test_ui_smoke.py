@@ -126,13 +126,26 @@ async def _intro_to_chat():
         await pilot.press("enter")
         assert await _wait(pilot, lambda: len(chat.history) == 2 and not chat.busy, 120), "no reply"
         assert chat.history[-1]["content"].strip()
-        await pilot.press("escape")
+        await pilot.press("escape")                                   # Esc = back to what I was doing: the choice
         await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "WelcomeScreen" and app.screen.phase == "begin"
+        await pilot.press("down")
+        await pilot.press("enter")                                    # "See how MONA works"
+        await pilot.pause(0.6)
+        assert type(app.screen).__name__ == "ZoomScreen"
+        await pilot.press("escape")                                   # and back to the choice again
+        await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "WelcomeScreen" and app.screen.phase == "begin"
+        await pilot.press("escape")                                   # leaving the choice: the home screen
+        await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "HomeScreen"
+        await pilot.press("escape")                                   # the root: stays put (and says so)
+        await pilot.pause(0.2)
         assert type(app.screen).__name__ == "HomeScreen"
 
 
 async def _zoom_lesson():
-    """The whole lesson plays through: 7 scenes, then back to the home screen with the lesson marked done."""
+    """The whole lesson plays through, every scene, then back out with the lesson marked done."""
     os.environ["MONA_REDUCED_MOTION"] = "1"
     app = MonaApp()
     async with app.run_test(size=(150, 46)) as pilot:
@@ -145,13 +158,21 @@ async def _zoom_lesson():
         assert type(zoom).__name__ == "ZoomScreen"
         assert await _wait(pilot, lambda: zoom.D is not None, 30), "zoom data did not load"
         await pilot.pause(1.0)
-        for scene in range(6):                                        # Enter dives into the next scene
+        from mona.ui.zoom import SCENES
+        for scene in range(len(SCENES) - 1):                          # Enter dives into the next scene
             await pilot.press("enter")
             assert await _wait(pilot, lambda: zoom.trans is None and zoom.i == scene + 1, 5), f"stuck at scene {scene}"
             await pilot.pause(0.3)
         await pilot.press("enter")                                    # the last scene: leave
         await pilot.pause(0.5)
-        assert type(app.screen).__name__ == "HomeScreen" and "zoom" in app.state.completed
+        assert "zoom" in app.state.completed and type(app.screen).__name__ == "HomeScreen"
+
+
+def test_identity_questions_are_asked_fresh():
+    from mona.ui import chatmodel
+    assert chatmodel.is_identity_question("what is your name?") and chatmodel.is_identity_question("Who are you")
+    assert not chatmodel.is_identity_question("hello") and not chatmodel.is_identity_question("what is 2+2")
+    assert "MONA" in chatmodel.SYSTEM
 
 
 def test_intro_writes_welcome_then_chat():
@@ -164,6 +185,7 @@ def test_zoom_lesson_plays_through():
 
 if __name__ == "__main__":
     test_welcome_animation_can_be_skipped()
+    test_identity_questions_are_asked_fresh()
     test_intro_writes_welcome_then_chat()
     test_zoom_lesson_plays_through()
     test_every_screen_opens()

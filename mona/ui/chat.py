@@ -28,7 +28,7 @@ class ChatScreen(Screen):
         yield Static(id="keys", classes="keys")
 
     def on_mount(self):
-        self.history, self.shown, self.busy, self.alive = [], [], False, True
+        self.history, self.shown, self.busy, self.alive, self.fresh = [], [], False, True, False
         self.cancel = threading.Event()
         self.query_one("#chat-note", Static).update(Text(NOTE, style="#9399b2"))
         self.query_one("#chat-input", Input).placeholder = "Say something to MONA and press Enter…"
@@ -78,13 +78,14 @@ class ChatScreen(Screen):
             self.set_status("New conversation.", "#a6e3a1")
             return
         self.history.append({"role": "user", "content": text})
+        self.fresh = chatmodel.is_identity_question(text) and len(self.history) > 1
         self.shown += [("user", text), ("mona", "")]
         self.busy = True
         self.cancel.clear()
         event.input.disabled = True
         self.set_status("MONA is thinking…", "#f9e2af")
         self.draw()
-        self.reply(list(self.history))
+        self.reply(self.history[-1:] if self.fresh else list(self.history))
 
     @work(thread=True, exclusive=True, group="chatreply")
     def reply(self, history):
@@ -111,7 +112,8 @@ class ChatScreen(Screen):
         self.shown[-1] = ("mona", text or "…")
         self.history.append({"role": "assistant", "content": text})
         self.busy = False
-        self.set_status(f"Done: {n} tokens in {secs:.1f} s ({n / max(secs, 1e-6):.0f} tokens/s, on your own hardware)", "#a6e3a1")
+        note = "  ·  asked fresh: she was only taught to answer this as a first message" if getattr(self, "fresh", False) else ""
+        self.set_status(f"Done: {n} tokens in {secs:.1f} s ({n / max(secs, 1e-6):.0f} tokens/s, on your own hardware){note}", "#a6e3a1")
         box = self.query_one("#chat-input", Input)
         box.disabled = False
         box.focus()
@@ -119,9 +121,7 @@ class ChatScreen(Screen):
 
     def action_watch(self):
         from .zoom import ZoomScreen
-        self.cancel.set()
-        self.app.pop_screen()
-        self.app.push_screen(ZoomScreen())
+        self.app.push_screen(ZoomScreen())            # on top, so Esc comes back to the chat
 
     def action_back(self):
         self.cancel.set()

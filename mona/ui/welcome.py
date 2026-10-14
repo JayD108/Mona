@@ -270,11 +270,14 @@ class WelcomeScreen(Screen):
         begin.focus()
 
     def begin(self, what):
+        """Open Chat or the zoom lesson ON TOP of this screen, so Esc comes back here, to the choice."""
         from .chat import ChatScreen
         from .zoom import ZoomScreen
-        app = self.app
-        app.pop_screen()
-        app.push_screen(ChatScreen() if what == "talk" else ZoomScreen())
+        self.app.push_screen(ChatScreen() if what == "talk" else ZoomScreen())
+
+    def on_screen_resume(self):
+        if getattr(self, "phase", "") == "begin":
+            self.query_one("#wel-begin", OptionList).focus()
 
     def action_done(self):
         if self.phase == "logo":

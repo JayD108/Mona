@@ -197,13 +197,16 @@ class DisplayCheckScreen(Screen):
 
 
 class HomeScreen(Screen):
-    BINDINGS = [Binding("d", "app.cycle_depth", "depth"), Binding("q", "app.quit", "quit"),
+    BINDINGS = [Binding("d", "app.cycle_depth", "depth"), Binding("q", "app.quit", "quit"), Binding("escape", "root_hint", "back", show=False),
                 Binding("s", "story", "story"), Binding("b", "badges", "badges"), Binding("c", "compare", "compare"),
                 Binding("t", "teacher", "teacher"), Binding("o", "tour", "tour"), Binding("j", "journey", "journey"),
                 Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget"),
                 Binding("m", "mysteries", "mysteries"), Binding("n", "next_up", "next"),
                 Binding("e", "brain_next", "next example"),
                 Binding("k", "talk", "talk with MONA"), Binding("z", "zoom", "inside MONA")]
+
+    def action_root_hint(self):
+        self.app.notify("This is the home screen, the first stop. Press Q to quit, or pick something to explore.", timeout=3)
 
     def action_talk(self):
         from .chat import ChatScreen
