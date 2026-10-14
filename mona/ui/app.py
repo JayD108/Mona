@@ -6,7 +6,7 @@ from textual.app import App
 from textual.binding import Binding
 
 from .palette import MonaCommands
-from .screens import HomeScreen
+from .hub import HubScreen
 from .state import DEPTHS, State
 from .text import romanize, t
 from .welcome import WelcomeScreen, address
@@ -115,6 +115,17 @@ TabPane { padding: 0 1; }
 #zoom-box { height: 1fr; }
 #zoom-stage { width: 1fr; height: 1fr; min-height: 19; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
               border-title-style: bold; padding: 0; background: #1e1e2e; content-align: center middle; overflow: hidden; }
+/* hub: the Transformer home screen */
+HubScreen { padding: 0 1; }
+#hub-cols { height: 1fr; }
+#hub-diagram { width: 76; height: 1fr; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+               border-title-style: bold; padding: 0 1; background: #1e1e2e; }
+#hub-side { width: 1fr; height: 1fr; }
+#hub-parts { height: 14; }
+#hub-info { height: 1fr; min-height: 7; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+            border-title-style: bold; padding: 0 2; }
+#hub-actions { layout: grid; grid-size: 3; grid-gutter: 0 1; height: 6; }
+#hub-actions Button { width: 1fr; min-width: 0; height: 3; }
 #zoom-ctl { height: 3; align: left middle; margin: 0 0 0 0; }
 #zoom-ctl Button { min-width: 12; height: 3; margin: 0 1 0 0; }
 #ctl-speed { width: auto; height: 3; content-align: left middle; }
@@ -158,7 +169,7 @@ class MonaApp(App):
     CSS = CSS
     TITLE = "MONA"
     COMMANDS = App.COMMANDS | {MonaCommands}      # Ctrl+P: search every lesson, experiment and command
-    BINDINGS = [Binding("f3", "cycle_depth", "depth", show=False), Binding("f9", "export", "export", show=False),
+    BINDINGS = [Binding("q", "quit", "quit", show=False), Binding("f3", "cycle_depth", "depth", show=False), Binding("f9", "export", "export", show=False),
                 Binding("f7", "address", "address", show=False), Binding("f1", "glossary", "glossary", show=False),
                 Binding("f8", "code", "code", show=False)]
 
@@ -208,7 +219,7 @@ class MonaApp(App):
                     "JourneyScreen": "How MONA was trained", "BudgetScreen": "Scaling laws explorer",
                     "TourScreen": "How AI labs build models", "StoryScreen": "Follow one sentence",
                     "TeacherScreen": "Teacher mode", "BadgesScreen": "Progress & certificate", "ChatScreen": "Talk with MONA", "ZoomScreen": "Inside MONA",
-                    "PathScreen": "Your words, step by step"}
+                    "PathScreen": "Your words, step by step", "HubScreen": "MONA  ·  understand AI from the inside"}
 
     def push_screen(self, screen, *args, **kwargs):
         if not isinstance(screen, str):
@@ -224,7 +235,7 @@ class MonaApp(App):
 
     # ── start-up ──────────────────────────────────────────────────────────────
     def on_mount(self):
-        self.push_screen(HomeScreen())
+        self.push_screen(HubScreen())              # the home screen: the Transformer as a map of MONA
         self.push_screen(WelcomeScreen())          # every launch: "how should I address you?" (Enter keeps it)
         self.load_engine()
 
@@ -245,6 +256,10 @@ class MonaApp(App):
         for screen in self.screen_stack:
             if hasattr(screen, "refresh_texts"):
                 screen.refresh_texts()
+
+    def action_help_quit(self):
+        """Ctrl+C quits (Textual's default only shows a hint to press Ctrl+Q)."""
+        self.exit()
 
     def action_cycle_depth(self):
         self.state.cycle("depth", DEPTHS)

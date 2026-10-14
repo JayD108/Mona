@@ -8,9 +8,10 @@ from .text import STAGES
 
 def _home(app):
     """Return to the home screen (the palette can be opened from anywhere) and give it back."""
+    from .hub import HubScreen
     from .screens import HomeScreen
     for _ in range(12):
-        if isinstance(app.screen, HomeScreen):
+        if isinstance(app.screen, (HubScreen, HomeScreen)):
             break
         app.pop_screen()
     return app.screen

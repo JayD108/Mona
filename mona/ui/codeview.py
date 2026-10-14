@@ -161,7 +161,7 @@ SCREEN_CODE = {
     "EvalsLab": ["bits_per_byte"], "RagLab": ["rag_search"], "BeyondLab": ["fake_quant", "generate"],
     "CourseScreen": ["train", "bits_per_byte", "tokenizer"], "BudgetScreen": ["scaling"], "IncidentScreen": ["train"],
     "JourneyScreen": ["train", "batches"], "CompareLab": ["generate"],
-    "ChatScreen": ["generate", "encode_chat"], "PathScreen": ["tokenizer", "bpe_replay", "embedding", "forward"], "ZoomScreen": ["forward", "block", "attention", "swiglu"],
+    "ChatScreen": ["generate", "encode_chat"], "HubScreen": ["forward", "block", "attention", "swiglu"], "PathScreen": ["tokenizer", "bpe_replay", "embedding", "forward"], "ZoomScreen": ["forward", "block", "attention", "swiglu"],
 }
 DEFAULT = ["forward", "block", "attention", "swiglu", "generate"]
 

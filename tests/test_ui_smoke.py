@@ -34,7 +34,11 @@ async def _run():
             await pilot.pause(0.5)
         assert app.gb is not None, "model did not load"
         assert app.state.lang == "en" and app.state.depth in ("simple", "engineer")
+        assert type(app.screen).__name__ == "HubScreen"   # the home screen is the Transformer diagram
+        app.screen.action_dashboard()                     # the course dashboard: stages, brain strip, explore list
+        await pilot.pause(0.5)
         home = app.screen
+        assert type(home).__name__ == "HomeScreen"
         for _ in range(60):                               # the Brain strip runs one real forward pass
             if getattr(home, "reading", None) is not None:
                 break
@@ -86,7 +90,7 @@ async def _welcome_animation():
         assert welcome.phase == "name"
         await pilot.press("escape")                                                  # now Esc leaves the screen
         await pilot.pause(0.3)
-        assert type(app.screen).__name__ == "HomeScreen"
+        assert type(app.screen).__name__ == "HubScreen"
 
 
 def test_every_screen_opens():
@@ -138,10 +142,10 @@ async def _intro_to_chat():
         assert type(app.screen).__name__ == "WelcomeScreen" and app.screen.phase == "begin"
         await pilot.press("escape")                                   # leaving the choice: the home screen
         await pilot.pause(0.3)
-        assert type(app.screen).__name__ == "HomeScreen"
+        assert type(app.screen).__name__ == "HubScreen"
         await pilot.press("escape")                                   # the root: stays put (and says so)
         await pilot.pause(0.2)
-        assert type(app.screen).__name__ == "HomeScreen"
+        assert type(app.screen).__name__ == "HubScreen"
 
 
 async def _zoom_lesson():
@@ -165,7 +169,7 @@ async def _zoom_lesson():
             await pilot.pause(0.3)
         await pilot.press("enter")                                    # the last scene: leave
         await pilot.pause(0.5)
-        assert "zoom" in app.state.completed and type(app.screen).__name__ == "HomeScreen"
+        assert "zoom" in app.state.completed and type(app.screen).__name__ == "HubScreen"
 
 
 def test_identity_questions_are_asked_fresh():
@@ -242,11 +246,72 @@ async def _words_lesson():
         assert lesson.asking and type(app.screen).__name__ == "PathScreen"
         await pilot.press("escape")
         await pilot.pause(0.3)
-        assert type(app.screen).__name__ == "HomeScreen"
+        assert type(app.screen).__name__ == "HubScreen"
 
 
 def test_words_lesson_with_speed_and_pause():
     asyncio.run(_words_lesson())
+
+
+
+async def _hub_and_quit():
+    """The home screen is the diagram; its parts open their chapter; Quit (Q, button, Ctrl+C) works on every kind of screen."""
+    os.environ["MONA_REDUCED_MOTION"] = "1"
+    app = MonaApp()
+    async with app.run_test(size=(150, 46)) as pilot:
+        await pilot.pause(0.5)
+        await pilot.press("escape")
+        await pilot.pause(0.5)
+        hub = app.screen
+        assert type(hub).__name__ == "HubScreen"
+        for _ in range(3):
+            await pilot.press("down")                                 # words, embed, pos -> masked attention
+        await pilot.pause(0.3)
+        assert hub.sel == "masked"
+        assert await _wait(pilot, lambda: app.gb is not None, 90)
+        await pilot.press("enter")                                    # opens Inside MONA at the attention chapter
+        await pilot.pause(0.6)
+        lesson = app.screen
+        assert type(lesson).__name__ == "ZoomScreen"
+        assert await _wait(pilot, lambda: lesson.D is not None, 30)
+        assert lesson.i == 3
+        await pilot.press("escape")
+        await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "HubScreen"
+        await pilot.press("q")                                        # Q quits from the home screen ...
+        await pilot.pause(0.5)
+        assert app._exit
+
+    app = MonaApp()                                                   # ... and from a lesson, where it never worked before
+    async with app.run_test(size=(150, 46)) as pilot:
+        await pilot.pause(0.5)
+        await pilot.press("escape")
+        await pilot.pause(0.3)
+        app.screen.action_zoom()
+        await pilot.pause(0.6)
+        assert type(app.screen).__name__ == "ZoomScreen"
+        await pilot.press("q")
+        await pilot.pause(0.5)
+        assert app._exit
+
+    app = MonaApp()                                                   # the Quit button, and Ctrl+C
+    async with app.run_test(size=(150, 46)) as pilot:
+        await pilot.pause(0.5)
+        await pilot.press("escape")
+        await pilot.pause(0.3)
+        await pilot.click("#hub-quit")
+        await pilot.pause(0.5)
+        assert app._exit
+    app = MonaApp()
+    async with app.run_test(size=(150, 46)) as pilot:
+        await pilot.pause(0.5)
+        await pilot.press("ctrl+c")
+        await pilot.pause(0.5)
+        assert app._exit
+
+
+def test_hub_is_home_and_quit_works_everywhere():
+    asyncio.run(_hub_and_quit())
 
 
 if __name__ == "__main__":
@@ -255,5 +320,6 @@ if __name__ == "__main__":
     test_intro_writes_welcome_then_chat()
     test_zoom_lesson_plays_through()
     test_words_lesson_with_speed_and_pause()
+    test_hub_is_home_and_quit_works_everywhere()
     test_every_screen_opens()
     print("ok: welcome skips; MONA writes her welcome and chats; both lessons play with pause and speed; every screen opens at both depths")

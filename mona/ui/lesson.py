@@ -153,6 +153,10 @@ class LessonScreen(Screen):
         return ()
 
     # ── layout ────────────────────────────────────────────────────────────────
+    def __init__(self, start=0, **kwargs):
+        super().__init__(**kwargs)
+        self.start_scene = start                  # the chapter to open at (the hub's parts open their own chapter)
+
     def compose(self) -> ComposeResult:
         with Vertical(id="zoom-box"):
             yield Static(id="zoom-stage")
@@ -201,7 +205,7 @@ class LessonScreen(Screen):
 
     def _loaded(self, D):
         self.D, self.S = D, self.derive(D)
-        self.i, self.t, self.trans = 0, 0.0, None
+        self.i, self.t, self.trans = min(self.start_scene, len(self.SCENES) - 1), 0.0, None
         self.last = time.monotonic()
 
     @property

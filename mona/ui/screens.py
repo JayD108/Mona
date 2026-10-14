@@ -200,18 +200,8 @@ class DisplayCheckScreen(Screen):
             self.app.pop_screen()
 
 
-class HomeScreen(Screen):
-    BINDINGS = [Binding("d", "app.cycle_depth", "depth"), Binding("q", "app.quit", "quit"), Binding("escape", "root_hint", "back", show=False),
-                Binding("s", "story", "story"), Binding("b", "badges", "badges"), Binding("c", "compare", "compare"),
-                Binding("t", "teacher", "teacher"), Binding("o", "tour", "tour"), Binding("j", "journey", "journey"),
-                Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget"),
-                Binding("m", "mysteries", "mysteries"), Binding("n", "next_up", "next"),
-                Binding("e", "brain_next", "next example"),
-                Binding("k", "talk", "talk with MONA"), Binding("z", "zoom", "inside MONA"),
-                Binding("w", "words", "your words")]
-
-    def action_root_hint(self):
-        self.app.notify("This is the home screen, the first stop. Press Q to quit, or pick something to explore.", timeout=3)
+class ExploreActions:
+    """Opening the explore screens. Shared by the hub (the diagram home screen) and the course dashboard."""
 
     def action_talk(self):
         from .chat import ChatScreen
@@ -228,16 +218,6 @@ class HomeScreen(Screen):
     def action_mysteries(self):
         from .mysteries import MysteryScreen
         self.app.push_screen(MysteryScreen())
-
-    def next_up(self):
-        return next((sid for sid in PATH if sid not in self.app.state.completed), None)
-
-    def action_next_up(self):
-        sid = self.next_up()
-        if sid in PATH_NAMES:
-            getattr(self, f"action_{sid}")()
-        elif sid:
-            self.app.push_screen(open_lab(sid))
 
     def action_tour(self):
         from .tour import TourScreen
@@ -275,6 +255,27 @@ class HomeScreen(Screen):
         from .story import BadgesScreen
         self.app.push_screen(BadgesScreen())
 
+
+class HomeScreen(ExploreActions, Screen):
+    BINDINGS = [Binding("d", "app.cycle_depth", "depth"), Binding("q", "app.quit", "quit"), Binding("escape", "app.pop_screen", "back", show=False),
+                Binding("s", "story", "story"), Binding("b", "badges", "badges"), Binding("c", "compare", "compare"),
+                Binding("t", "teacher", "teacher"), Binding("o", "tour", "tour"), Binding("j", "journey", "journey"),
+                Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget"),
+                Binding("m", "mysteries", "mysteries"), Binding("n", "next_up", "next"),
+                Binding("e", "brain_next", "next example"),
+                Binding("k", "talk", "talk with MONA"), Binding("z", "zoom", "inside MONA"),
+                Binding("w", "words", "your words")]
+
+    def next_up(self):
+        return next((sid for sid in PATH if sid not in self.app.state.completed), None)
+
+    def action_next_up(self):
+        sid = self.next_up()
+        if sid in PATH_NAMES:
+            getattr(self, f"action_{sid}")()
+        elif sid:
+            self.app.push_screen(open_lab(sid))
+
     def compose(self) -> ComposeResult:
         with Vertical(id="main"):
             with Horizontal(id="top-row"):
@@ -291,7 +292,7 @@ class HomeScreen(Screen):
 
     def on_mount(self):
         self.reading, self.example_i = None, 0
-        self.query_one("#main").border_title = "MONA  ·  understand AI from the inside"
+        self.query_one("#main").border_title = "MONA  ·  the course"
         self.query_one("#stages").border_title = "Learning path"
         self.query_one("#desk").border_title = "Explore further"
         self.query_one("#mission").border_title = "Mission"
