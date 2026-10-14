@@ -14,7 +14,7 @@ from ... import config
 from ... import tokenizer as T
 from ...engine.rag import build_library, words
 
-CHAT_WEIGHTS = config.RUNS_DIR / "mona_m_chat" / "model.pt"
+CHAT_WEIGHTS = config.chat_weights()
 from ..text import register
 from ..widgets import Avatar
 

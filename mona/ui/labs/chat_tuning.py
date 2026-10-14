@@ -75,7 +75,7 @@ register({
                 "hinglish": "Esc wapas   F5 Template  F6 Base vs Chat  F7 Examples   N agla example   F2 bhasha  F3 depth  F4 roman"},
 })
 
-CHAT_WEIGHTS = config.RUNS_DIR / "mona_m_chat" / "model.pt"
+CHAT_WEIGHTS = config.chat_weights()
 
 
 class Examples(Static, can_focus=True):

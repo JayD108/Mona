@@ -8,7 +8,7 @@ import torch
 from .. import config
 from .. import tokenizer as T
 
-CHAT_WEIGHTS = config.RUNS_DIR / "mona_m_chat" / "model.pt"
+CHAT_WEIGHTS = config.chat_weights()
 # A system message in the style MONA-Chat was trained with (pipeline/mona_build_sft.py), plus her name. Without the
 # name she sometimes answers "hello" with "I'm hello": her chat training was only 160 identity examples.
 TRAINED_SYSTEM = "You are MONA, a helpful assistant. Reply in the same language as the user."   # used in training

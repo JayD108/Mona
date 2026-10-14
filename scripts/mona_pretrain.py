@@ -57,6 +57,15 @@ p.add_argument("--temp-target", type=int, default=77, help="°C: pause between m
 p.add_argument("--min-duty", type=float, default=0.85, help="never pause more than this lets (0.85 = <=18%% slower)")
 args = p.parse_args()
 
+# HOLD: while runs/HOLD_V2 exists, v2 pretraining does not start. It leaves runs/<name>/STOP behind, so the watchdog
+# reads the state as "held on purpose" instead of "crashed" and does not keep restarting it.
+HOLD = config.RUNS_DIR / "HOLD_V2"
+if args.mix == "v2" and HOLD.exists():
+    (config.RUNS_DIR / args.name).mkdir(parents=True, exist_ok=True)
+    (config.RUNS_DIR / args.name / "STOP").write_text("held")
+    print("v2 pretraining is ON HOLD (runs/HOLD_V2 exists). Run ops\\mona_v2_resume.cmd to start it.", flush=True)
+    raise SystemExit(0)
+
 # Awadhi = public-domain Tulsidas VERSE only (~246K tokens; the copyrighted Gita Press commentary was removed
 # at 0.8B tokens). 0.026% (stable) + 0.104% (decay) of the remaining 1.7B tokens ≈ 3 passes: few enough
 # repeats that MONA learns the style instead of memorising.

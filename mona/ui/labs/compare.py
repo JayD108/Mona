@@ -19,7 +19,7 @@ from ..text import register
 from ..widgets import Avatar
 
 OLLAMA = "http://localhost:11434"
-CHAT_WEIGHTS = config.RUNS_DIR / "mona_m_chat" / "model.pt"
+CHAT_WEIGHTS = config.chat_weights()
 
 register({
     "cmp_title": {"en": "MONA vs a big model: what does scale buy?", "hi": "MONA बनाम बड़ा मॉडल: आकार से क्या मिलता है?",

@@ -21,6 +21,15 @@ class ModelConfig:
     dropout:    float = 0.0     # big data, one pass: no dropout needed (modern practice)
 
 
+def chat_weights():
+    """The MONA-Chat the app talks with: the v2 model once it has been adopted (the marker file
+    runs/mona_m_chat2/ADOPTED), otherwise the original. Deleting the marker switches back."""
+    v2 = RUNS_DIR / "mona_m_chat2"
+    if (v2 / "ADOPTED").exists() and (v2 / "model.pt").exists():
+        return v2 / "model.pt"
+    return RUNS_DIR / "mona_m_chat" / "model.pt"
+
+
 MONA_M = ModelConfig()                                                    # ~110M parameters
 MONA_TINY = ModelConfig(d_model=256, n_layers=4, n_heads=4, ffn_hidden=704)  # for tests/pilots
 
