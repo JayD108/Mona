@@ -115,6 +115,10 @@ TabPane { padding: 0 1; }
 #zoom-box { height: 1fr; }
 #zoom-stage { width: 1fr; height: 1fr; min-height: 19; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
               border-title-style: bold; padding: 0; background: #1e1e2e; content-align: center middle; overflow: hidden; }
+#zoom-ctl { height: 3; align: left middle; margin: 0 0 0 0; }
+#zoom-ctl Button { min-width: 12; height: 3; margin: 0 1 0 0; }
+#ctl-speed { width: auto; height: 3; content-align: left middle; }
+#path-input { margin: 0 0 0 0; }
 #zoom-say { width: 1fr; height: auto; min-height: 6; max-height: 9; margin: 1 0 0 0; padding: 0 2; border: round #cba6f7;
             border-title-align: center; border-title-color: #cba6f7; border-title-style: bold; color: #cdd6f4; }
 
@@ -199,7 +203,8 @@ class MonaApp(App):
                     "IncidentScreen": "Training failures", "CourseScreen": "Train a model yourself",
                     "JourneyScreen": "How MONA was trained", "BudgetScreen": "Scaling laws explorer",
                     "TourScreen": "How AI labs build models", "StoryScreen": "Follow one sentence",
-                    "TeacherScreen": "Teacher mode", "BadgesScreen": "Progress & certificate", "ChatScreen": "Talk with MONA", "ZoomScreen": "Inside MONA"}
+                    "TeacherScreen": "Teacher mode", "BadgesScreen": "Progress & certificate", "ChatScreen": "Talk with MONA", "ZoomScreen": "Inside MONA",
+                    "PathScreen": "Your words, step by step"}
 
     def push_screen(self, screen, *args, **kwargs):
         if not isinstance(screen, str):

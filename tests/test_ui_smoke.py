@@ -19,7 +19,7 @@ from mona.ui.app import MonaApp  # noqa: E402
 from mona.ui.screens import open_lab  # noqa: E402
 
 STAGES = ["lm", "data", "tokens", "embeddings", "attention", "layers", "next", "training", "chat", "evals", "rag", "beyond"]
-EXPLORE = ["talk", "zoom", "mysteries", "incidents", "course", "journey", "budget", "tour", "compare", "story", "teacher", "badges"]
+EXPLORE = ["talk", "zoom", "words", "mysteries", "incidents", "course", "journey", "budget", "tour", "compare", "story", "teacher", "badges"]
 
 
 async def _run():
@@ -183,10 +183,61 @@ def test_zoom_lesson_plays_through():
     asyncio.run(_zoom_lesson())
 
 
+async def _words_lesson():
+    """Type a sentence, follow it through all 12 pages, with pause / play and speed working along the way."""
+    os.environ["MONA_REDUCED_MOTION"] = "1"
+    app = MonaApp()
+    async with app.run_test(size=(150, 46)) as pilot:
+        await pilot.pause(0.5)
+        await pilot.press("escape")
+        assert await _wait(pilot, lambda: app.gb is not None, 90)
+        app.screen.action_words()
+        await pilot.pause(0.6)
+        lesson = app.screen
+        assert type(lesson).__name__ == "PathScreen" and lesson.asking
+        for ch in "my cat sat":
+            await pilot.press("space" if ch == " " else ch)
+        await pilot.press("enter")
+        assert await _wait(pilot, lambda: lesson.D is not None, 60), "lesson data did not load"
+        assert lesson.D["text"] == "my cat sat" and lesson.D["n"] == len(lesson.D["ids"])
+        from mona.ui.lesson import SPEEDS
+        start = lesson.speed
+        await pilot.press("plus")
+        assert lesson.speed == SPEEDS[SPEEDS.index(start) + 1]
+        await pilot.press("minus")
+        assert lesson.speed == start
+        await pilot.press("space")                                    # pause: the scene clock stops
+        assert lesson.paused
+        await pilot.pause(0.3)
+        t0 = lesson.t
+        await pilot.pause(0.6)
+        assert lesson.t == t0
+        await pilot.press("enter")                                    # Next still works while paused, and the dive completes
+        assert await _wait(pilot, lambda: lesson.i == 1 and lesson.trans is None, 8), "paused dive did not finish"
+        assert lesson.paused and lesson.t == 0.0
+        await pilot.press("space")                                    # play again
+        assert not lesson.paused
+        for scene in range(1, len(lesson.SCENES) - 1):
+            await pilot.press("enter")
+            assert await _wait(pilot, lambda: lesson.i == scene + 1 and lesson.trans is None, 8), f"stuck at page {scene + 1}"
+        assert lesson.i == 11
+        await pilot.press("escape")                                   # Esc goes back to the typing step
+        await pilot.pause(0.3)
+        assert lesson.asking and type(app.screen).__name__ == "PathScreen"
+        await pilot.press("escape")
+        await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "HomeScreen"
+
+
+def test_words_lesson_with_speed_and_pause():
+    asyncio.run(_words_lesson())
+
+
 if __name__ == "__main__":
     test_welcome_animation_can_be_skipped()
     test_identity_questions_are_asked_fresh()
     test_intro_writes_welcome_then_chat()
     test_zoom_lesson_plays_through()
+    test_words_lesson_with_speed_and_pause()
     test_every_screen_opens()
-    print("ok: welcome skips; MONA writes her welcome and chats; zoom lesson plays; every screen opens at both depths")
+    print("ok: welcome skips; MONA writes her welcome and chats; both lessons play with pause and speed; every screen opens at both depths")

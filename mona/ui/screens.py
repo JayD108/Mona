@@ -32,6 +32,7 @@ EXPLORE = [
     (None, "", "💬 TALK AND WATCH", "💬 TALK AND WATCH", "💬 TALK AND WATCH"),
     ("talk", "K", "Talk with MONA", "Talk with MONA", "Talk with MONA"),
     ("zoom", "Z", "Inside MONA: model to neuron", "Inside MONA: model to neuron", "Inside MONA: model to neuron"),
+    ("words", "W", "Your words, step by step", "Your words, step by step", "Your words, step by step"),
     (None, "", "🔍 INVESTIGATE", "🔍 जाँच", "🔍 INVESTIGATE"),
     ("mysteries", "M", "Model mysteries: debug MONA", "मॉडल की पहेलियाँ: MONA को डीबग कीजिए", "Model mysteries: MONA ko debug karo"),
     ("incidents", "I", "Training failures: what goes wrong", "ट्रेनिंग की गड़बड़ियाँ: क्या बिगड़ता है", "Training failures: kya bigadta hai"),
@@ -95,6 +96,9 @@ MEMOS = [
 
 # The mission briefing under the lists: (objective, experiment, what you unlock) for the highlighted item.
 MISSIONS = {
+    "words": ("Follow the text YOU type through MONA, from letters to the next word she picks.",
+              "Type a sentence, then watch 12 animated pages: cleaning, splitting, bytes, merges, token ids, embeddings, position, blocks, attention, scores.",
+              "Understand exactly what happens to every word you type."),
     "talk": ("Have a real conversation with MONA.",
              "Ask her anything and watch her write, token by token, on your own computer.", "See what a small model can and cannot do."),
     "zoom": ("See how a language model is built, from the whole thing down to a single neuron.",
@@ -203,7 +207,8 @@ class HomeScreen(Screen):
                 Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget"),
                 Binding("m", "mysteries", "mysteries"), Binding("n", "next_up", "next"),
                 Binding("e", "brain_next", "next example"),
-                Binding("k", "talk", "talk with MONA"), Binding("z", "zoom", "inside MONA")]
+                Binding("k", "talk", "talk with MONA"), Binding("z", "zoom", "inside MONA"),
+                Binding("w", "words", "your words")]
 
     def action_root_hint(self):
         self.app.notify("This is the home screen, the first stop. Press Q to quit, or pick something to explore.", timeout=3)
@@ -211,6 +216,10 @@ class HomeScreen(Screen):
     def action_talk(self):
         from .chat import ChatScreen
         self.app.push_screen(ChatScreen())
+
+    def action_words(self):
+        from .path import PathScreen
+        self.app.push_screen(PathScreen())
 
     def action_zoom(self):
         from .zoom import ZoomScreen

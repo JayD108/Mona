@@ -5,70 +5,10 @@ The camera "dives" into a box of each scene to reach the next one. The drawing i
 Controls: Space pause / resume autoplay, Enter or → next, ← back, R replay the scene, Esc leave.
 """
 import math
-import time
-
-from rich.text import Text
-from textual import work
-from textual.app import ComposeResult
-from textual.binding import Binding
-from textual.containers import Vertical
-from textual.screen import Screen
-from textual.widgets import Static
 
 from . import zoomdata
 from .brain import LEVELS
-from .canvas import LH, LW, Canvas
-
-FPS = 30
-TRANSITION = 1.1
-CPS = 62                                  # narration typing speed
-HOLD = 3.5                                # seconds to linger after a scene has finished
-MAX_SCALE = 3                             # the drawing grows up to 3x the base size
-
-CYAN, AMBER, GREEN, PINK, TEXT, MUTE, MAUVE, LAV = ("#89dceb", "#f9e2af", "#a6e3a1", "#f5c2e7", "#cdd6f4", "#9399b2", "#cba6f7", "#b4befe")
-BG = "#1e1e2e"
-
-
-def _rgb(h):
-    return tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))
-
-
-def mix(a, b, t):
-    a, b = (_rgb(a) if isinstance(a, str) else a), (_rgb(b) if isinstance(b, str) else b)
-    t = max(0.0, min(1.0, t))
-    return "#%02x%02x%02x" % tuple(round(a[i] + (b[i] - a[i]) * t) for i in range(3))
-
-
-def heat(v):
-    """0 -> dark, 1 -> bright: dark blue, cyan, then amber."""
-    v = max(0.0, min(1.0, v)) ** 0.6
-    return mix("#313244", CYAN, v * 2) if v < 0.5 else mix(CYAN, AMBER, (v - 0.5) * 2)
-
-
-def typed(s, t, t0, cps=40):
-    return s[: max(0, int((t - t0) * cps))]
-
-
-def ease(x):
-    x = max(0.0, min(1.0, x))
-    return x * x * (3 - 2 * x)
-
-
-def num(n):
-    return f"{n:,}"
-
-
-def human(v):
-    for unit, size in (("trillion", 1e12), ("billion", 1e9), ("million", 1e6)):
-        if v >= size:
-            x = v / size
-            return f"{x:.0f} {unit}" if x >= 10 or abs(x - round(x)) < 0.05 else f"{x:.1f} {unit}"
-    return num(int(v))
-
-
-def word(tok):
-    return tok.replace("▁", "").strip()
-
+from .lesson import (AMBER, BG, CYAN, GREEN, LAV, MUTE, PINK, TEXT, LessonScreen, ease, heat, human, mix, num, typed, word)
 
 # ───────────────────────────── the scenes ─────────────────────────────
 def scene_whole(c, t, D, S):
@@ -595,127 +535,15 @@ def derive(D):
                 pre=f"{nn['pre']:+.3f}", out=f"{nn['out']:+.3f}")
 
 
-def duration(scene, S):
-    return max(0.3 + len(scene["say"].format(**S)) / CPS, scene["anim"]) + HOLD
+class ZoomScreen(LessonScreen):
+    SCENES = SCENES
 
+    def compute(self, gb):
+        return zoomdata.compute(gb)
 
-def draw_transition(prev, rect, p, caption):
-    """The camera dives into `rect` (physical cells): the old scene dims, and a frame grows from the box to the whole screen."""
-    c = Canvas(prev.w, prev.h)
-    c.copy_from(prev)
-    x, y, w, h = rect
-    w, h = max(w, 5), max(h, 3)
-    x, y = x - (w - rect[2]) // 2, y - (h - rect[3]) // 2
-    k = ease(p)
-    for echo, strength in ((0.0, 1.0), (-0.12, 0.55), (-0.24, 0.3)):
-        kk = ease(max(0.0, p + echo))
-        if kk <= 0:
-            continue
-        rx, ry = round(x * (1 - kk)), round(y * (1 - kk))
-        rw, rh = round(w + (c.w - w) * kk), round(h + (c.h - h) * kk)
-        if echo == 0.0:
-            c.rclear(rx, ry, rw, rh)
-        c.rbox(rx, ry, max(rw, 2), max(rh, 2), mix(AMBER, BG, 1 - strength))
-    if caption and k > 0.25:
-        text = f" {caption} "
-        c.rput(max(0, (c.w - len(text)) // 2), c.h // 2, text, f"bold {AMBER}")
-    return c
+    def derive(self, D):
+        return derive(D)
 
-
-class ZoomScreen(Screen):
-    BINDINGS = [Binding("escape", "back", "back"), Binding("space", "pause", "pause"), Binding("enter", "next", "next"),
-                Binding("right", "next", "next"), Binding("left", "prev", "back"), Binding("r", "replay", "replay")]
-
-    def compose(self) -> ComposeResult:
-        with Vertical(id="zoom-box"):
-            yield Static(id="zoom-stage")
-            yield Static(id="zoom-say")
-        yield Static(id="keys", classes="keys")
-
-    def on_mount(self):
-        self.D = self.S = None
-        self.i, self.t, self.trans, self.paused = 0, 0.0, None, False
-        self.last = time.monotonic()
-        self.query_one("#keys", Static).update("Space pause   Enter / → next scene   ← back a scene   R replay   F8 the real code   Esc go back")
-        self.query_one("#zoom-say").border_title = "MONA"
-        self.query_one("#zoom-stage", Static).update(Text("MONA is opening herself up…", style=MUTE))
-        self.timer = self.set_interval(1 / FPS, self.tick)
-        if self.app.gb is not None:
-            self.load()
-
-    def on_engine_ready(self):
-        if self.D is None:
-            self.load()
-
-    @work(thread=True, exclusive=True, group="zoom")
-    def load(self):
-        D = zoomdata.compute(self.app.gb)
-        self.app.call_from_thread(self._loaded, D)
-
-    def _loaded(self, D):
-        self.D, self.S = D, derive(D)
-        self.last = time.monotonic()
-
-    def stage_size(self):
-        """The drawing fills the stage: any size from the base 96 x 17 up to 3x that."""
-        size = self.query_one("#zoom-stage").content_size
-        return max(LW, min(size.width, LW * MAX_SCALE)), max(LH, min(size.height, LH * MAX_SCALE))
-
-    # ── playback ──────────────────────────────────────────────────────────────
-    def tick(self):
-        now = time.monotonic()
-        dt, self.last = min(now - self.last, 0.2), now
-        if self.D is None:
-            return
-        if not self.paused:
-            if self.trans:
-                self.trans["t"] += dt
-                if self.trans["t"] >= TRANSITION:
-                    self.i, self.t, self.trans = self.trans["to"], 0.0, None
-            else:
-                self.t += dt
-                if self.t >= duration(SCENES[self.i], self.S) and self.i < len(SCENES) - 1:
-                    self.action_next()
-        self.paint()
-
-    def paint(self):
-        scene = SCENES[self.i]
-        pw, ph = self.stage_size()
-        if self.trans:
-            canvas = draw_transition(self.trans["prev"], self.trans["rect"], self.trans["t"] / TRANSITION, self.trans["caption"])
-            say = ""
-        else:
-            canvas = Canvas(pw, ph)
-            scene["draw"](canvas, self.t, self.D, self.S)
-            say = typed(scene["say"].format(**self.S), self.t, 0.3, CPS)
-        stage = self.query_one("#zoom-stage", Static)
-        stage.update(canvas.render())
-        stage.border_title = f"{self.i + 1} / {len(SCENES)}  ·  {scene['title']}" + ("   ⏸ paused" if self.paused else "")
-        self.query_one("#zoom-say", Static).update(Text(say, style="#cdd6f4"))
-
-    def action_next(self):
-        if self.D is None or self.trans:
-            return
-        scene = SCENES[self.i]
-        if self.i >= len(SCENES) - 1:
-            self.app.state.complete("zoom")
-            self.app.pop_screen()
-            return
-        pw, ph = self.stage_size()
-        prev = Canvas(pw, ph)
-        scene["draw"](prev, 1e6, self.D, self.S)
-        self.trans = dict(t=0.0, to=self.i + 1, prev=prev.dimmed(), rect=scene["target"](self.D, prev), caption=scene["caption"])
-
-    def action_prev(self):
-        if self.D is not None and not self.trans and self.i > 0:
-            self.i, self.t = self.i - 1, 0.0
-
-    def action_replay(self):
-        if self.D is not None and not self.trans:
-            self.t = 0.0
-
-    def action_pause(self):
-        self.paused = not self.paused
-
-    def action_back(self):
+    def finished(self):
+        self.app.state.complete("zoom")
         self.app.pop_screen()
