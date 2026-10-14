@@ -14,8 +14,9 @@ from textual import work
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
-from textual.screen import Screen
-from textual.widgets import Button, Static
+from textual.screen import ModalScreen, Screen
+from textual.widgets import Button, OptionList, Static
+from textual.widgets.option_list import Option
 
 from .canvas import LH, LW, Canvas
 
@@ -71,6 +72,35 @@ def word(tok):
     return tok.replace("▁", "").strip()
 
 
+class ChapterScreen(ModalScreen):
+    """The chapter picker: choose any chapter of a lesson and jump straight to it, without the animations in between."""
+    BINDINGS = [Binding("escape", "close", "close"), Binding("c", "close", "close")]
+
+    def __init__(self, scenes, current):
+        super().__init__()
+        self.scenes, self.current = scenes, current
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="chap-box"):
+            yield Static("Chapters", id="chap-title")
+            yield OptionList(id="chap-list")
+            yield Static("↑↓ choose   Enter jump there   Esc close   (or press 1-9 inside the lesson)", classes="dim")
+
+    def on_mount(self):
+        lst = self.query_one("#chap-list", OptionList)
+        for i, scene in enumerate(self.scenes):
+            here = "▶" if i == self.current else " "
+            lst.add_option(Option(Text.assemble((f" {here} {i + 1:>2}  ", f"bold {AMBER}"), (scene["title"], "bold")), id=str(i)))
+        lst.highlighted = self.current
+        lst.focus()
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected):
+        self.dismiss(int(event.option.id))
+
+    def action_close(self):
+        self.dismiss(None)
+
+
 def duration(scene, S):
     """How long a scene plays at 1x: its narration, or its animation, whichever is longer, plus a short hold."""
     return max(0.3 + len(scene["say"].format(**S)) / CPS, scene["anim"]) + HOLD
@@ -106,7 +136,8 @@ class LessonScreen(Screen):
     AUTO_FOCUS = ""                      # never focus a button: Enter and Space must reach the lesson's own keys
     BINDINGS = [Binding("escape", "back", "back"), Binding("space", "pause", "pause / play"), Binding("enter", "next", "next"),
                 Binding("right", "next", "next"), Binding("left", "prev", "back"), Binding("r", "replay", "replay"),
-                Binding("plus,equals_sign", "faster", "faster"), Binding("minus,underscore", "slower", "slower")]
+                Binding("plus,equals_sign", "faster", "faster"), Binding("minus,underscore", "slower", "slower"),
+                Binding("c", "chapters", "chapters")] + [Binding(str(n), f"chapter({n - 1})", f"chapter {n}", show=False) for n in range(1, 10)]
 
     # ── to override ───────────────────────────────────────────────────────────
     def compute(self, gb):
@@ -133,6 +164,7 @@ class LessonScreen(Screen):
                 yield Button("⏸ Pause", id="ctl-pause", variant="primary")
                 yield Button("+ Faster", id="ctl-faster")
                 yield Button("Next ▶", id="ctl-next")
+                yield Button("☰ Chapters", id="ctl-chapters")
                 yield Static(id="ctl-speed")
         yield Static(id="keys", classes="keys")
 
@@ -144,7 +176,7 @@ class LessonScreen(Screen):
         for button in self.query(Button):
             button.can_focus = False                 # keep the keyboard shortcuts working; the mouse can still click
         self.query_one("#keys", Static).update(
-            "Space pause / play   + / − speed   Enter / → next   ← back   R replay   F8 the real code   Esc go back")
+            "Space pause / play   + / − speed   Enter / → next   ← back   C chapters (or 1-9)   R replay   F8 code   Esc go back")
         self.query_one("#zoom-say").border_title = "MONA"
         self.query_one("#zoom-stage", Static).update(Text("MONA is getting ready…", style=MUTE))
         self.show_controls()
@@ -251,9 +283,27 @@ class LessonScreen(Screen):
         self.speed_i = max(0, self.speed_i - 1)
         self.show_controls()
 
+    def goto(self, index):
+        """Jump straight to a chapter: no dive through the chapters in between."""
+        if self.D is None or not 0 <= index < len(self.SCENES):
+            return
+        self.i, self.t, self.trans = index, 0.0, None
+
+    def action_chapter(self, index: int):
+        self.goto(index)
+
+    def action_chapters(self):
+        if self.D is not None:
+            self.app.push_screen(ChapterScreen(self.SCENES, self.i), self.goto_picked)
+
+    def goto_picked(self, index):
+        if index is not None:
+            self.goto(index)
+
     def action_back(self):
         self.app.pop_screen()
 
     def on_button_pressed(self, event: Button.Pressed):
         {"ctl-prev": self.action_prev, "ctl-next": self.action_next, "ctl-pause": self.action_pause,
-         "ctl-faster": self.action_faster, "ctl-slower": self.action_slower}[event.button.id]()
+         "ctl-faster": self.action_faster, "ctl-slower": self.action_slower,
+         "ctl-chapters": self.action_chapters}[event.button.id]()

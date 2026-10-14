@@ -20,6 +20,7 @@ import json
 import math
 import random
 import time
+from pathlib import Path
 
 import torch
 
@@ -36,6 +37,7 @@ p.add_argument("--lr", type=float, default=1e-4)
 p.add_argument("--micro-batch", type=int, default=8)
 p.add_argument("--accum", type=int, default=8)
 p.add_argument("--eval-every", type=int, default=200)
+p.add_argument("--data", default=None, help="folder with train.jsonl / val.jsonl (default: data/mona_sft; v2: data/mona_sft_v2)")
 args = p.parse_args()
 
 torch.backends.cuda.matmul.allow_tf32 = True
@@ -70,8 +72,9 @@ def load_rows(path):
     return ids, mask, len(convs)
 
 
-train_ids, train_mask, n_train = load_rows(config.SFT_DIR / "train.jsonl")
-val_ids, val_mask, n_val = load_rows(config.SFT_DIR / "val.jsonl")
+data_dir = Path(args.data) if args.data else config.SFT_DIR
+train_ids, train_mask, n_train = load_rows(data_dir / "train.jsonl")
+val_ids, val_mask, n_val = load_rows(data_dir / "val.jsonl")
 print(f"train: {n_train:,} conversations packed into {len(train_ids):,} rows; "
       f"answer tokens {train_mask.sum().item() / 1e6:.1f}M of {train_ids.numel() / 1e6:.1f}M")
 
@@ -114,7 +117,7 @@ def val_loss():
     return total / max(n, 1)
 
 
-TEST_PROMPTS = ["Who are you?", "What is photosynthesis?", "भारत की राजधानी क्या है?",
+TEST_PROMPTS = ["hello", "Who are you?", "What is your name?", "What is photosynthesis?", "Give me three tips for studying better.", "भारत की राजधानी क्या है?",
                 "mujhe neend nahi aa rahi, kya karun?", "इस चौपाई का अर्थ बताइए:\nमंगल भवन अमंगल हारी । द्रवउ सो दसरथ अजिर बिहारी ॥"]
 
 

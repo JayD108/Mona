@@ -100,7 +100,7 @@ TabPane { padding: 0 1; }
 #wel-status { width: 90; height: 1; margin: 1 0 0 0; content-align: center middle; }
 #wel-hw { width: 90; height: 1; content-align: center middle; }
 #wel-begin-ask { width: 90; margin: 1 0 0 0; content-align: center middle; }
-#wel-begin { width: 70; height: 4; margin: 0 10; }
+#wel-begin { width: 80; height: 5; margin: 0 5; }
 
 /* talk with MONA */
 #chat-box { height: 1fr; }
@@ -119,6 +119,10 @@ TabPane { padding: 0 1; }
 #zoom-ctl Button { min-width: 12; height: 3; margin: 0 1 0 0; }
 #ctl-speed { width: auto; height: 3; content-align: left middle; }
 #path-input { margin: 0 0 0 0; }
+ChapterScreen { align: center middle; background: rgba(10, 12, 30, 0.7); border: none; padding: 0; }
+#chap-box { width: 56; height: auto; max-height: 90%; border: round #f9e2af; background: #181825; padding: 1 2; }
+#chap-title { text-style: bold; color: #f9e2af; margin: 0 0 1 0; }
+#chap-list { height: auto; max-height: 20; }
 #zoom-say { width: 1fr; height: auto; min-height: 6; max-height: 9; margin: 1 0 0 0; padding: 0 2; border: round #cba6f7;
             border-title-align: center; border-title-color: #cba6f7; border-title-style: bold; color: #cdd6f4; }
 

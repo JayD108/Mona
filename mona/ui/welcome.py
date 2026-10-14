@@ -265,6 +265,7 @@ class WelcomeScreen(Screen):
         begin.clear_options()
         begin.add_option(Option(Text("  Talk with MONA", style="bold"), id="talk"))
         begin.add_option(Option(Text("  See how MONA works: from the whole model to one neuron", style="bold"), id="watch"))
+        begin.add_option(Option(Text("  Follow your own words through MONA: tokens, numbers, blocks (12 pages)", style="bold"), id="words"))
         begin.highlighted = 0
         begin.display = True
         begin.focus()
@@ -272,8 +273,9 @@ class WelcomeScreen(Screen):
     def begin(self, what):
         """Open Chat or the zoom lesson ON TOP of this screen, so Esc comes back here, to the choice."""
         from .chat import ChatScreen
+        from .path import PathScreen
         from .zoom import ZoomScreen
-        self.app.push_screen(ChatScreen() if what == "talk" else ZoomScreen())
+        self.app.push_screen({"talk": ChatScreen, "watch": ZoomScreen, "words": PathScreen}[what]())
 
     def on_screen_resume(self):
         if getattr(self, "phase", "") == "begin":

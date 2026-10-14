@@ -26,8 +26,17 @@ LOG = RUNS / "logs" / "mona_watchdog.log"
 LOCK = ROOT / "ops" / "mona_watchdog.lock"
 GUARD_LOG = RUNS / "logs" / "mona_power_guard.log"
 QUEUE_LOG = RUNS / "logs" / "mona_run_all.log"
-STOP = RUNS / "mona_m" / "STOP"
-PIPE = re.compile(r"scripts\.mona_(run_all|pretrain|sft|eval|release)|pipeline\.mona_build_sft")
+PLAN_FILE = RUNS / "ACTIVE_PLAN"                 # "v2" while the English-centric v2 job is running; absent = the finished v1 job
+PLAN = PLAN_FILE.read_text().strip() if PLAN_FILE.exists() else "v1"
+if PLAN == "v2":
+    QUEUE_LOG, QUEUE_MODULE, QUEUE_OUT, DONE_TEXT = RUNS / "logs" / "mona_run_v2.log", "scripts.mona_run_v2", "mona_run_v2.out", "V2 QUEUE COMPLETE"
+    STOP = RUNS / "mona_v2" / "STOP"
+    QUEUE_LOCK = ROOT / "ops" / "mona_run_v2.lock"
+else:
+    QUEUE_MODULE, QUEUE_OUT, DONE_TEXT = "scripts.mona_run_all", "mona_run_all.out", "QUEUE COMPLETE"
+    STOP = RUNS / "mona_m" / "STOP"
+    QUEUE_LOCK = ROOT / "ops" / "mona_run_all.lock"
+PIPE = re.compile(r"scripts\.mona_(run_all|run_v2|pretrain|sft|eval|chat_eval|release)|pipeline\.mona_(build_sft|prep_v2|tokenize|clean|download)")
 NO_WINDOW = subprocess.CREATE_NO_WINDOW          # started hidden at log-in: never flash console windows
 DEAD_MIN, HUNG_MIN, GPU_IDLE_PCT = 5, 30, 5
 MAX_RESTARTS, WINDOW_H = 3, 3
@@ -109,11 +118,11 @@ def recent_write(minutes):
 
 def start_queue():
     flags = subprocess.CREATE_NEW_PROCESS_GROUP | NO_WINDOW   # hidden console, inherited by children
-    subprocess.Popen([sys.executable, "-u", "-m", "scripts.mona_run_all"], cwd=ROOT, creationflags=flags,
+    subprocess.Popen([sys.executable, "-u", "-m", QUEUE_MODULE], cwd=ROOT, creationflags=flags,
                      env=dict(os.environ, PYTHONIOENCODING="utf-8"),
-                     stdout=open(RUNS / "logs" / "mona_run_all.out", "a", encoding="utf-8"),
+                     stdout=open(RUNS / "logs" / QUEUE_OUT, "a", encoding="utf-8"),
                      stderr=subprocess.STDOUT)
-    log("started the job queue (scripts.mona_run_all)")
+    log(f"started the job queue ({QUEUE_MODULE})")
 
 
 def kill_tree(procs):
@@ -122,7 +131,7 @@ def kill_tree(procs):
         if parent not in pids:
             subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"], capture_output=True, creationflags=NO_WINDOW)
             log(f"killed hung process tree {pid}: {cmd[-80:]}")
-    (ROOT / "ops" / "mona_run_all.lock").unlink(missing_ok=True)
+    QUEUE_LOCK.unlink(missing_ok=True)
 
 
 def main():
@@ -136,7 +145,7 @@ def main():
     while True:
         try:
             now = time.time()
-            state = ("done" if "QUEUE COMPLETE" in read(QUEUE_LOG) else
+            state = ("done" if DONE_TEXT in read(QUEUE_LOG) else
                      "held" if STOP.exists() else "frozen" if frozen() else "active")
             if state != last_state:
                 log(f"state: {state}")

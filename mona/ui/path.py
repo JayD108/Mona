@@ -321,30 +321,30 @@ SCENES = [
          say="Step one is a clean-up called Unicode NFC. The same visible letter can be saved in more than one way, "
              "and I want it to always look the same to me. {changed_note} Every character already has a number, its "
              "code point."),
-    dict(title="Pieces", draw=scene_pieces, target=target_pieces, caption="into the bytes", anim=6.5,
+    dict(title="Cut into pieces", draw=scene_pieces, target=target_pieces, caption="into the bytes", anim=6.5,
          say="Next, a splitter cuts your text into {npieces} pieces: words, numbers and punctuation. A space stays "
              "stuck to the front of its word, so “cat” and “ cat” are different pieces. This is not yet my "
              "tokens; it's just the rough cut."),
-    dict(title="Bytes", draw=scene_bytes, target=target_bytes, caption="into the merges", anim=6.0,
+    dict(title="Pieces become bytes", draw=scene_bytes, target=target_bytes, caption="into the merges", anim=6.0,
          say="Each piece is written as bytes, the 0s and 1s computers use for text. There are only 256 possible bytes, "
              "and I know all of them, so nothing is ever an unknown word. English letters take one byte each. A "
              "single Hindi letter takes three."),
-    dict(title="Merges", draw=scene_merge, target=target_merge, caption="into the token numbers", anim=8.0,
+    dict(title="Bytes merge into tokens (BPE)", draw=scene_merge, target=target_merge, caption="into the token numbers", anim=8.0,
          say="Bytes are too small to be useful, so my tokenizer glues them back together. {merge_note} It joins pairs "
              "that were most common in the billions of words I was trained on. Common words become one token; rare "
              "words stay in several."),
-    dict(title="Token ids", draw=scene_ids, target=target_ids, caption="into the embeddings", anim=7.0,
+    dict(title="Each token gets its number", draw=scene_ids, target=target_ids, caption="into the embeddings", anim=7.0,
          say="Now your text is {ntok} tokens, and each token has a number from my vocabulary of {vocab}. "
              "{ratio_note} These numbers are all that enters my model. From here on, I never see a single letter."),
-    dict(title="Embeddings", draw=scene_embed, target=target_embed, caption="into the positions", anim=6.5,
+    dict(title="Numbers become 768-number lists", draw=scene_embed, target=target_embed, caption="into the positions", anim=6.5,
          say="A token number alone means nothing, so each one looks itself up in a big table and gets a list of 768 "
              "numbers: my idea of that token. This table holds {embed} numbers, the biggest single part of me. "
              "Similar words end up with similar lists."),
-    dict(title="Position", draw=scene_position, target=target_position, caption="into the 12 blocks", anim=6.5,
+    dict(title="Position: knowing the order", draw=scene_position, target=target_position, caption="into the 12 blocks", anim=6.5,
          say="There is one more problem: a list of numbers doesn't say which word came first. I don't add a position "
              "number. Instead I rotate each token's numbers by an angle that grows with its position. This trick is "
              "called RoPE, and Llama uses it too."),
-    dict(title="12 blocks", draw=scene_blocks_wrap, target=target_blocks, caption="into attention", anim=5.5,
+    dict(title="Through the 12 blocks", draw=scene_blocks_wrap, target=target_blocks, caption="into attention", anim=5.5,
          say="Now the numbers climb through my {nb} blocks. In each block the tokens look at each other (attention) "
              "and then I think about what I found (the feed-forward part). After every block I already have a guess "
              "for the next token: watch it improve until it settles on “{word}”."),
@@ -352,11 +352,11 @@ SCENES = [
          say="Here is attention in block {l}, on YOUR text. Each row is a token, and the bright squares show which "
              "earlier tokens it looks at. The last token, “{last}”, puts {p} of its attention on “{tw}”. This is "
              "how context gets mixed in."),
-    dict(title="Scores", draw=scene_scores, target=target_scores, caption="into the pick", anim=8.5,
+    dict(title="32,768 scores and the temperature", draw=scene_scores, target=target_scores, caption="into the pick", anim=8.5,
          say="At the very end, the last token's numbers are turned into {vocab} scores, one for every token I know. "
              "The highest is “{top}”. Scores become probabilities, and the temperature knob decides how much I "
              "favour the favourite: low means safe, high means adventurous."),
-    dict(title="Pick and repeat", draw=scene_pick, target=target_pick, caption="", anim=9.5,
+    dict(title="Pick one, add it, repeat", draw=scene_pick, target=target_pick, caption="", anim=9.5,
          say="Finally I pick one token, turn its number back into a piece of text, and add it to yours. Then the whole "
              "new text goes back in and the journey starts again. Writing a story, answering a question: it's always "
              "this loop, one token at a time. That's what happens to every word you type."),

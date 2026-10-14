@@ -51,6 +51,8 @@ p.add_argument("--ckpt-minutes", type=float, default=30)
 p.add_argument("--snapshot-every", type=float, default=0.5e9)
 p.add_argument("--stop-at", default=None, help="HH:MM local time: save and exit when reached")
 p.add_argument("--resume", action="store_true")
+p.add_argument("--init", default=None, help="start from these weights (a .pt state dict or checkpoint) with a fresh optimizer: continued pretraining")
+p.add_argument("--mix", choices=["v1", "v2"], default="v1", help="v2: English-centric (about 87%% English, 10%% Hindi), needs the english2 shard")
 p.add_argument("--temp-target", type=int, default=77, help="°C: pause between micro-batches to stay near this")
 p.add_argument("--min-duty", type=float, default=0.85, help="never pause more than this lets (0.85 = <=18%% slower)")
 args = p.parse_args()
@@ -60,6 +62,13 @@ args = p.parse_args()
 # repeats that MONA learns the style instead of memorising.
 MIX_STABLE = {"english": 0.55, "hindi": 0.40, "hinglish": 0.04974, "awadhi": 0.00026}
 MIX_DECAY  = {"english": 0.55, "hindi": 0.40, "hinglish": 0.04896, "awadhi": 0.00104}
+
+# v2: continued pretraining, English-centric. english + english2 are two pools of English (old shard, new shards);
+# the new pool is weighted up so most of what she reads is text she has not seen. Awadhi: about 3 passes in total again.
+MIX_V2_STABLE = {"english": 0.12, "english2": 0.75, "hindi": 0.10, "hinglish": 0.0299, "awadhi": 0.0001}
+MIX_V2_DECAY  = {"english": 0.12, "english2": 0.75, "hindi": 0.10, "hinglish": 0.0294, "awadhi": 0.0006}
+if args.mix == "v2":
+    MIX_STABLE, MIX_DECAY = MIX_V2_STABLE, MIX_V2_DECAY
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
@@ -92,6 +101,10 @@ if args.resume and ckpt_path.exists():
     print(f"Resumed from step {step:,} ({tokens_seen / 1e9:.3f}B tokens)")
 elif args.resume:
     print("No checkpoint found: starting fresh")
+if args.init and step == 0:                       # continued pretraining: weights from an earlier run, new optimizer and schedule
+    init = torch.load(args.init, map_location=device, weights_only=False)
+    model.load_state_dict(init["model"] if "model" in init else init)
+    print(f"Initialised from {args.init}")
 
 data = PretrainBatches(MIX_STABLE, cfg.context, args.micro_batch, device, seed=step + 1)
 tok = T.load()

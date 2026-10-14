@@ -2,6 +2,7 @@
 
 Run from C:\\LLM (each group can run in parallel in its own terminal):
     python -m pipeline.mona_download english     # FineWeb-Edu, 3 shards (~6.5 GB)
+    python -m pipeline.mona_download english_more  # six more shards of the 10BT sample (v2 training, ~12 GB)
     python -m pipeline.mona_download hindi       # Sangraha verified Hindi, files 0-9 (~3.7 GB)
     python -m pipeline.mona_download hinglish    # Sangraha romanized Hindi, 3 files (~0.6 GB)
     python -m pipeline.mona_download sft         # instruction data (smol-smoltalk + Aya)
@@ -23,6 +24,7 @@ RAW = config.DATA_DIR / "raw"
 
 GROUPS = {
     "english":  ("HuggingFaceFW/fineweb-edu", "sample/10BT", 3, RAW / "english_fineweb"),
+    "english_more": ("HuggingFaceFW/fineweb-edu", "sample/10BT", 8, RAW / "english_fineweb"),   # shards 2-7 (v2): ~5B more tokens
     "hindi":    ("ai4bharat/sangraha", "verified/hin", 10, RAW / "hindi_sangraha"),
     "hinglish": ("ai4bharat/sangraha", "synthetic/hin_Latn", 3, RAW / "hinglish_sangraha"),
     "hindi_wiki": ("ai4bharat/sangraha", "synthetic/hin_Deva", 1, RAW / "sft" / "hindi_wiki"),  # SFT Q&A

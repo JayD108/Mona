@@ -30,11 +30,13 @@ from mona import config
 RAW = config.DATA_DIR / "raw"
 SOURCES = {   # language: (raw folder, glob)
     "english":  (RAW / "english_fineweb", "**/*.parquet"),
+    "english2": (RAW / "english_fineweb", "**/*.parquet"),   # v2: the shards that "english" did not use
     "hindi":    (RAW / "hindi_sangraha", "**/*.parquet"),
     "hinglish": (RAW / "hinglish_sangraha", "**/*.parquet"),
 }
 # Public-domain Tulsidas VERSE only. The source corpus also contains Hanuman Prasad Poddar's Hindi
 # commentary (Gita Press), which is likely still under copyright, so it is never used for MONA.
+USED_BY_ENGLISH = {"000_00000", "001_00000"}      # the two shards the first MONA read (english)
 TULSIDAS = config.DATA_DIR / "processed" / "tulsidas_verse_strict.txt"
 SEP = "\x1e"
 # Cleaning rules live in the package (mona/textclean.py) so the app can use them too.
@@ -96,6 +98,8 @@ def main(langs):
             continue
         folder, pattern = SOURCES[lang]
         for src in sorted(folder.glob(pattern)):
+            if lang == "english2" and src.stem in USED_BY_ENGLISH:
+                continue
             for rg in range(pq.ParquetFile(src).num_row_groups):
                 dst = config.CLEAN_DIR / lang / f"{src.stem}_rg{rg:03d}.txt"
                 if not dst.exists():

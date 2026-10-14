@@ -1,8 +1,13 @@
 """Step ⑥ — build the instruction-tuning (chat) dataset for MONA.
 
-Run from C:\\LLM:   python -m pipeline.mona_build_sft
+Run from C:\\LLM:   python -m pipeline.mona_build_sft                          (v1: the original mix)
+                    python -m pipeline.mona_build_sft --v2                     (v2: English-centric, see below)
 
-Output: data/mona_sft/train.jsonl, val.jsonl — one {"messages": [...], "source": ...} per line.
+Output: data/mona_sft/train.jsonl, val.jsonl (v2: data/mona_sft_v2/) — one {"messages": [...], "source": ...} per line.
+
+v2 (more English, about 10% Hindi): the full smol-smoltalk set (300K chats instead of 80K), identity answers that
+survive earlier turns of a chat (v1 only taught them as a first message), greetings, a system prompt that states her
+name, and a held-out English set (never trained on, by v1 or v2) so old and new models can be compared fairly.
 
 Sources (each optional: missing ones are skipped)
   english   smol-smoltalk (Apache-2.0): ~80K multi-turn chats
@@ -16,6 +21,7 @@ Sources (each optional: missing ones are skipped)
 a turn boundary so they always end with an assistant reply.
 """
 import json
+import pathlib
 import random
 import re
 
@@ -30,11 +36,13 @@ random.seed(0)
 tok = T.load()
 CREATOR = "Mrittunjay Dubey"
 
+NAME_PROMPT = "You are MONA, a small multilingual language model. Your name is MONA. Reply in the same language as the user."
 SYSTEM_PROMPTS = [
     "You are MONA, a helpful assistant. Reply in the same language as the user.",
     "You are MONA. Answer clearly and briefly.",
     "आप MONA हैं, एक सहायक। उपयोगकर्ता की भाषा में उत्तर दें।",
 ]
+V2 = False                       # set by --v2: the name prompt is used a lot, so she always knows who she is
 
 
 def n_tokens(messages):
@@ -51,18 +59,41 @@ def fit(messages, limit=config.MONA_M.context):
 
 
 def with_system(messages, p=0.3):
+    if messages and messages[0]["role"] == "system":
+        return messages
+    if V2:
+        r = random.random()
+        if r < 0.40:
+            return [{"role": "system", "content": NAME_PROMPT}] + messages
+        if r < 0.55:
+            return [{"role": "system", "content": SYSTEM_PROMPTS[0]}] + messages
+        return messages
     if random.random() < p:
         return [{"role": "system", "content": random.choice(SYSTEM_PROMPTS)}] + messages
     return messages
 
 
-def english(limit=80_000):
+ENGLISH_POOL = []              # a few thousand real English exchanges, reused for multi-turn identity examples
+HELDOUT = 1000                 # the LAST rows of the shuffled set: never trained on, by v1 or v2
+
+
+def english(limit=80_000, heldout_path=None):
     files = sorted((RAW / "sft" / "smol-smoltalk" / "data").glob("train-*.parquet"))
     rows = [r for f in files for r in pq.read_table(f).to_pylist()]
     random.shuffle(rows)
+    if heldout_path is not None:
+        with open(heldout_path, "w", encoding="utf-8") as f:
+            for r in rows[-HELDOUT:]:
+                msgs = [{"role": m["role"], "content": m["content"]} for m in r["messages"]
+                        if m["role"] in ("system", "user", "assistant")]
+                msgs = fit(msgs)
+                if msgs:
+                    f.write(json.dumps({"messages": msgs, "source": "heldout"}, ensure_ascii=False) + "\n")
     for r in rows[:limit]:
         msgs = [{"role": m["role"], "content": m["content"]} for m in r["messages"]
                 if m["role"] in ("system", "user", "assistant")]
+        if len(ENGLISH_POOL) < 6000 and len(msgs) >= 2 and msgs[0]["role"] == "user" and msgs[1]["role"] == "assistant":
+            ENGLISH_POOL.append(msgs[:2])
         yield "english", msgs
 
 
@@ -165,28 +196,88 @@ IDENTITY = [
 ]
 
 
+GREETINGS = ["hello", "Hello", "hi", "Hi!", "hey", "Hello!", "hello there", "Hi there", "Good morning", "good evening",
+             "hello MONA", "hi MONA", "hey MONA!", "namaste", "Hello, how are you?", "hi, how are you doing?"]
+GREETING_REPLIES = [
+    "Hello! I'm MONA. How can I help you today?",
+    "Hi! I'm MONA, a small language model. What would you like to talk about?",
+    "Hello! How can I help you today?",
+    "Hi there! I'm MONA. Ask me anything, and remember that I'm small, so I can make mistakes.",
+    "Good to see you! I'm MONA. What can I do for you?",
+]
+EXTRA_NAME_QUESTIONS = ["what is your name?", "what's your name", "what is your name", "who are you", "Who are you?",
+                        "tell me your name", "can you tell me who you are?", "what should I call you?", "are you ChatGPT?",
+                        "which model are you?", "hello, who are you?"]
+
+
+def greetings(copies=40):
+    for _ in range(copies):
+        for g in GREETINGS:
+            yield "greeting", [{"role": "user", "content": g}, {"role": "assistant", "content": random.choice(GREETING_REPLIES)}]
+
+
+def identity_multiturn(n=6000):
+    """A real English exchange first, THEN who-are-you: so she keeps her name deep into a chat, not only as the first message."""
+    answers = [IDENTITY[0][1], IDENTITY[1][1]]
+    for i in range(n):
+        if not ENGLISH_POOL:
+            return
+        first = ENGLISH_POOL[i % len(ENGLISH_POOL)]
+        if n_tokens(first) > 450:
+            continue
+        q = random.choice(IDENTITY[0][0] + EXTRA_NAME_QUESTIONS + IDENTITY[1][0])
+        a = answers[1] if q in IDENTITY[1][0] else answers[0]
+        yield "identity_multi", first + [{"role": "user", "content": q}, {"role": "assistant", "content": a}]
+
+
 def identity(copies=40):
     for _ in range(copies):
         for questions, answer in IDENTITY:
             yield "identity", [{"role": "user", "content": random.choice(questions)},
                                {"role": "assistant", "content": answer}]
+        if V2:                                                       # the extra ways people ask for her name
+            yield "identity", [{"role": "user", "content": random.choice(EXTRA_NAME_QUESTIONS)},
+                               {"role": "assistant", "content": IDENTITY[0][1]}]
 
 
 def main():
-    out_dir = config.SFT_DIR
+    global V2
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--v2", action="store_true", help="English-centric mix, multi-turn identity, held-out set")
+    ap.add_argument("--out", default=None)
+    ap.add_argument("--english", type=int, default=None)
+    args = ap.parse_args()
+    V2 = args.v2
+    out_dir = pathlib.Path(args.out) if args.out else (config.DATA_DIR / "mona_sft_v2" if V2 else config.SFT_DIR)
     out_dir.mkdir(parents=True, exist_ok=True)
-    generators = [
-        english(),
-        aya_hindi(),
-        wiki_qa("hindi_qa", RAW / "sft" / "hindi_wiki", limit=25_000, stop="।"),
-        wiki_qa("hinglish", RAW / "hinglish_sangraha", limit=10_000, stop="."),
-        tulsidas(),
-        identity(),
-    ]
+    if V2:      # about 90% English, about 10% Hindi (Hindi Q&A, Aya, Tulsidas verse) and a little Hinglish
+        generators = [
+            english(args.english or 300_000, heldout_path=out_dir / "heldout_english.jsonl"),
+            aya_hindi(),
+            wiki_qa("hindi_qa", RAW / "sft" / "hindi_wiki", limit=20_000, stop="।"),
+            wiki_qa("hinglish", RAW / "hinglish_sangraha", limit=3_000, stop="."),
+            tulsidas(),
+            identity(copies=60),
+            greetings(),
+        ]
+    else:
+        generators = [
+            english(args.english or 80_000),
+            aya_hindi(),
+            wiki_qa("hindi_qa", RAW / "sft" / "hindi_wiki", limit=25_000, stop="।"),
+            wiki_qa("hinglish", RAW / "hinglish_sangraha", limit=10_000, stop="."),
+            tulsidas(),
+            identity(),
+        ]
     examples, counts, dropped = [], {}, 0
-    for gen in generators:
+
+    def run(gen):
+        nonlocal dropped
         try:
             for source, msgs in gen:
+                if source == "tulsidas" and V2 and random.random() < 0.5:
+                    continue                                          # verse is only a small part of the Hindi share
                 msgs = fit(with_system(msgs))
                 if msgs is None:
                     dropped += 1
@@ -195,6 +286,11 @@ def main():
                 counts[source] = counts.get(source, 0) + 1
         except FileNotFoundError as e:
             print(f"  skipped a source: {e}")
+
+    for gen in generators:
+        run(gen)
+    if V2:
+        run(identity_multiturn())                                     # needs the English pool filled above
     random.shuffle(examples)
     n_val = max(500, len(examples) // 50)
     for name, part in (("val", examples[:n_val]), ("train", examples[n_val:])):
@@ -202,10 +298,11 @@ def main():
             for ex in part:
                 f.write(json.dumps(ex, ensure_ascii=False) + "\n")
     print("Conversations per source:")
-    for s, c in sorted(counts.items(), key=lambda x: -x[1]):
-        print(f"  {s:10s} {c:8,}")
-    print(f"total {len(examples):,} (train {len(examples) - n_val:,}, val {n_val:,}); "
-          f"dropped {dropped:,} that could not fit")
+    for src, c in sorted(counts.items(), key=lambda x: -x[1]):
+        print(f"  {src:14s} {c:8,}")
+    hindi = sum(c for src, c in counts.items() if src in ("hindi_aya", "hindi_qa", "tulsidas", "hinglish"))
+    print(f"total {len(examples):,} (train {len(examples) - n_val:,}, val {n_val:,}); dropped {dropped:,} that could not fit; "
+          f"Hindi/Hinglish share {hindi / max(len(examples), 1):.1%}")
 
 
 if __name__ == "__main__":

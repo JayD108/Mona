@@ -221,6 +221,22 @@ async def _words_lesson():
             await pilot.press("enter")
             assert await _wait(pilot, lambda: lesson.i == scene + 1 and lesson.trans is None, 8), f"stuck at page {scene + 1}"
         assert lesson.i == 11
+        await pilot.press("c")                                        # the chapter picker: jump straight to chapter 1, no dives
+        await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "ChapterScreen"
+        await pilot.press("home")
+        await pilot.press("enter")
+        await pilot.pause(0.3)
+        assert lesson.i == 0 and lesson.trans is None and type(app.screen).__name__ == "PathScreen"
+        await pilot.press("7")                                        # number keys jump too
+        await pilot.pause(0.2)
+        assert lesson.i == 6 and lesson.trans is None
+        await pilot.click("#ctl-chapters")                            # and so does the Chapters button
+        await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "ChapterScreen"
+        await pilot.press("escape")
+        await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "PathScreen" and lesson.i == 6
         await pilot.press("escape")                                   # Esc goes back to the typing step
         await pilot.pause(0.3)
         assert lesson.asking and type(app.screen).__name__ == "PathScreen"

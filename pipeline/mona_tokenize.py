@@ -21,8 +21,8 @@ from mona import config
 from mona import tokenizer as T
 
 SEP = "\x1e"
-CAP = {"english": 1_600_000_000, "hindi": 1_150_000_000, "hinglish": 130_000_000, "awadhi": None}
-VAL = {"english": 2_000_000, "hindi": 2_000_000, "hinglish": 1_000_000, "awadhi": None}  # awadhi: last 5%
+CAP = {"english": 1_600_000_000, "english2": None, "hindi": 1_150_000_000, "hinglish": 130_000_000, "awadhi": None}
+VAL = {"english": 2_000_000, "english2": 1_000_000, "hindi": 2_000_000, "hinglish": 1_000_000, "awadhi": None}  # awadhi: last 5%
 BATCH_DOCS = 2000
 
 
