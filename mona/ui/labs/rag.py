@@ -69,7 +69,7 @@ register({
                   "hinglish": "Library mein jod diya. Ab iske baare mein poochho!"},
     "rag_add_prompt": {"en": "Paste a paragraph to add to the library (Enter)…", "hi": "पुस्तकालय में जोड़ने के लिए एक अनुच्छेद (Enter)…",
                        "hinglish": "Library mein jodne ke liye ek paragraph (Enter)…"},
-    "rag_keys": {"en": "Enter ask   F5 example   F6 add your text   Esc back   F2 language  F3 depth  F4 romanize",
+    "rag_keys": {"en": "Enter ask   F5 example   F6 add your text   Esc back   F3 depth",
                  "hi": "Enter पूछें   F5 उदाहरण   F6 अपना पाठ   Esc वापस   F2 भाषा  F3 गहराई  F4 रोमन",
                  "hinglish": "Enter poochho   F5 example   F6 apna text   Esc wapas   F2 bhasha  F3 depth  F4 roman"},
 })
@@ -218,37 +218,37 @@ class RagLab(Screen):
         tr, rr = self.app.tr, self.rr
         q, hits, with_prompt, without, with_ = self.result
         qwords = set(words(q))
-        s = Text(tr("rag_step1") + "\n\n", style="bold #8ecae6")
+        s = Text(tr("rag_step1") + "\n\n", style="bold #89dceb")
         if not hits:
-            s.append(tr("rag_none"), style="#f4a3c0")
+            s.append(tr("rag_none"), style="#f5c2e7")
         for h in hits:
-            s.append(f"{h.score:5.1f}  ", style="bold #ffd166")
-            s.append(f"[{h.chunk.source}] ", style="#8a8fb0")
-            s.append(rr(h.chunk.title) + "\n", style="bold #e8e8f0")
+            s.append(f"{h.score:5.1f}  ", style="bold #f9e2af")
+            s.append(f"[{h.chunk.source}] ", style="#9399b2")
+            s.append(rr(h.chunk.title) + "\n", style="bold #cdd6f4")
             snippet = h.chunk.text[:220].replace("\n", " ")
             line = Text("       ")
             for w in snippet.split(" "):
-                line.append(rr(w) + " ", style="bold #14172b on #ffd166" if w.lower().strip(".,।?!") in qwords else "#c9cce0")
+                line.append(rr(w) + " ", style="bold #1e1e2e on #f9e2af" if w.lower().strip(".,।?!") in qwords else "#bac2de")
             s.append_text(line)
             s.append("\n")
         self.query_one("#search", Static).update(s)
 
-        p = Text(tr("rag_step2") + "\n\n", style="bold #8ecae6")
-        p.append(rr(with_prompt[:700]) if with_prompt else "—", style="#c9cce0")
+        p = Text(tr("rag_step2") + "\n\n", style="bold #89dceb")
+        p.append(rr(with_prompt[:700]) if with_prompt else "—", style="#bac2de")
         self.query_one("#prompt", Static).update(p)
 
-        a = Text(tr("rag_step3") + f"   ({getattr(self, 'which', '')})\n\n", style="bold #8ecae6")
+        a = Text(tr("rag_step3") + f"   ({getattr(self, 'which', '')})\n\n", style="bold #89dceb")
         a.append(tr("rag_without") + "\n", style="bold #f78c6b")
-        a.append(rr(without) + "\n\n", style="#e8e8f0")
+        a.append(rr(without) + "\n\n", style="#cdd6f4")
         if with_ is not None:
-            a.append(tr("rag_with") + "\n", style="bold #06d6a0")
+            a.append(tr("rag_with") + "\n", style="bold #a6e3a1")
             ctx_words = set(words(hits[0].chunk.text))
             ans = with_.split(" ")
             grounded = 0
             for w in ans:
                 inside = w.lower().strip(".,।?!") in ctx_words
                 grounded += inside
-                a.append(rr(w) + " ", style="bold #06d6a0" if inside else "#e8e8f0")
-            a.append("\n\n" + tr("rag_grounded", p=grounded / max(len(ans), 1)), style="italic #8ecae6")
+                a.append(rr(w) + " ", style="bold #a6e3a1" if inside else "#cdd6f4")
+            a.append("\n\n" + tr("rag_grounded", p=grounded / max(len(ans), 1)), style="italic #89dceb")
         self.query_one("#answers", Static).update(a)
         self.query_one("#avatar", Avatar).set_mood("wow" if with_ else "thinking")

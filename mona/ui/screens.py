@@ -59,7 +59,7 @@ MEMOS = [
     ("A model never sees letters, only numbers. 'नमस्ते' is just a few token numbers to MONA.",
      "मॉडल अक्षर कभी नहीं देखता, सिर्फ़ संख्याएँ। MONA के लिए 'नमस्ते' बस कुछ टोकन नंबर है।",
      "Model letters kabhi nahi dekhta, sirf numbers. MONA ke liye 'नमस्ते' bas kuch token numbers hai."),
-    ("Training MONA took about 30 hours on one laptop. Frontier models use thousands of GPUs for months.",
+    ("Training MONA took about 19 hours on one laptop. Frontier models use thousands of GPUs for months.",
      "MONA की ट्रेनिंग एक लैपटॉप पर लगभग 30 घंटे चली। बड़े मॉडल हज़ारों GPU पर महीनों चलते हैं।",
      "MONA ki training ek laptop par lagbhag 30 ghante chali. Bade models hazaron GPUs par mahino chalte hain."),
     ("Chat models are first trained to continue text. Only then are they taught to answer like an assistant.",
@@ -87,6 +87,32 @@ MEMOS = [
      "RAG से छोटा मॉडल सब याद रखने के बजाय चीज़ें खोज सकता है, जैसे खुली किताब वाली परीक्षा।",
      "RAG se chhota model sab yaad rakhne ke bajaye cheezein dhoondh sakta hai, jaise open-book exam."),
 ]
+
+# What you'll find out: shown in the Preview box under the lists.
+BLURBS = {
+    "lm": "Why \"guess the next word\" is the only thing a language model does, and why that is enough to write essays. You play the game against MONA.",
+    "data": "What MONA read, and why cleaning data is most of the work. You decide which documents to keep and which to drop.",
+    "tokens": "How your sentence is cut into pieces and turned into numbers, and why Hindi costs some models four times more than English.",
+    "embeddings": "How words become points on a map, with similar words close together. Find neighbours and play odd-one-out.",
+    "attention": "How a word looks back at earlier words to work out what it means, for example how \"it\" finds \"the cat\".",
+    "layers": "Watch MONA's guess take shape layer by layer, from a blurry first idea to the final answer.",
+    "next": "What temperature, top-k and top-p really do to the choice of the next word. Turn the knobs and see.",
+    "training": "A time machine through MONA's real training: from random noise to sentences, with the real loss curve.",
+    "chat": "How a text-continuer becomes an assistant: the chat template, and what the loss mask hides from the model.",
+    "evals": "How to tell whether a model is any good, and why benchmark scores can mislead.",
+    "rag": "Give MONA a library and watch her look things up instead of guessing. Answers with and without it, side by side.",
+    "beyond": "Shrinking a model (quantization), letting it use tools, and the KV-cache trick that makes writing fast.",
+    "mysteries": "Five debugging cases. MONA does something strange; you run experiments, collect evidence and name the cause.",
+    "incidents": "Real problems from MONA's training run: an overheating GPU, copyrighted data, a watchdog crying wolf. What would you do?",
+    "course": "Train your own tiny model in about two minutes, then change the learning rate and compare what happens.",
+    "journey": "MONA's real training diary: the loss, the incidents and what she wrote at every stage.",
+    "budget": "Pick a compute budget and a model size and see the U-shaped quality curve, next to GPT-3 and Llama.",
+    "tour": "The life of a model, team by team, next to what MONA's own build did.",
+    "compare": "Ask MONA and a big local model (Ollama) the same question, side by side.",
+    "story": "Type a sentence and follow it through every stage of the model.",
+    "teacher": "45-minute lesson plans and printable quizzes for every stage.",
+    "badges": "Your badges, and a certificate of completion after all 12 stages.",
+}
 
 register({
     "memo": {"en": "💡 Did you know? {m}", "hi": "💡 क्या आप जानते हैं? {m}", "hinglish": "💡 Kya aap jaante ho? {m}"},
@@ -141,8 +167,7 @@ class DisplayCheckScreen(Screen):
 
 
 class HomeScreen(Screen):
-    BINDINGS = [Binding("l", "app.cycle_lang", "language"), Binding("d", "app.cycle_depth", "depth"),
-                Binding("r", "app.toggle_roman", "romanize"), Binding("q", "app.quit", "quit"),
+    BINDINGS = [Binding("d", "app.cycle_depth", "depth"), Binding("q", "app.quit", "quit"),
                 Binding("s", "story", "story"), Binding("b", "badges", "badges"), Binding("c", "compare", "compare"),
                 Binding("t", "teacher", "teacher"), Binding("o", "tour", "tour"), Binding("j", "journey", "journey"),
                 Binding("g", "course", "course"), Binding("i", "incidents", "incidents"), Binding("p", "budget", "budget"),
@@ -199,64 +224,53 @@ class HomeScreen(Screen):
         self.app.push_screen(BadgesScreen())
 
     def compose(self) -> ComposeResult:
-        yield Static(id="topbar")
-        with Horizontal(id="hello-row"):
-            yield Avatar(id="avatar")
+        with Vertical(id="main"):
             yield Static(id="hello")
-        with Horizontal(id="home-cols"):
-            with Vertical(id="stage-col"):
-                yield Static(id="journey-title", classes="title")
-                yield OptionList(id="stages")
-            with Vertical(id="desk-col"):
-                yield Static(id="desk-title", classes="title")
-                yield OptionList(id="desk")
-        yield Static(id="progress")
+            with Horizontal(id="home-cols"):
+                with Vertical(id="stage-col"):
+                    yield OptionList(id="stages")
+                with Vertical(id="desk-col"):
+                    yield OptionList(id="desk")
+            yield Static(id="preview")
+            yield Static(id="progress")
         yield Static(id="keys", classes="keys")
 
     def on_mount(self):
+        self.query_one("#main").border_title = "MONA  ·  understand AI from the inside"
+        self.query_one("#stages").border_title = "Learning path"
+        self.query_one("#desk").border_title = "Explore further"
+        self.query_one("#preview").border_title = "Preview"
+        self.query_one("#progress").border_title = "Progress"
         self.refresh_texts()
         self.query_one("#stages").focus()
 
     def refresh_texts(self):
         app, s = self.app, self.app.state
         tr = app.tr
-        langs = Text()
-        for code, name in (("en", "EN"), ("hi", "हिं"), ("hinglish", "Hinglish")):
-            langs.append(f" {name} ", style="bold #1b1f3b on #ffd166" if s.lang == code else "#8a8fb0")
-        top = Text.assemble((" MONA ", "bold #1b1f3b on #8ecae6"), "  ", (app.tr("tagline"), "italic #c9cce0"))
-        top.append("\n")
-        top.append_text(langs)
-        top.append(f"   ◆ {tr('depth_name')}", style="bold #06d6a0")
-        if s.romanize:
-            top.append("   abc→अ", style="#f4a3c0")
-        self.query_one("#topbar", Static).update(top)
         who = app.addr()
-        hello = Text(tr(greeting_key()) + (f", {who}" if who else "") + "! ", style="bold #ffd166")
-        hello.append(tr("hello"), style="#e8e8f0")
-        li = {"en": 0, "hi": 1, "hinglish": 2}[s.lang]
+        hello = Text(tr(greeting_key()) + (f", {who}" if who else "") + "! ", style="bold #f9e2af")
+        hello.append(tr("hello"), style="#cdd6f4")
         nxt = self.next_up()
         if nxt:
             stage = next((st for st in STAGES if st[0] == nxt), None)
-            name = f"{STAGES.index(stage)} · {stage_name(stage, s.lang)}" if stage else PATH_NAMES[nxt][li]
-            hello.append("\n" + tr("next_up", n=app.roman(name) if s.romanize else name), style="bold #06d6a0")
+            name = f"{STAGES.index(stage)} · {stage_name(stage, 'en')}" if stage else PATH_NAMES[nxt][0]
+            hello.append("\n" + tr("next_up", n=name), style="bold #a6e3a1")
         else:
-            hello.append("\n" + tr("all_done"), style="bold #06d6a0")
-        memo = MEMOS[dt.date.today().toordinal() % len(MEMOS)][li]
-        hello.append("\n" + tr("memo", m=app.roman(memo) if s.romanize else memo), style="#8ecae6")
-        self.query_one("#hello", Static).update(hello)
-        self.query_one("#journey-title", Static).update(tr("journey"))
-        self.query_one("#desk-title", Static).update(tr("desk_title"))
+            hello.append("\n" + tr("all_done"), style="bold #a6e3a1")
+        hello.append("\n" + tr("memo", m=MEMOS[dt.date.today().toordinal() % len(MEMOS)][0]), style="#89dceb")
+        box = self.query_one("#hello", Static)
+        box.update(hello)
+        box.border_title = f"Hello  ·  {tr('depth_name')} mode"
         desk = self.query_one("#desk", OptionList)
         keep = desk.highlighted
         desk.clear_options()
         for item in EXPLORE:
-            name = item[2 + li]
-            name = app.roman(name) if s.romanize else name
+            name = item[2]
             if item[0] is None:                                      # a section heading
-                desk.add_option(Option(Text(name, style="bold #8ecae6"), disabled=True))
+                desk.add_option(Option(Text(name, style="bold underline #f9e2af"), disabled=True))
             else:
                 mark = "✓" if item[0] in s.completed else " "
-                desk.add_option(Option(Text.assemble((f" {item[1]} ", "bold #ffd166"), (f"{mark} ", "#06d6a0"),
+                desk.add_option(Option(Text.assemble((f" {item[1]} ", "bold #f9e2af"), (f"{mark} ", "#a6e3a1"),
                                                      (name, "bold")), id=item[0]))
         desk.highlighted = keep if keep is not None else 1
         stages = self.query_one("#stages", OptionList)
@@ -264,28 +278,34 @@ class HomeScreen(Screen):
         stages.clear_options()
         target = None
         for title, ids in TRACKS:
-            stages.add_option(Option(Text(app.roman(title[li]) if s.romanize else title[li], style="bold #8ecae6"),
-                                     disabled=True))
+            stages.add_option(Option(Text(title[0], style="bold underline #f9e2af"), disabled=True))
             for sid in ids:
                 stage = next(st for st in STAGES if st[0] == sid)
                 i = STAGES.index(stage)
                 mark = "✓" if sid in s.completed else ("●" if sid in READY else "○")
-                name = stage_name(stage, s.lang)
-                if s.romanize:
-                    name = app.roman(name)
-                label = Text.assemble((f"  {i:>2}  {mark}  ", "#ffd166" if sid in READY else "#5a5f7c"),
-                                      (name, "bold" if sid in READY else "#8a8fb0"))
+                label = Text.assemble((f"  {i:>2}  {mark}  ", "#a6e3a1" if sid in s.completed else "#f9e2af" if sid in READY else "#6c7086"),
+                                      (stage_name(stage, "en"), "bold" if sid in READY else "#9399b2"))
                 stages.add_option(Option(label, id=sid))
                 if sid == nxt:
                     target = stages.option_count - 1
         stages.highlighted = highlighted if highlighted is not None else (target if target is not None else 1)
         done = len([c for c in s.completed if c in {st[0] for st in STAGES}])   # stages only, not story
-        bar = "█" * done + "░" * (len(STAGES) - done)
+        bar = "━" * (done * 4) + "─" * ((len(STAGES) - done) * 4)
         badges = "   " + "  ".join(f"🏅 {b}" for b in s.badges) if s.badges else ""
         self.query_one("#progress", Static).update(
-            Text.assemble((f"{tr('progress')}  ", "#8a8fb0"), (bar, "#06d6a0"), (f"  {done}/{len(STAGES)}", "#8a8fb0"),
-                          (badges, "#ffd166")))
+            Text.assemble((bar[:done * 4], "bold #a6e3a1"), (bar[done * 4:], "#45475a"), (f"  {done}/{len(STAGES)} stages", "#9399b2"), (badges, "#f9e2af")))
         self.query_one("#keys", Static).update(tr("keys_home"))
+        self.show_preview()
+
+    def on_option_list_option_highlighted(self, event: OptionList.OptionHighlighted):
+        self.show_preview(event.option.id)
+
+    def show_preview(self, oid=None):
+        """The Preview box: one friendly line about whatever the cursor is on."""
+        if oid is None:
+            lst = self.query_one("#stages", OptionList)
+            oid = lst.get_option_at_index(lst.highlighted).id if lst.highlighted is not None else None
+        self.query_one("#preview", Static).update(Text(BLURBS.get(oid, ""), style="#bac2de"))
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected):
         if event.option_list.id == "desk":

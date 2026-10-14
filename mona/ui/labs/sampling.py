@@ -59,7 +59,7 @@ register({
 TEMPS = [0.1, 0.3, 0.5, 0.7, 0.8, 1.0, 1.2, 1.6, 2.0]
 TOPKS = [None, 1, 5, 20, 50]
 TOPPS = [None, 0.5, 0.9, 0.95]
-CONF = ["#ef476f", "#f78c6b", "#ffd166", "#b5e48c", "#06d6a0"]       # red -> green by confidence
+CONF = ["#ef476f", "#f78c6b", "#f9e2af", "#b5e48c", "#a6e3a1"]       # red -> green by confidence
 
 
 def conf_colour(p):
@@ -216,30 +216,30 @@ class SamplingLab(Screen):
         roman = self.app.roman if self.app.state.romanize else (lambda s: s)
         temp, k, topp = self.knobs
         knobs = Text()
-        knobs.append(" temperature ", style="#8a8fb0")
-        knobs.append(f" {temp:.1f} ", style="bold #14172b on #ffd166")
-        knobs.append("   top-k ", style="#8a8fb0")
-        knobs.append(f" {k or 'off'} ", style="bold #14172b on #8ecae6")
-        knobs.append("   top-p ", style="#8a8fb0")
-        knobs.append(f" {topp or 'off'} ", style="bold #14172b on #cdb4db")
-        knobs.append(f"     {tr('smp_excluded')}", style="#5a5f7c")
+        knobs.append(" temperature ", style="#9399b2")
+        knobs.append(f" {temp:.1f} ", style="bold #1e1e2e on #f9e2af")
+        knobs.append("   top-k ", style="#9399b2")
+        knobs.append(f" {k or 'off'} ", style="bold #1e1e2e on #89dceb")
+        knobs.append("   top-p ", style="#9399b2")
+        knobs.append(f" {topp or 'off'} ", style="bold #1e1e2e on #cba6f7")
+        knobs.append(f"     {tr('smp_excluded')}", style="#6c7086")
         self.query_one("#knobs", Static).update(knobs)
 
-        dist = Text(tr("smp_dist") + "\n\n", style="bold #8ecae6")
+        dist = Text(tr("smp_dist") + "\n\n", style="bold #89dceb")
         if self.cands:
             label_w = max(cell_len(roman(show_piece(t.text))) for t, *_ in self.cands) + 2
             top = max(c[1] for c in self.cands) or 1
             for n, (tok, pv, ok, _) in enumerate(self.cands, 1):
                 piece = roman(show_piece(tok.text))
                 filled = max(1, round(30 * pv / top))
-                style = "bold #e8e8f0" if ok else "strike #5a5f7c"
-                dist.append(f"{n if n <= 9 else ' '} ", style="#ffd166" if ok else "#5a5f7c")
+                style = "bold #cdd6f4" if ok else "strike #6c7086"
+                dist.append(f"{n if n <= 9 else ' '} ", style="#f9e2af" if ok else "#6c7086")
                 dist.append(piece + " " * (label_w - cell_len(piece)), style=style)
-                dist.append("█" * filled, style="#06d6a0" if ok else "#3a3f5c")
+                dist.append("█" * filled, style="#a6e3a1" if ok else "#45475a")
                 dist.append(f" {pv:6.1%}\n", style=style)
         self.query_one("#dist", Static).update(dist)
 
-        text = Text(roman(self.query_one("#prompt", Input).value), style="#c9cce0")
+        text = Text(roman(self.query_one("#prompt", Input).value), style="#bac2de")
         for tok, pv in self.gen:
             text.append(roman(tok.text), style=f"bold {conf_colour(pv)}")
         self.query_one("#text", Static).update(text)
@@ -247,7 +247,7 @@ class SamplingLab(Screen):
         marks = {c: ("✓" if c in self.done else "○") for c in ("repeat", "wild")}
         ch = Text(tr("smp_ch", a=marks["repeat"], b=marks["wild"]))
         if {"repeat", "wild"} <= self.done:
-            ch.append("\n" + tr("smp_badge"), style="bold #ffd166")
+            ch.append("\n" + tr("smp_badge"), style="bold #f9e2af")
         self.query_one("#challenge", Static).update(ch)
         mood = "wow" if self.cands and self.cands[0][1] > 0.5 else ("thinking" if temp >= 1.6 else "happy")
         self.query_one("#avatar", Avatar).set_mood(mood)

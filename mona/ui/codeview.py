@@ -216,12 +216,12 @@ class CodeScreen(ModalScreen):
         try:
             rel, start, code = source_of(key)
         except Exception as e:                                  # e.g. source not shipped
-            self.query_one("#cv-code", Static).update(Text(f"(source not available: {e})", style="#f4a3c0"))
+            self.query_one("#cv-code", Static).update(Text(f"(source not available: {e})", style="#f5c2e7"))
             return
         lang = self.app.state.lang
-        head = Text(f"{title}\n", style="bold #ffd166")
-        head.append(f"{rel}:{start}\n\n", style="#8ecae6")
-        head.append(walk.get(lang, walk["en"]) + "\n", style="#e8e8f0")
+        head = Text(f"{title}\n", style="bold #f9e2af")
+        head.append(f"{rel}:{start}\n\n", style="#89dceb")
+        head.append(walk.get(lang, walk["en"]) + "\n", style="#cdd6f4")
         syntax = Syntax(code, "python", theme="monokai", line_numbers=True, start_line=start, word_wrap=False,
-                        background_color="#14172b")
+                        background_color="#1e1e2e")
         self.query_one("#cv-code", Static).update(Group(head, syntax))

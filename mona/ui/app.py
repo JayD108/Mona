@@ -5,98 +5,120 @@ from textual import work
 from textual.app import App
 from textual.binding import Binding
 
-from .screens import DisplayCheckScreen, HomeScreen
-from .state import DEPTHS, LANGS, State
+from .screens import HomeScreen
+from .state import DEPTHS, State
 from .text import romanize, t
 from .welcome import WelcomeScreen, address
 
 # each lab's main explanation opens with a short line addressed to the learner (by their chosen name)
 LAB_INTROS = {"lm_explain", "dat_explain", "tok_explain", "emb_explain", "att_explain", "lay_explain", "smp_explain",
               "tm_explain", "ct_explain", "ev_explain", "rag_explain", "by_q_explain", "cmp_explain"}
-BRIEFING = {"en": "💡 {a}, here's the idea:\n", "hi": "💡 {a}, बात यह है:\n", "hinglish": "💡 {a}, baat yeh hai:\n"}
+BRIEFING = "💡 {a}, here's the idea:\n"
 
 CSS = """
-Screen { background: #14172b; color: #e8e8f0; }
-.title { text-style: bold; color: #ffd166; margin: 1 0 0 0; }
-.subtitle { text-style: bold; color: #8ecae6; margin: 1 0 0 0; }
-.dim { color: #8a8fb0; }
-.keys { dock: bottom; height: 1; color: #8a8fb0; background: #1b1f3b; padding: 0 1; }
+/* Look: soft navy, pastel borders with the title set into the border line, one frame per screen. */
+Screen { background: #1e1e2e; color: #cdd6f4; border: round #b4befe; border-title-align: center;
+         border-title-color: #f9e2af; border-title-style: bold; padding: 0 1; }
+GlossaryScreen, CodeScreen { border: none; padding: 0; }
+.title { text-style: bold underline; color: #f9e2af; margin: 1 0 0 0; }
+.subtitle { text-style: bold; color: #89dceb; margin: 1 0 0 0; }
+.dim { color: #9399b2; }
+.keys { dock: bottom; height: auto; min-height: 3; max-height: 5; color: #9399b2; background: #1e1e2e;
+        border: round #89dceb; border-title-align: center; border-title-color: #f9e2af; border-title-style: bold;
+        padding: 0 1; }
 
-#topbar { height: 3; padding: 0 1; background: #1b1f3b; }
-#hello-row { height: 7; margin: 1 1 0 1; }
-#avatar { width: 11; }
-#hello { padding: 0 2; border: round #8ecae6; height: 7; width: 1fr; }
+OptionList { background: #1e1e2e; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+             border-title-style: bold; padding: 0 1; }
+OptionList:focus { border: round #b4befe; background: #1e1e2e; }
+OptionList > .option-list--option-highlighted { background: #45475a; color: #cdd6f4; text-style: bold; }
+OptionList:focus > .option-list--option-highlighted { background: #45475a; color: #cdd6f4; text-style: bold; }
+OptionList > .option-list--option-hover { background: #313244; }
+OptionList > .option-list--separator { color: #45475a; }
+
+* { scrollbar-background: #181825; scrollbar-background-hover: #181825; scrollbar-background-active: #181825;
+    scrollbar-color: #45475a; scrollbar-color-hover: #b4befe; scrollbar-color-active: #b4befe; scrollbar-corner-color: #181825; }
+Input { margin: 1 1 0 1; background: #181825; border: round #89dceb; color: #cdd6f4; }
+Input:focus { border: round #b4befe; }
+Button { background: #313244; color: #cdd6f4; border: round #89dceb; }
+Button:hover { background: #45475a; }
+TabbedContent Tabs { background: #1e1e2e; }
+Tab { color: #9399b2; }
+Tab.-active { color: #f9e2af; text-style: bold underline; }
+
+/* home */
+#main { height: 1fr; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+        border-title-style: bold; padding: 0 1; }
+#hello { height: auto; min-height: 5; margin: 1 0 1 0; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+         border-title-style: bold; padding: 0 2; }
 #home-cols { height: 1fr; }
-#stage-col { width: 1fr; }
-#desk-col { width: 46; }
-#journey-title, #desk-title { margin: 1 2 0 2; }
-#stages, #desk { margin: 0 2; height: 1fr; border: round #3a3f5c; background: #14172b; }
-#stages:focus, #desk:focus { border: round #ffd166; }
-#progress { margin: 0 2 1 2; height: 1; }
+#stage-col { width: 1fr; background: #1e1e2e; }
+#desk-col { width: 50; background: #1e1e2e; }
+#stages, #desk { height: 1fr; }
+#preview { height: auto; min-height: 3; max-height: 5; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+           border-title-style: bold; padding: 0 2; color: #bac2de; }
+#progress { height: 3; border: round #89dceb; border-title-align: center; border-title-color: #f9e2af;
+            border-title-style: bold; padding: 0 2; }
 
 /* labs */
 .lab-head { height: 6; margin: 1 1 0 1; }
 .lab-avatar { width: 11; }
-.lab-title { text-style: bold; color: #ffd166; padding: 2 1; }
-.explain { color: #c9cce0; margin: 1 1 0 1; height: auto; }
+.lab-title { text-style: bold; color: #f9e2af; padding: 2 1; }
+.explain { color: #bac2de; margin: 1 1 0 1; height: auto; }
 .count { margin: 1 0 0 0; }
 .chips { margin: 1 0 0 0; }
-.panel { margin: 1 1; padding: 1 2; border: round #3a3f5c; height: auto; min-height: 5; }
-.panel:focus { border: round #ffd166; }
+.panel { margin: 1 1; padding: 1 2; border: round #89dceb; height: auto; min-height: 5; }
+.panel:focus { border: round #b4befe; }
 .race-input { margin: 0 1; }
 TabbedContent { height: 1fr; }
 .knobs { margin: 1 1 0 1; height: 1; }
 #cmp-cols { height: auto; }
 #te-cols { height: 1fr; }
-#te-stages { width: 34; border: round #3a3f5c; }
+#te-stages { width: 34; border: round #45475a; }
 #te-right { width: 1fr; }
 .cmp-col { width: 1fr; }
-.gen-text { margin: 0 1 1 1; padding: 1 2; border: round #3a3f5c; height: auto; }
+.gen-text { margin: 0 1 1 1; padding: 1 2; border: round #45475a; height: auto; }
 TabPane { padding: 0 1; }
-Input { margin: 1 1 0 1; border: tall #3a3f5c; }
-Input:focus { border: tall #ffd166; }
 
 #check-box { align: center middle; padding: 2 4; }
 #wel-box { align: center middle; padding: 1 4; }
 #wel-box #avatar { height: 5; }
-#wel-text { margin: 1 0; color: #e8e8f0; width: 120; }
-#wel-choices { width: 44; height: 5; border: round #8ecae6; margin: 1 0 0 0; }
+#wel-text { margin: 1 0; color: #cdd6f4; width: 120; }
+#wel-choices { width: 44; height: 5; border: round #89dceb; margin: 1 0 0 0; }
 #wel-name { width: 44; }
 #wel-keys { margin: 1 0 0 0; }
 
 /* explore screens: a list on the left, the details on the right */
 #tour-cols { height: 1fr; }
-#teams, #chapters, #incidents, #steps { width: 42; margin: 1 0 1 1; border: round #3a3f5c; background: #14172b; }
-#teams:focus, #chapters:focus, #incidents:focus, #steps:focus { border: round #ffd166; }
+#teams, #chapters, #incidents, #steps { width: 42; margin: 1 0 1 1; border: round #45475a; background: #1e1e2e; }
+#teams:focus, #chapters:focus, #incidents:focus, #steps:focus { border: round #f9e2af; }
 #tour-right { width: 1fr; }
 
 /* F1 glossary popup */
 GlossaryScreen { align: center middle; background: rgba(10, 12, 30, 0.7); }
-#gl-box { width: 110; height: 32; border: round #ffd166; background: #1b1f3b; padding: 0 1; }
+#gl-box { width: 110; height: 32; border: round #f9e2af; background: #181825; padding: 0 1; }
 #gl-cols { height: 1fr; }
-#gl-list { width: 32; border: round #3a3f5c; background: #14172b; }
+#gl-list { width: 32; border: round #45475a; background: #1e1e2e; }
 #gl-detail { width: 1fr; padding: 1 2; }
 
 /* F8 code view */
 CodeScreen { align: center middle; background: rgba(10, 12, 30, 0.7); }
-#cv-box { width: 96%; height: 92%; border: round #ffd166; background: #1b1f3b; padding: 0 1; }
+#cv-box { width: 96%; height: 92%; border: round #f9e2af; background: #181825; padding: 0 1; }
 #cv-cols { height: 1fr; }
-#cv-list { width: 34; border: round #3a3f5c; background: #14172b; }
+#cv-list { width: 34; border: round #45475a; background: #1e1e2e; }
 #cv-right { width: 1fr; padding: 0 1; }
-#cases { width: 42; margin: 1 0 1 1; border: round #3a3f5c; background: #14172b; }
-#cases:focus { border: round #ffd166; }
-#check-sample { text-style: bold; color: #ffd166; padding: 1 2; border: round #ffd166; width: auto; margin: 1 0; }
+#cases { width: 42; margin: 1 0 1 1; border: round #45475a; background: #1e1e2e; }
+#cases:focus { border: round #f9e2af; }
+#check-sample { text-style: bold; color: #f9e2af; padding: 1 2; border: round #f9e2af; width: auto; margin: 1 0; }
 #check-buttons { height: auto; margin: 1 0; }
 #check-buttons Button { margin-right: 2; }
-#check-fix { color: #c9cce0; margin: 1 0; }
+#check-fix { color: #bac2de; margin: 1 0; }
 """
 
 
 class MonaApp(App):
     CSS = CSS
     TITLE = "MONA"
-    BINDINGS = [Binding("f2", "cycle_lang", "language", show=False), Binding("f3", "cycle_depth", "depth", show=False),
-                Binding("f4", "toggle_roman", "romanize", show=False), Binding("f9", "export", "export", show=False),
+    BINDINGS = [Binding("f3", "cycle_depth", "depth", show=False), Binding("f9", "export", "export", show=False),
                 Binding("f7", "address", "address", show=False), Binding("f1", "glossary", "glossary", show=False),
                 Binding("f8", "code", "code", show=False)]
 
@@ -109,12 +131,12 @@ class MonaApp(App):
     # ── text helpers used by every screen ────────────────────────────────────
     def tr(self, key, **fmt):
         who = self.addr()
-        shown = who or {"en": "friend", "hi": "दोस्त", "hinglish": "dost"}[self.state.lang]
+        shown = who or "friend"
         if fmt:                                    # texts with other {fields} may also say {addr}
             fmt.setdefault("addr", shown)
         text = t(key, self.state.lang, self.state.depth, **fmt).replace("{addr}", shown)
         if key in LAB_INTROS and who:
-            text = BRIEFING[self.state.lang].format(a=who) + text
+            text = BRIEFING.format(a=who) + text
         return self.roman(text) if self.state.romanize else text
 
     def addr(self):
@@ -135,11 +157,33 @@ class MonaApp(App):
             self._tok = Tokenizer.from_file(str(TOKENIZER_PATH))
         return self._tok
 
+    # ── the frame: every screen gets a title set into its border, and its key hints sit in a "Help" box ─
+    FRAME_TITLES = {"HomeScreen": "", "WelcomeScreen": "MONA", "LMGameLab": "Stage 0 · What is a language model?",
+                    "DataLab": "Stage 1 · Data", "TokensLab": "Stage 2 · Tokens", "EmbeddingsLab": "Stage 3 · Embeddings",
+                    "AttentionLab": "Stage 4 · Attention", "LayersLab": "Stage 5 · Layers", "SamplingLab": "Stage 6 · Next word",
+                    "TimeMachineLab": "Stage 7 · Training", "ChatTuningLab": "Stage 8 · Chat tuning",
+                    "EvalsLab": "Stage 9 · Evals", "RagLab": "Stage 10 · RAG", "BeyondLab": "Stage 11 · Beyond",
+                    "CompareLab": "MONA vs a big model", "MysteryScreen": "Model mysteries",
+                    "IncidentScreen": "Training failures", "CourseScreen": "Train a model yourself",
+                    "JourneyScreen": "How MONA was trained", "BudgetScreen": "Scaling laws explorer",
+                    "TourScreen": "How AI labs build models", "StoryScreen": "Follow one sentence",
+                    "TeacherScreen": "Teacher mode", "BadgesScreen": "Progress & certificate"}
+
+    def push_screen(self, screen, *args, **kwargs):
+        if not isinstance(screen, str):
+            name = type(screen).__name__
+            screen.border_title = self.FRAME_TITLES.get(name, "")
+            screen.call_after_refresh(self._decorate, screen)
+        return super().push_screen(screen, *args, **kwargs)
+
+    @staticmethod
+    def _decorate(screen):
+        for box in screen.query(".keys"):
+            box.border_title = "Help"
+
     # ── start-up ──────────────────────────────────────────────────────────────
     def on_mount(self):
         self.push_screen(HomeScreen())
-        if not self.state.display_checked:
-            self.push_screen(DisplayCheckScreen())
         self.push_screen(WelcomeScreen())          # every launch: "how should I address you?" (Enter keeps it)
         self.load_engine()
 
@@ -160,10 +204,6 @@ class MonaApp(App):
         for screen in self.screen_stack:
             if hasattr(screen, "refresh_texts"):
                 screen.refresh_texts()
-
-    def action_cycle_lang(self):
-        self.state.cycle("lang", LANGS)
-        self._refresh_all()
 
     def action_cycle_depth(self):
         self.state.cycle("depth", DEPTHS)
@@ -201,15 +241,10 @@ class MonaApp(App):
         keys = screen.code_targets() if hasattr(screen, "code_targets") else SCREEN_CODE.get(type(screen).__name__, DEFAULT)
         self.push_screen(CodeScreen(keys))
 
-    def action_toggle_roman(self):
-        self.state.romanize = not self.state.romanize
-        self.state.save()
-        self._refresh_all()
-
 
 def main():
     import argparse
-    p = argparse.ArgumentParser(prog="mona", description="MONA: open up a real language model and see how it thinks.")
+    p = argparse.ArgumentParser(prog="mona", description="MONA: understand AI from the inside.")
     p.add_argument("--weights", help="path to MONA weights (default: newest available)")
     p.add_argument("--reset", action="store_true", help="forget settings and progress")
     args = p.parse_args()

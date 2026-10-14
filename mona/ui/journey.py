@@ -290,17 +290,17 @@ def loss_curve(rows, mark, width=60, height=5):
     blocks = " ▁▂▃▄▅▆▇█"
     out = Text()
     for row in range(height - 1, -1, -1):
-        out.append(f"{hi:5.1f} " if row == height - 1 else (f"{lo:5.1f} " if row == 0 else "      "), style="#5a5f7c")
+        out.append(f"{hi:5.1f} " if row == height - 1 else (f"{lo:5.1f} " if row == 0 else "      "), style="#6c7086")
         for v in vals:
             if v is None:
-                out.append("·" if row == 0 else " ", style="#3a3f5c")
+                out.append("·" if row == 0 else " ", style="#45475a")
             else:
                 lv = round((v - lo) / span * height * 8)
-                out.append(blocks[min(max(lv - row * 8, 0), 8)], style="#06d6a0")
+                out.append(blocks[min(max(lv - row * 8, 0), 8)], style="#a6e3a1")
         out.append("\n")
     if mark is not None:
-        out.append("      " + " " * min(int(mark / 2.5 * width), width - 1) + "▲", style="bold #ffd166")
-    out.append("\n      0" + " " * (width - 6) + "2.5B tokens", style="#5a5f7c")
+        out.append("      " + " " * min(int(mark / 2.5 * width), width - 1) + "▲", style="bold #f9e2af")
+    out.append("\n      0" + " " * (width - 6) + "2.5B tokens", style="#6c7086")
     return out
 
 
@@ -337,7 +337,7 @@ class JourneyScreen(Screen):
             title = d[app.state.lang][0]
             ahead = self.ahead(billions, check)
             label = Text.assemble((f" {icon} ", ""), (app.roman(title) if app.state.romanize else title,
-                                                      "#5a5f7c" if ahead else "bold"))
+                                                      "#6c7086" if ahead else "bold"))
             box.add_option(Option(label, id=cid))
         box.highlighted = keep if keep is not None else 0
         self.show()
@@ -359,23 +359,23 @@ class JourneyScreen(Screen):
         idx = self.query_one("#chapters", OptionList).highlighted or 0
         cid, when, icon, d, billions, check = CHAPTERS[idx]
         title, story = d[app.state.lang]
-        out = Text(f"{icon} {title}", style="bold #ffd166")
-        out.append(f"    {when}\n\n", style="#8a8fb0")
-        out.append(story + "\n\n", style="#e8e8f0")
+        out = Text(f"{icon} {title}", style="bold #f9e2af")
+        out.append(f"    {when}\n\n", style="#9399b2")
+        out.append(story + "\n\n", style="#cdd6f4")
         if self.ahead(billions, check):
             seen = self.rows[-1][0] if self.rows else 0
             out.append((tr("jr_wait", p=f"{seen:.2f}B / 2.5B tokens") if self.rows else tr("jr_wait2")) + "\n\n",
-                       style="bold #f4a3c0")
+                       style="bold #f5c2e7")
         elif billions is not None and self.rows:
             near = min(self.rows, key=lambda r: abs(r[0] - billions))
-            out.append(tr("jr_loss", l=f"{near[1]:.2f}") + "\n\n", style="bold #8ecae6")
+            out.append(tr("jr_loss", l=f"{near[1]:.2f}") + "\n\n", style="bold #89dceb")
             rec = samples_at(billions)
             lang = SAMPLE_LANG[app.state.lang]
             if rec and lang in rec[1]:
-                out.append(tr("jr_wrote") + "\n", style="bold #06d6a0")
-                out.append(f"“{rec[1][lang][:260]}…”\n\n", style="italic #c9cce0")
+                out.append(tr("jr_wrote") + "\n", style="bold #a6e3a1")
+                out.append(f"“{rec[1][lang][:260]}…”\n\n", style="italic #bac2de")
         if self.rows:
-            out.append(tr("jr_curve") + "\n", style="#8a8fb0")
+            out.append(tr("jr_curve") + "\n", style="#9399b2")
             out.append_text(loss_curve(self.rows, billions))
         self.query_one("#chapter", Static).update(app.roman(out.plain) if app.state.romanize else out)
         if idx == len(CHAPTERS) - 1:

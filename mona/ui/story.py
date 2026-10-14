@@ -209,21 +209,21 @@ class StoryScreen(Screen):
             return
         out = Text()
         if self.chapter >= len(CHAPTERS):
-            out.append(tr("st_end"), style="bold #ffd166")
+            out.append(tr("st_end"), style="bold #f9e2af")
             card.update(out)
             self.app.state.complete("story", badge="Storyteller")
             return
         stage, story, diary = CHAPTERS[self.chapter]
         name = next(stage_name(s, lang) for s in STAGES if s[0] == stage)
-        out.append(tr("st_chapter", i=self.chapter + 1, n=len(CHAPTERS)) + "  ·  ", style="#5a5f7c")
-        out.append(roman(name) + "\n\n", style="bold #ffd166")
-        out.append("“" + roman(self.sentence) + "”\n\n", style="italic #8ecae6")
-        out.append(roman(story.get(lang, story["en"])) + "\n\n", style="#e8e8f0")
-        out.append(tr("st_diary") + "\n", style="bold #cdb4db")
-        out.append(roman(diary.get(lang, diary["en"])) + "\n\n", style="#c9cce0")
-        out.append("▶ " + tr("st_go"), style="bold #06d6a0")
+        out.append(tr("st_chapter", i=self.chapter + 1, n=len(CHAPTERS)) + "  ·  ", style="#6c7086")
+        out.append(roman(name) + "\n\n", style="bold #f9e2af")
+        out.append("“" + roman(self.sentence) + "”\n\n", style="italic #89dceb")
+        out.append(roman(story.get(lang, story["en"])) + "\n\n", style="#cdd6f4")
+        out.append(tr("st_diary") + "\n", style="bold #cba6f7")
+        out.append(roman(diary.get(lang, diary["en"])) + "\n\n", style="#bac2de")
+        out.append("▶ " + tr("st_go"), style="bold #a6e3a1")
         bar = "".join("●" if i < self.chapter else ("◉" if i == self.chapter else "○") for i in range(len(CHAPTERS)))
-        out.append("\n\n" + bar, style="#ffd166")
+        out.append("\n\n" + bar, style="#f9e2af")
         card.update(out)
 
 
@@ -258,12 +258,12 @@ class BadgesScreen(Screen):
         for name, stage, how in all_badges:
             have = name in st.badges
             out.append("🏅 " if have else "🔒 ", style="")
-            out.append(f"{name:22s}", style="bold #ffd166" if have else "#5a5f7c")
-            out.append(roman(how.get(lang, how["en"])) + "\n", style="#e8e8f0" if have else "#8a8fb0")
-        out.append(f"\n{len(st.badges)}/{len(all_badges)}\n\n", style="bold #06d6a0")
+            out.append(f"{name:22s}", style="bold #f9e2af" if have else "#6c7086")
+            out.append(roman(how.get(lang, how["en"])) + "\n", style="#cdd6f4" if have else "#9399b2")
+        out.append(f"\n{len(st.badges)}/{len(all_badges)}\n\n", style="bold #a6e3a1")
         left = len([s for s in STAGES if s[0] not in st.completed])
         if left:
-            out.append(tr("cert_left", n=left), style="bold #8ecae6")
+            out.append(tr("cert_left", n=left), style="bold #89dceb")
         else:
             out.append_text(self.certificate())
         self.query_one("#list", Static).update(out)
@@ -278,14 +278,14 @@ class BadgesScreen(Screen):
                                                                                    f"{dt.date.today():%d %B %Y}", ""]
         width = max(cell_len(line) for line in lines) + 6
         out = Text()
-        out.append("╔" + "═" * width + "╗\n", style="#ffd166")
+        out.append("╔" + "═" * width + "╗\n", style="#f9e2af")
         for line in lines:
             pad = width - cell_len(line)
-            out.append("║", style="#ffd166")
+            out.append("║", style="#f9e2af")
             out.append(" " * (pad // 2) + line + " " * (pad - pad // 2),
-                       style="bold #ffd166" if line in (tr("cert_head"), who) else "#e8e8f0")
-            out.append("║\n", style="#ffd166")
-        out.append("╚" + "═" * width + "╝", style="#ffd166")
+                       style="bold #f9e2af" if line in (tr("cert_head"), who) else "#cdd6f4")
+            out.append("║\n", style="#f9e2af")
+        out.append("╚" + "═" * width + "╝", style="#f9e2af")
         return out
 
     def export(self):

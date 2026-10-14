@@ -104,7 +104,7 @@ register({
     },
     "by_speed_run": {"en": "Press R to race: 100 tokens with and without the KV-cache.", "hi": "दौड़ के लिए R: KV-cache के साथ और बिना 100 टोकन।",
                      "hinglish": "Race ke liye R: KV-cache ke saath aur bina 100 tokens."},
-    "by_keys": {"en": "Esc back   F5 Shrink  F6 Tools  F7 Speed   R run   F2 language  F3 depth  F4 romanize",
+    "by_keys": {"en": "Esc back   F5 Shrink  F6 Tools  F7 Speed   R run   F3 depth",
                 "hi": "Esc वापस   F5 छोटा करें  F6 औज़ार  F7 रफ़्तार   R चलाएँ   F2 भाषा  F3 गहराई  F4 रोमन",
                 "hinglish": "Esc wapas   F5 Shrink  F6 Tools  F7 Speed   R run   F2 bhasha  F3 depth  F4 roman"},
 })
@@ -238,18 +238,18 @@ class BeyondLab(Screen):
     def draw_q(self):
         tr, view = self.app.tr, self.query_one("#q-view", Static)
         if not self.q_rows and not self.q_status:
-            view.update(Text(tr("by_q_run"), style="bold #ffd166"))
+            view.update(Text(tr("by_q_run"), style="bold #f9e2af"))
             return
-        out = Text(f"{'':20s}{'size':>10s}{'bits/byte':>12s}   sample: “The history of India…”\n", style="#5a5f7c")
+        out = Text(f"{'':20s}{'size':>10s}{'bits/byte':>12s}   sample: “The history of India…”\n", style="#6c7086")
         base_bpb = self.q_rows[0][2] if self.q_rows else None
         for name, mb, bpb, sample in self.q_rows:
             worse = f" (+{(bpb / base_bpb - 1):.1%})" if base_bpb and bpb != base_bpb else ""
-            out.append(f"{name:20s}", style="bold #e8e8f0")
-            out.append(f"{mb:8.0f} MB", style="bold #8ecae6")
-            out.append(f"{bpb:10.3f}{worse:10s}", style="#06d6a0" if not worse or bpb / base_bpb < 1.02 else "#f78c6b")
-            out.append(f"  {sample[:60]}\n", style="#c9cce0")
+            out.append(f"{name:20s}", style="bold #cdd6f4")
+            out.append(f"{mb:8.0f} MB", style="bold #89dceb")
+            out.append(f"{bpb:10.3f}{worse:10s}", style="#a6e3a1" if not worse or bpb / base_bpb < 1.02 else "#f78c6b")
+            out.append(f"  {sample[:60]}\n", style="#bac2de")
         if self.q_status:
-            out.append("\n" + tr("by_q_working", name=self.q_status), style="italic #8a8fb0")
+            out.append("\n" + tr("by_q_working", name=self.q_status), style="italic #9399b2")
         view.update(out)
 
     # ── tools ────────────────────────────────────────────────────────────────
@@ -274,19 +274,19 @@ class BeyondLab(Screen):
     def _tool_done(self, expr, value, guesses, written, number):
         tr = self.app.tr
         out = Text(tr("by_tool_mona") + "\n", style="bold #f78c6b")
-        out.append(f"   {expr.strip()} =", style="bold #e8e8f0")
-        out.append(f"{written.splitlines()[0] if written.strip() else written}\n\n", style="bold #ffd166")
+        out.append(f"   {expr.strip()} =", style="bold #cdd6f4")
+        out.append(f"{written.splitlines()[0] if written.strip() else written}\n\n", style="bold #f9e2af")
         out.append_text(prob_bars(guesses))
         g = number.replace(",", "")
         ok = g == str(value)
         out.append(tr("by_tool_true", v=value, g=g, m="✓" if ok else "✗") + "\n\n",
-                   style="bold #06d6a0" if ok else "bold #ef476f")
-        out.append(tr("by_tool_loop") + "\n", style="bold #06d6a0")
+                   style="bold #a6e3a1" if ok else "bold #ef476f")
+        out.append(tr("by_tool_loop") + "\n", style="bold #a6e3a1")
         steps = [("MONA writes", f"calculator: {expr.strip()}"), ("program runs", f"calculator({expr.strip()!r})"),
                  ("result goes back", f"→ {value}"), ("MONA continues", f"{expr.strip()} = {value}")]
         for i, (who, what) in enumerate(steps, 1):
-            out.append(f"   {i}. {who:18s}", style="#8ecae6")
-            out.append(f"{what}\n", style="bold #e8e8f0")
+            out.append(f"   {i}. {who:18s}", style="#89dceb")
+            out.append(f"{what}\n", style="bold #cdd6f4")
         self.query_one("#tool-view", Static).update(out)
         self.query_one("#avatar", Avatar).set_mood("wow")
 
@@ -318,14 +318,14 @@ class BeyondLab(Screen):
     def draw_speed(self):
         view = self.query_one("#speed-view", Static)
         if not self.speed:
-            view.update(Text(self.app.tr("by_speed_run"), style="bold #ffd166"))
+            view.update(Text(self.app.tr("by_speed_run"), style="bold #f9e2af"))
             return
         n, a, b = self.speed
         top = max(a, b)
         out = Text()
-        for label, s, colour in (("with KV-cache", a, "#06d6a0"), ("without (re-read everything)", b, "#ef476f")):
-            out.append(f"{label:30s}", style="bold #e8e8f0")
+        for label, s, colour in (("with KV-cache", a, "#a6e3a1"), ("without (re-read everything)", b, "#ef476f")):
+            out.append(f"{label:30s}", style="bold #cdd6f4")
             out.append("█" * max(1, round(40 * s / top)), style=colour)
-            out.append(f"  {s:5.2f} s  ({n / s:5.1f} tokens/s)\n", style="#c9cce0")
-        out.append(f"\n{b / a:.1f}× faster with the cache", style="bold #ffd166")
+            out.append(f"  {s:5.2f} s  ({n / s:5.1f} tokens/s)\n", style="#bac2de")
+        out.append(f"\n{b / a:.1f}× faster with the cache", style="bold #f9e2af")
         view.update(out)

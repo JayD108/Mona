@@ -58,7 +58,7 @@ register({
     "tm_recorded": {"en": "Recorded during training: what MONA wrote at each check (same prompt each time)",
                     "hi": "ट्रेनिंग के दौरान दर्ज: हर जाँच पर MONA ने क्या लिखा (हर बार एक ही प्रॉम्प्ट)",
                     "hinglish": "Training ke dauraan record: har check par MONA ne kya likha (har baar same prompt)"},
-    "tm_keys": {"en": "Enter ask again   R refresh logs   Esc back   F2 language  F3 depth  F4 romanize",
+    "tm_keys": {"en": "Enter ask again   R refresh logs   Esc back   F3 depth",
                 "hi": "Enter फिर पूछें   R लॉग ताज़ा करें   Esc वापस   F2 भाषा  F3 गहराई  F4 रोमन",
                 "hinglish": "Enter phir poochho   R logs refresh   Esc wapas   F2 bhasha  F3 depth  F4 roman"},
 })
@@ -66,7 +66,7 @@ register({
 TOTAL_TOKENS, STEP_TOKENS = 2.5e9, 524_288
 
 
-def area_chart(values, width=64, height=8, colour="#06d6a0"):
+def area_chart(values, width=64, height=8, colour="#a6e3a1"):
     """A filled line chart made of block characters (8 sub-levels per cell)."""
     if not values:
         return Text("")
@@ -83,7 +83,7 @@ def area_chart(values, width=64, height=8, colour="#06d6a0"):
     out = Text()
     for row in range(height - 1, -1, -1):
         label = f"{hi:5.2f} " if row == height - 1 else (f"{lo:5.2f} " if row == 0 else "      ")
-        out.append(label, style="#5a5f7c")
+        out.append(label, style="#6c7086")
         for lv in levels:
             fill = min(max(lv - row * 8, 0), 8)
             out.append(blocks[fill], style=colour)
@@ -101,10 +101,10 @@ def lr_plan(frac_now, width=64):
     blocks = "▁▂▃▄▅▆▇█"
     out.append("      ")
     for v in shape:
-        out.append(blocks[min(int(v * 7.99), 7)], style="#cdb4db")
+        out.append(blocks[min(int(v * 7.99), 7)], style="#cba6f7")
     out.append("\n      ")
     pos = min(int(frac_now * (width - 1)), width - 1)
-    out.append(" " * pos + "▲", style="bold #ffd166")
+    out.append(" " * pos + "▲", style="bold #f9e2af")
     return out
 
 
@@ -172,15 +172,15 @@ class TimeMachineLab(Screen):
         tr = self.app.tr
         roman = self.app.roman if self.app.state.romanize else (lambda s: s)
         prompt = roman(self.query_one("#prompt", Input).value)
-        out = Text(tr("tm_versions") + "\n\n", style="bold #8ecae6")
-        colours = ["#ef476f", "#f78c6b", "#ffd166", "#b5e48c", "#06d6a0", "#8ecae6"]
+        out = Text(tr("tm_versions") + "\n\n", style="bold #89dceb")
+        colours = ["#ef476f", "#f78c6b", "#f9e2af", "#b5e48c", "#a6e3a1", "#89dceb"]
         for i, (label, text) in enumerate(self.rows):
             out.append(f"{label:>22}  ", style=f"bold {colours[min(i, len(colours) - 1)]}")
-            out.append(prompt, style="#8a8fb0")
+            out.append(prompt, style="#9399b2")
             if text is None:
-                out.append("  " + tr("tm_loading"), style="italic #5a5f7c")
+                out.append("  " + tr("tm_loading"), style="italic #6c7086")
             else:
-                out.append(roman(text), style="#e8e8f0")
+                out.append(roman(text), style="#cdd6f4")
             out.append("\n")
         self.query_one("#versions", Static).update(out)
         busy = any(t is None for _, t in self.rows)
@@ -196,31 +196,31 @@ class TimeMachineLab(Screen):
             last = train[-1]
             tokens = int(last["tokens"]) / 1e9
             out.append(tr("tm_facts", tokens=tokens, step=int(last["step"]), pages=STEP_TOKENS // 1300,
-                          temp=last["gpu_temp_c"]) + "\n\n", style="#c9cce0")
-            out.append(tr("tm_loss") + "\n", style="bold #8ecae6")
+                          temp=last["gpu_temp_c"]) + "\n\n", style="#bac2de")
+            out.append(tr("tm_loss") + "\n", style="bold #89dceb")
             out.append_text(area_chart(losses))
-            out.append(f"      0{' ' * 52}{tokens:.2f}B tokens\n\n", style="#5a5f7c")
-            out.append(tr("tm_lr") + "\n", style="bold #8ecae6")
+            out.append(f"      0{' ' * 52}{tokens:.2f}B tokens\n\n", style="#6c7086")
+            out.append(tr("tm_lr") + "\n", style="bold #89dceb")
             out.append_text(lr_plan(int(last["tokens"]) / TOTAL_TOKENS))
             out.append("\n\n")
-        out.append(tr("tm_eval") + "\n", style="bold #8ecae6")
+        out.append(tr("tm_eval") + "\n", style="bold #89dceb")
         if evals:
             langs = [k for k in evals[0] if k not in ("step", "tokens")]
             first, latest = evals[0], evals[-1]
             for lang in langs:
                 a, b = float(first[lang]), float(latest[lang])
-                out.append(f"  {lang:9s} {a:6.2f} → {b:6.2f}  ", style="#c9cce0")
-                out.append("▼ better\n" if b < a else "•\n", style="#06d6a0" if b < a else "#5a5f7c")
+                out.append(f"  {lang:9s} {a:6.2f} → {b:6.2f}  ", style="#bac2de")
+                out.append("▼ better\n" if b < a else "•\n", style="#a6e3a1" if b < a else "#6c7086")
         else:
-            out.append("  " + tr("tm_noeval"), style="#5a5f7c")
+            out.append("  " + tr("tm_noeval"), style="#6c7086")
         self.query_one("#curves", Static).update(out)
         # what MONA actually wrote at each evaluation during training (works even without snapshot files)
         lang = {"en": "english", "hi": "hindi", "hinglish": "hinglish"}[self.app.state.lang]
         recs = recorded_samples()
-        rec = Text(tr("tm_recorded") + "\n\n", style="bold #8ecae6")
+        rec = Text(tr("tm_recorded") + "\n\n", style="bold #89dceb")
         roman = self.app.roman if self.app.state.romanize else (lambda s: s)
         for billions, texts in recs[-8:]:
             if lang in texts:
-                rec.append(f"{billions:5.2f}B  ", style="bold #ffd166")
-                rec.append(roman(texts[lang][:150]) + "\n", style="#e8e8f0")
+                rec.append(f"{billions:5.2f}B  ", style="bold #f9e2af")
+                rec.append(roman(texts[lang][:150]) + "\n", style="#cdd6f4")
         self.query_one("#recorded", Static).update(rec if recs else "")

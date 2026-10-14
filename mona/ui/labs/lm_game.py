@@ -55,7 +55,7 @@ register({
     "lm_end": {"en": "Game over. Guessing the next word is hard, and it's the ONLY thing MONA learned to do. (Enter: play again)",
                "hi": "खेल ख़त्म। अगला शब्द अंदाज़ा लगाना मुश्किल है, और MONA ने बस यही सीखा है। (Enter: फिर खेलें)",
                "hinglish": "Game over. Agla word guess karna mushkil hai, aur MONA ne bas yahi seekha hai. (Enter: phir khelo)"},
-    "lm_keys": {"en": "Enter submit / next   Esc back   F2 language (changes the sentences)   F3 depth   F4 romanize",
+    "lm_keys": {"en": "Enter submit / next   Esc back   F3 depth",
                 "hi": "Enter जमा / अगला   Esc वापस   F2 भाषा (वाक्य बदलते हैं)   F3 गहराई   F4 रोमन",
                 "hinglish": "Enter submit / agla   Esc wapas   F2 bhasha (sentences badlenge)   F3 depth   F4 roman"},
 })
@@ -144,9 +144,9 @@ class LMGameLab(Screen):
             return
         roman = self.app.roman if self.app.state.romanize else (lambda s: s)
         ctx = self.item[0]
-        out = Text(self.app.tr("lm_round", r=self.round) + "\n\n", style="bold #8ecae6")
-        out.append("…" + roman(ctx), style="#e8e8f0")
-        out.append(" ____", style="bold #ffd166")
+        out = Text(self.app.tr("lm_round", r=self.round) + "\n\n", style="bold #89dceb")
+        out.append("…" + roman(ctx), style="#cdd6f4")
+        out.append(" ____", style="bold #f9e2af")
         self.query_one("#context", Static).update(out)
 
     def on_input_submitted(self, event: Input.Submitted):
@@ -175,22 +175,22 @@ class LMGameLab(Screen):
         self.mona += mona_ok
         self.answered = True
         out = Text()
-        out.append(tr("lm_real", w=roman(real)) + "\n\n", style="bold #ffd166")
+        out.append(tr("lm_real", w=roman(real)) + "\n\n", style="bold #f9e2af")
         out.append(tr("lm_you", g=roman(guess) or "—", m="✓" if you_ok else "✗") + "\n",
-                   style="bold #06d6a0" if you_ok else "#f4a3c0")
+                   style="bold #a6e3a1" if you_ok else "#f5c2e7")
         out.append(tr("lm_mona", g=roman(mona_guess), m="✓" if mona_ok else "✗", p=f"{p_real:.1%}", k=rank) + "\n\n",
-                   style="bold #06d6a0" if mona_ok else "#f4a3c0")
+                   style="bold #a6e3a1" if mona_ok else "#f5c2e7")
         out.append_text(prob_bars(top, self.app.roman if self.app.state.romanize else None))
-        out.append("\n" + tr("lm_score", a=self.you, b=self.mona) + "\n", style="bold #8ecae6")
+        out.append("\n" + tr("lm_score", a=self.you, b=self.mona) + "\n", style="bold #89dceb")
         if self.round >= 5:
             if self.you > self.mona:
                 self.app.state.complete("lm", badge="Mind Reader")
-                out.append(tr("lm_end_win"), style="bold #ffd166")
+                out.append(tr("lm_end_win"), style="bold #f9e2af")
             else:
                 self.app.state.complete("lm")
-                out.append(tr("lm_end"), style="#c9cce0")
+                out.append(tr("lm_end"), style="#bac2de")
         else:
-            out.append(tr("lm_next"), style="#5a5f7c")
+            out.append(tr("lm_next"), style="#6c7086")
         self.query_one("#reveal", Static).update(out)
         self.query_one("#guess", Input).focus()
         self.query_one("#avatar", Avatar).set_mood("wow" if mona_ok else ("happy" if you_ok else "thinking"))

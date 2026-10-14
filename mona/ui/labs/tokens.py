@@ -126,7 +126,7 @@ register({
                  "hinglish": "Ek token, {c} characters! Naya record. (Best ab tak: {b})"},
     "ch_b_one": {"en": "One token, {c} characters. Your record: {b}.", "hi": "एक टोकन, {c} अक्षर। आपका रिकॉर्ड: {b}।",
                  "hinglish": "Ek token, {c} characters. Aapka record: {b}."},
-    "tok_keys": {"en": "Esc back   F5 Peek  F6 Merge  F7 Race  F10 Challenge   F2 language  F3 depth  F4 romanize",
+    "tok_keys": {"en": "Esc back   F5 Peek  F6 Merge  F7 Race  F10 Challenge   F3 depth",
                  "hi": "Esc वापस   F5 झाँकें  F6 जोड़  F7 दौड़  F10 चुनौती   F2 भाषा  F3 गहराई  F4 रोमन",
                  "hinglish": "Esc wapas   F5 Peek  F6 Merge  F7 Race  F10 Challenge   F2 bhasha  F3 depth  F4 roman"},
 })
@@ -263,7 +263,7 @@ class TokensLab(Screen):
 
     def _peek_show(self, text, tokens, guesses, depth):
         self.query_one("#peek-count", Static).update(
-            Text(self.app.tr("tok_count", chars=len(text), n=len(tokens)), style="bold #06d6a0"))
+            Text(self.app.tr("tok_count", chars=len(text), n=len(tokens)), style="bold #a6e3a1"))
         self.query_one("#peek-chips", Static).update(token_chips(tokens, self.roman, show_ids=depth != "simple"))
         self.query_one("#next-bars", Static).update(prob_bars(guesses, self.roman) if guesses else "")
         self.query_one("#avatar", Avatar).set_mood("wow" if guesses and guesses[0].prob > 0.3 else "happy")
@@ -307,21 +307,21 @@ class TokensLab(Screen):
             return
         step = self.merge_steps[self.merge_i]
         out = Text()
-        out.append(tr("merge_step", i=self.merge_i, n=len(self.merge_steps) - 1) + "\n\n", style="bold #8ecae6")
+        out.append(tr("merge_step", i=self.merge_i, n=len(self.merge_steps) - 1) + "\n\n", style="bold #89dceb")
         for k, piece in enumerate(step.pieces):
             shown = self.roman(piece) if self.roman else piece
             is_new = step.merged and piece == step.merged
-            style = "bold #14172b on #ffd166" if is_new else f"#1b1f3b on {CHIP_COLOURS[k % len(CHIP_COLOURS)]}"
+            style = "bold #1e1e2e on #f9e2af" if is_new else f"#181825 on {CHIP_COLOURS[k % len(CHIP_COLOURS)]}"
             out.append(f" {show_piece(shown)} ", style=style)
             out.append(" ")
         out.append("\n\n")
         if step.rank < 0:
-            out.append(tr("start_bytes"), style="#f4a3c0")
+            out.append(tr("start_bytes"), style="#f5c2e7")
         else:
             when = tr("early") if step.rank < 1000 else tr("late")
-            out.append(tr("merge_new", p=step.merged, r=step.rank, when=when), style="#06d6a0")
+            out.append(tr("merge_new", p=step.merged, r=step.rank, when=when), style="#a6e3a1")
         # progress strip: how many pieces at each step
-        out.append("\n\n" + "  ".join(str(len(s.pieces)) for s in self.merge_steps), style="#5a5f7c")
+        out.append("\n\n" + "  ".join(str(len(s.pieces)) for s in self.merge_steps), style="#6c7086")
         view.update(out)
 
     # ── Race ─────────────────────────────────────────────────────────────────
@@ -333,7 +333,7 @@ class TokensLab(Screen):
         view = self.query_one("#race-view", Static)
         tr = self.app.tr
         if not self.race_revealed:
-            view.update(Text("  1 = English     2 = हिंदी     3 = Hinglish      ?", style="bold #ffd166"))
+            view.update(Text("  1 = English     2 = हिंदी     3 = Hinglish      ?", style="bold #f9e2af"))
             return
         texts = [self.query_one(f"#race-{i}", Input).value for i in range(3)]
         counts = [len(self.app.tokenizer.encode(t).ids) for t in texts]
@@ -341,9 +341,9 @@ class TokensLab(Screen):
         out = Text()
         out.append(tr("race_guess", g=RACE[self.race_choice][0]) + "   ", style="bold")
         right = counts[self.race_choice] == counts[most]
-        out.append(tr("race_right") if right else tr("race_wrong"), style="bold #06d6a0" if right else "bold #f4a3c0")
+        out.append(tr("race_right") if right else tr("race_wrong"), style="bold #a6e3a1" if right else "bold #f5c2e7")
         if sorted(counts)[-1] - sorted(counts)[-2] <= 1:
-            out.append("  " + tr("race_close"), style="#8a8fb0")
+            out.append("  " + tr("race_close"), style="#9399b2")
         out.append("\n\n")
         top = max(counts) or 1
         label_w = max(cell_len(lang) for lang, _ in RACE) + 2      # pad by screen cells, not characters
@@ -353,8 +353,8 @@ class TokensLab(Screen):
             out.append(lang + " " * (label_w - cell_len(lang)), style="bold")
             out.append(bar, style=CHIP_COLOURS[i])
             out.append(f"  {counts[i]} tokens · {counts[i] / words:.2f} per word · {len(texts[i]) / max(counts[i], 1):.1f} chars/token\n",
-                       style="#c9cce0")
-        out.append("\n" + tr("race_why"), style="italic #8ecae6")
+                       style="#bac2de")
+        out.append("\n" + tr("race_why"), style="italic #89dceb")
         view.update(out)
         self.query_one("#avatar", Avatar).set_mood("wow" if right else "thinking")
 
@@ -371,15 +371,15 @@ class TokensLab(Screen):
         out.append("\n\n")
         if n >= 6:
             st.complete("tokens", badge="Token Tamer")
-            out.append(tr("ch_a_done", n=n) + "\n", style="bold #ffd166")
+            out.append(tr("ch_a_done", n=n) + "\n", style="bold #f9e2af")
         else:
-            out.append(tr("ch_a_more", n=n) + "\n", style="#c9cce0")
+            out.append(tr("ch_a_more", n=n) + "\n", style="#bac2de")
         if n == 1:
             best = max(st.records.get("one_token_chars", 0), len(word))
             new = len(word) > st.records.get("one_token_chars", 0)
             st.records["one_token_chars"] = best
             st.save()
-            out.append(tr("ch_b_rec" if new else "ch_b_one", c=len(word), b=best), style="bold #06d6a0")
+            out.append(tr("ch_b_rec" if new else "ch_b_one", c=len(word), b=best), style="bold #a6e3a1")
         self.query_one("#ch-result", Static).update(out)
         self.query_one("#avatar", Avatar).set_mood("wow" if n >= 6 or n == 1 else "happy")
 

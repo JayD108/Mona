@@ -270,14 +270,14 @@ class TourScreen(Screen):
         app, tr = self.app, self.app.tr
         _, icon, d, stage = self.current()
         name, big, ours, question = d[app.state.lang]
-        out = Text(f"{icon} {name}\n\n", style="bold #ffd166")
-        for head, body, colour in ((tr("tour_big"), big, "#8ecae6"), (tr("tour_ours"), ours, "#06d6a0"),
-                                   (tr("tour_q"), question, "#f4a3c0")):
+        out = Text(f"{icon} {name}\n\n", style="bold #f9e2af")
+        for head, body, colour in ((tr("tour_big"), big, "#89dceb"), (tr("tour_ours"), ours, "#a6e3a1"),
+                                   (tr("tour_q"), question, "#f5c2e7")):
             out.append(head + "\n", style=f"bold {colour}")
-            out.append(body + "\n\n", style="#e8e8f0")
+            out.append(body + "\n\n", style="#cdd6f4")
         from .text import STAGES, stage_name
         st = next(s for s in STAGES if s[0] == stage)
-        out.append(tr("tour_open", s=stage_name(st, app.state.lang)), style="bold #ffd166")
+        out.append(tr("tour_open", s=stage_name(st, app.state.lang)), style="bold #f9e2af")
         self.query_one("#brief", Static).update(app.roman(out.plain) if app.state.romanize else out)
         if self.query_one("#teams", OptionList).highlighted == len(TEAMS) - 1:      # walked the whole floor
             app.state.complete("tour")

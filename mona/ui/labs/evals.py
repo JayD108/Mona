@@ -60,7 +60,7 @@ register({
                "hinglish": "{bytes} bytes par {bits:.1f} bits surprise = {bpb:.2f} bits per byte  (kam = MONA ko zyada natural laga)"},
     "ev_trend": {"en": "MONA's real held-out loss during training (per language):", "hi": "ट्रेनिंग के दौरान MONA का असली held-out loss (हर भाषा):",
                  "hinglish": "Training ke dauraan MONA ka asli held-out loss (har bhasha):"},
-    "ev_keys": {"en": "Esc back   F5 Mini exam  F6 Make your own  F7 Surprise meter   R run   F2 language  F3 depth  F4 romanize",
+    "ev_keys": {"en": "Esc back   F5 Mini exam  F6 Make your own  F7 Surprise meter   R run   F3 depth",
                 "hi": "Esc वापस   F5 परीक्षा  F6 अपनी परीक्षा  F7 हैरानी मीटर   R चलाएँ   F2 भाषा  F3 गहराई  F4 रोमन",
                 "hinglish": "Esc wapas   F5 Mini exam  F6 Apna exam  F7 Surprise meter   R run   F2 bhasha  F3 depth  F4 roman"},
 })
@@ -78,7 +78,7 @@ EXAM = [  # (question, [options], index of the right one)
     ("भारत की राजधानी नई", ["दिल्ली है", "मुंबई है", "चेन्नई है", "कोलकाता है"], 0),
     ("Main roz subah chai", ["peeta hoon", "khata hoon", "sota hoon", "likhta hoon"], 0),
 ]
-SURPRISE = ["#06d6a0", "#b5e48c", "#ffd166", "#f78c6b", "#ef476f"]
+SURPRISE = ["#a6e3a1", "#b5e48c", "#f9e2af", "#f78c6b", "#ef476f"]
 
 
 @torch.no_grad()
@@ -180,29 +180,29 @@ class EvalsLab(Screen):
     def render_question(self, out, q, opts, right, scores):
         pick = max(range(len(opts)), key=lambda i: scores[i])
         ok = pick == right
-        out.append(("✓ " if ok else "✗ "), style="bold #06d6a0" if ok else "bold #ef476f")
-        out.append(self.rr(q) + " …\n", style="bold #e8e8f0")
+        out.append(("✓ " if ok else "✗ "), style="bold #a6e3a1" if ok else "bold #ef476f")
+        out.append(self.rr(q) + " …\n", style="bold #cdd6f4")
         lo, hi = min(scores), max(scores)
         for i, (o, s) in enumerate(zip(opts, scores)):
             bar = "█" * max(1, round(18 * (s - lo) / ((hi - lo) or 1)))
-            style = "#06d6a0" if i == right else "#8a8fb0"
-            out.append(f"     {'★' if i == right else ' '} ", style="#ffd166")
+            style = "#a6e3a1" if i == right else "#9399b2"
+            out.append(f"     {'★' if i == right else ' '} ", style="#f9e2af")
             piece = self.rr(o)
             out.append(piece + " " * max(1, 18 - cell_len(piece)), style=style)
-            out.append(bar, style="#ffd166" if i == pick else "#3a3f5c")
+            out.append(bar, style="#f9e2af" if i == pick else "#45475a")
             out.append(f" {s:6.2f}{'  ← MONA' if i == pick else ''}\n", style=style)
         return ok
 
     def draw_exam(self):
         tr, view = self.app.tr, self.query_one("#exam-view", Static)
         if not self.exam_results:
-            view.update(Text(tr("ev_run"), style="bold #ffd166"))
+            view.update(Text(tr("ev_run"), style="bold #f9e2af"))
             return
         out, k = Text(), 0
         for q, opts, right, scores in self.exam_results:
             k += self.render_question(out, q, opts, right, scores)
         n = len(self.exam_results)
-        out.append("\n" + tr("ev_score", k=k, n=n, p=k / n), style="bold #8ecae6")
+        out.append("\n" + tr("ev_score", k=k, n=n, p=k / n), style="bold #89dceb")
         view.update(out)
         self.query_one("#avatar", Avatar).set_mood("wow" if k / n > 0.5 else "thinking")
 
@@ -245,9 +245,9 @@ class EvalsLab(Screen):
         out, k = Text(), 0
         for q, opts, right, scores in self.own:
             k += self.render_question(out, q, opts, right, scores)
-        out.append("\n" + self.app.tr("ev_score", k=k, n=len(self.own), p=k / len(self.own)), style="bold #8ecae6")
+        out.append("\n" + self.app.tr("ev_score", k=k, n=len(self.own), p=k / len(self.own)), style="bold #89dceb")
         if len(self.own) >= 3:
-            out.append("\n" + self.app.tr("ev_badge"), style="bold #ffd166")
+            out.append("\n" + self.app.tr("ev_badge"), style="bold #f9e2af")
         self.query_one("#own-view", Static).update(out)
 
     # ── surprise meter ───────────────────────────────────────────────────────
@@ -268,28 +268,28 @@ class EvalsLab(Screen):
     def _surprised(self, ids, bits):
         gb, tr = self.app.gb, self.app.tr
         out = Text()
-        out.append(self.rr(show_piece(gb.tok.decode([ids[0]]))), style="#8a8fb0")
+        out.append(self.rr(show_piece(gb.tok.decode([ids[0]]))), style="#9399b2")
         for tid, b in zip(ids[1:], bits):
             out.append(self.rr(gb.tok.decode([tid])), style=f"bold {SURPRISE[min(int(b / 4), 4)]}")
         total_bytes = len(gb.tok.decode(ids[1:]).encode("utf-8"))
         out.append("\n\n" + tr("ev_bpb", bits=sum(bits), bytes=total_bytes, bpb=sum(bits) / max(total_bytes, 1)),
-                   style="#c9cce0")
+                   style="#bac2de")
         legend = Text("\n")
         for i, lab in enumerate(["0-4", "4-8", "8-12", "12-16", "16+"]):
-            legend.append(f" {lab} bits ", style=f"bold #14172b on {SURPRISE[i]}")
+            legend.append(f" {lab} bits ", style=f"bold #1e1e2e on {SURPRISE[i]}")
             legend.append(" ")
         out.append_text(legend)
         self.query_one("#sur-view", Static).update(out)
 
     def draw_trend(self):
         _, evals = training_curves()
-        out = Text(self.app.tr("ev_trend") + "\n", style="bold #8ecae6")
+        out = Text(self.app.tr("ev_trend") + "\n", style="bold #89dceb")
         if evals:
             langs = [k for k in evals[0] if k not in ("step", "tokens")]
-            out.append(f"{'tokens':>8} " + "".join(f"{l:>10}" for l in langs) + "\n", style="#5a5f7c")
+            out.append(f"{'tokens':>8} " + "".join(f"{l:>10}" for l in langs) + "\n", style="#6c7086")
             for r in evals[-6:]:
                 out.append(f"{int(r['tokens']) / 1e9:7.2f}B " + "".join(f"{float(r[l]):10.3f}" for l in langs) + "\n",
-                           style="#c9cce0")
+                           style="#bac2de")
         self.query_one("#trend", Static).update(out)
 
     def export(self):

@@ -39,7 +39,7 @@ register({
     "wel_other": {"en": "A different name…", "hi": "कोई और नाम…", "hinglish": "Koi aur naam…"},
     "wel_name_is": {"en": "By my name: {n}", "hi": "मेरे नाम से: {n}", "hinglish": "Mere naam se: {n}"},
     "wel_type": {"en": "Type your name and press Enter", "hi": "अपना नाम लिखकर Enter दबाइए", "hinglish": "Apna naam likho aur Enter dabao"},
-    "wel_keys": {"en": "↑↓ choose   Enter continue   F2 language   (change later anytime: F7)",
+    "wel_keys": {"en": "↑↓ choose   Enter continue   (change later anytime: F7)",
                  "hi": "↑↓ चुनें   Enter आगे बढ़ें   F2 भाषा   (बाद में कभी भी बदलें: F7)",
                  "hinglish": "↑↓ chuno   Enter aage   F2 bhasha   (baad mein kabhi bhi badlo: F7)"},
     "greet_morning": {"en": "Good morning", "hi": "सुप्रभात", "hinglish": "Good morning"},
@@ -99,7 +99,7 @@ class WelcomeScreen(Screen):
             text = tr("wel_back", greet=tr(greeting_key()) + (f", {who}" if who else ""))
         else:
             text = tr("wel_first")
-        self.query_one("#wel-text", Static).update(Text(text, style="#e8e8f0"))
+        self.query_one("#wel-text", Static).update(Text(text, style="#cdd6f4"))
         self.query_one("#wel-ask", Static).update(tr("wel_ask"))
         choices = self.query_one("#wel-choices", OptionList)
         keep = choices.highlighted

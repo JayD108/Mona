@@ -1,7 +1,7 @@
 """Every word the app shows, in English / हिंदी / Hinglish, and per depth where it matters.
 
-An entry is either {lang: text} or {lang: {depth: text}}. Missing depth -> "student"; missing
-language -> English. Hindi and Hinglish wording should be reviewed by a native speaker before release.
+An entry is either {lang: text} or {lang: {depth: text}}. The app shows English only, at two depths
+(simple / engineer); the older "hi" / "hinglish" / "student" wording is kept in the dictionaries but never shown.
 
 Plain-language rule: a technical word is always explained in plain words the first time.
 """
@@ -52,14 +52,14 @@ S = {
     "journey": {"en": "THE LEARNING PATH", "hi": "सीखने का रास्ता", "hinglish": "LEARNING PATH"},
     "progress": {"en": "your progress", "hi": "आपकी प्रगति", "hinglish": "aapki progress"},
     "keys_home": {
-        "en": "↑↓ choose  Enter open  N next up  Tab path ⇄ explore  F1 explain a word  F8 show the code  F7 your name  L/D/R language/depth/roman  Q quit",
+        "en": "↑↓ choose  Enter open  N next up  Tab path ⇄ explore  F1 explain a word  F8 show the code  F7 your name  D depth  Q quit",
         "hi": "↑↓ चुनें  Enter खोलें  N अगला  Tab रास्ता ⇄ और  F1 शब्द का मतलब  F8 कोड देखें  F7 आपका नाम  L/D/R भाषा/गहराई/रोमन  Q बंद",
         "hinglish": "↑↓ chuno  Enter kholo  N agla  Tab path ⇄ explore  F1 word ka matlab  F8 code dekho  F7 aapka naam  L/D/R bhasha/depth/roman  Q band",
     },
     "soon": {"en": "Coming soon: this stage is being built.", "hi": "जल्द आ रहा है: यह चरण बन रहा है।",
              "hinglish": "Jaldi aa raha hai: yeh stage ban raha hai."},
     "loading": {"en": "Waking MONA up…", "hi": "MONA को जगा रहे हैं…", "hinglish": "MONA ko jaga rahe hain…"},
-    "depth_name": {"en": {"simple": "Simple", "student": "Student", "engineer": "Engineer"},
+    "depth_name": {"en": {"simple": "Simple", "engineer": "Engineer"},
                    "hi": {"simple": "सरल", "student": "विद्यार्थी", "engineer": "इंजीनियर"},
                    "hinglish": {"simple": "Simple", "student": "Student", "engineer": "Engineer"}},
 
@@ -90,11 +90,11 @@ def register(entries):
     S.update(entries)
 
 
-def t(key, lang="en", depth="student", **fmt):
+def t(key, lang="en", depth="simple", **fmt):
     entry = S[key]
-    val = entry.get(lang, entry["en"])
+    val = entry["en"]                          # the app is English-only; hi / hinglish entries are legacy
     if isinstance(val, dict):
-        val = val.get(depth, val.get("student"))
+        val = val.get(depth) or val.get("simple") or val.get("student")
     return val.format(**fmt) if fmt else val
 
 

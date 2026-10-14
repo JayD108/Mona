@@ -70,7 +70,7 @@ EXAMPLES = ["The cat sat on the mat because it was tired.",
             "राम ने धनुष तोड़ा और सीता ने माला पहनाई।",
             "Mujhe chai pasand hai kyunki woh garam hoti hai.",
             "1 2 3 4 5 1 2 3 4 5"]
-HEAT = ["#1b1f3b", "#2b2f55", "#3d3a70", "#5a3f86", "#7e4a92", "#a85a8f", "#d0707e", "#ee9468", "#fbbf5e", "#ffe28a"]
+HEAT = ["#181825", "#2b2f55", "#3d3a70", "#5a3f86", "#7e4a92", "#a85a8f", "#d0707e", "#ee9468", "#fbbf5e", "#ffe28a"]
 MAX_TOKENS = 22
 
 
@@ -228,50 +228,50 @@ class AttentionLab(Screen):
         toks = [self.label(t) for t in self.trace.tokens]
         W = self.current()
         where = tr("att_avg") if self.avg else tr("att_head", h=self.cur_head)
-        out = Text(tr("att_where", l=self.cur_layer, h=where) + "\n\n", style="bold #8ecae6")
+        out = Text(tr("att_where", l=self.cur_layer, h=where) + "\n\n", style="bold #89dceb")
         if self.view_focus and self.focus_i is not None:
             i = self.focus_i
-            out.append(tr("att_focus", w=toks[i]) + "\n\n", style="bold #ffd166")
+            out.append(tr("att_focus", w=toks[i]) + "\n\n", style="bold #f9e2af")
             start = max(0, i - 8) if self.quiz_q or answered else 0
             label_w = max(cell_len(t) for t in toks[:i + 1]) + 2
             for n, j in enumerate(range(start, i + 1), 1):
                 w = W[i, j].item()
-                out.append(f"{n} " if self.quiz_q else "  ", style="#ffd166")
+                out.append(f"{n} " if self.quiz_q else "  ", style="#f9e2af")
                 out.append(toks[j] + " " * (label_w - cell_len(toks[j])), style="bold")
                 if not self.quiz_q:
                     out.append("█" * max(1, round(40 * w)), style=heat(w))
-                    out.append(f" {w:5.1%}", style="#c9cce0")
+                    out.append(f" {w:5.1%}", style="#bac2de")
                 out.append("\n")
         else:
             label_w = max(cell_len(t) for t in toks) + 1
             for i, row_tok in enumerate(toks):
                 mark = "▶" if i == self.focus_i else " "
-                out.append(f"{mark}{row_tok}" + " " * (label_w - cell_len(row_tok)), style="bold #ffd166" if mark == "▶" else "#c9cce0")
+                out.append(f"{mark}{row_tok}" + " " * (label_w - cell_len(row_tok)), style="bold #f9e2af" if mark == "▶" else "#bac2de")
                 for j in range(len(toks)):
                     out.append("██" if j <= i else "  ", style=heat(W[i, j].item()) if j <= i else "")
                 out.append("\n")
-            out.append(" " * (label_w + 1) + "".join(f"{j % 10} " for j in range(len(toks))) + "\n", style="#5a5f7c")
-            out.append(" " * (label_w + 1) + "  ".join(f"{j}={t}" for j, t in enumerate(toks)), style="#5a5f7c")
+            out.append(" " * (label_w + 1) + "".join(f"{j % 10} " for j in range(len(toks))) + "\n", style="#6c7086")
+            out.append(" " * (label_w + 1) + "  ".join(f"{j}={t}" for j, t in enumerate(toks)), style="#6c7086")
         if self.quiz_q:
             i, j, _ = self.quiz_q
-            out.append("\n" + tr("att_quiz", l=self.cur_layer, h=self.cur_head, w=toks[i]), style="bold #f4a3c0")
+            out.append("\n" + tr("att_quiz", l=self.cur_layer, h=self.cur_head, w=toks[i]), style="bold #f5c2e7")
         elif answered:
             right, j = self.quiz_result
             out.append("\n" + (tr("att_right", n=self.quiz_wins) if right else tr("att_wrong", w=toks[j])),
-                       style="bold #06d6a0" if right else "bold #f4a3c0")
+                       style="bold #a6e3a1" if right else "bold #f5c2e7")
             if self.quiz_wins >= 3:
-                out.append("   " + tr("att_badge"), style="bold #ffd166")
+                out.append("   " + tr("att_badge"), style="bold #f9e2af")
             self.query_one("#avatar", Avatar).set_mood("wow" if right else "thinking")
         grid.update(out)
 
-        roles = Text(tr("att_roles") + "\n", style="bold #8ecae6")
+        roles = Text(tr("att_roles") + "\n", style="bold #89dceb")
         if self.roles:
             prev = sorted(self.roles, key=lambda r: -r["previous"])[:3]
             sink = sorted(self.roles, key=lambda r: -r["first"])[:3]
-            roles.append(tr("att_prev") + ":  ", style="#c9cce0")
-            roles.append("   ".join(f"L{r['layer']}·H{r['head']} ({r['previous']:.0%})" for r in prev) + "\n", style="bold #06d6a0")
-            roles.append(tr("att_sink") + ":  ", style="#c9cce0")
-            roles.append("   ".join(f"L{r['layer']}·H{r['head']} ({r['first']:.0%})" for r in sink), style="bold #cdb4db")
+            roles.append(tr("att_prev") + ":  ", style="#bac2de")
+            roles.append("   ".join(f"L{r['layer']}·H{r['head']} ({r['previous']:.0%})" for r in prev) + "\n", style="bold #a6e3a1")
+            roles.append(tr("att_sink") + ":  ", style="#bac2de")
+            roles.append("   ".join(f"L{r['layer']}·H{r['head']} ({r['first']:.0%})" for r in sink), style="bold #cba6f7")
         self.query_one("#roles", Static).update(roles)
 
     def export(self):

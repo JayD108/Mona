@@ -296,12 +296,12 @@ class GlossaryScreen(ModalScreen):
         term, d, stage = G[int(box.get_option_at_index(box.highlighted).id)]
         app, lang = self.app, self.app.state.lang
         meaning, like = d.get(lang, d["en"])
-        out = Text(term + "\n\n", style="bold #ffd166")
-        out.append(meaning + "\n\n", style="#e8e8f0")
-        out.append(app.tr("gl_like") + " ", style="bold #8ecae6")
-        out.append(like + "\n", style="italic #c9cce0")
+        out = Text(term + "\n\n", style="bold #f9e2af")
+        out.append(meaning + "\n\n", style="#cdd6f4")
+        out.append(app.tr("gl_like") + " ", style="bold #89dceb")
+        out.append(like + "\n", style="italic #bac2de")
         if stage:
             from .text import STAGES, stage_name
             st = next(s for s in STAGES if s[0] == stage)
-            out.append("\n" + app.tr("gl_see", s=stage_name(st, lang)), style="#06d6a0")
+            out.append("\n" + app.tr("gl_see", s=stage_name(st, lang)), style="#a6e3a1")
         detail.update(app.roman(out.plain) if app.state.romanize else out)

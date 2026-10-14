@@ -333,30 +333,30 @@ class IncidentScreen(Screen):
         app, tr = self.app, self.app.tr
         iid, when, icon, d = self.current()
         title, situation, options, did, lesson = d[app.state.lang]
-        out = Text(f"{icon} {title}", style="bold #ffd166")
-        out.append(f"    {when}\n\n", style="#8a8fb0")
-        out.append(situation + "\n\n", style="#e8e8f0")
+        out = Text(f"{icon} {title}", style="bold #f9e2af")
+        out.append(f"    {when}\n\n", style="#9399b2")
+        out.append(situation + "\n\n", style="#cdd6f4")
         chosen = self.answers.get(iid)
         for n, (text, verdict, feedback) in enumerate(options):
-            style = "bold #e8e8f0" if chosen is None else ("bold #06d6a0" if verdict == "good" else "#8a8fb0")
+            style = "bold #cdd6f4" if chosen is None else ("bold #a6e3a1" if verdict == "good" else "#9399b2")
             out.append(f"  {n + 1}. {text}\n", style=style)
         out.append("\n")
         if chosen is None:
-            out.append(tr("inc_choose"), style="bold #ffd166")
+            out.append(tr("inc_choose"), style="bold #f9e2af")
         else:
             verdict, feedback = options[chosen][1], options[chosen][2]
             out.append(tr({"good": "inc_good", "ok": "inc_ok", "bad": "inc_bad"}[verdict]) + " ",
-                       style="bold #06d6a0" if verdict == "good" else "bold #f4a3c0")
-            out.append(feedback + "\n\n", style="#e8e8f0")
-            out.append(tr("inc_real") + "\n", style="bold #8ecae6")
-            out.append(did + "\n\n", style="#e8e8f0")
-            out.append(tr("inc_lesson") + "\n", style="bold #cdb4db")
-            out.append(lesson + "\n\n", style="italic #c9cce0")
+                       style="bold #a6e3a1" if verdict == "good" else "bold #f5c2e7")
+            out.append(feedback + "\n\n", style="#cdd6f4")
+            out.append(tr("inc_real") + "\n", style="bold #89dceb")
+            out.append(did + "\n\n", style="#cdd6f4")
+            out.append(tr("inc_lesson") + "\n", style="bold #cba6f7")
+            out.append(lesson + "\n\n", style="italic #bac2de")
             good = sum(1 for k, v in self.answers.items()
                        if next(x for x in INCIDENTS if x[0] == k)[3]["en"][2][v][1] == "good")
-            out.append(tr("inc_score", a=good, b=len(self.answers)), style="bold #ffd166")
+            out.append(tr("inc_score", a=good, b=len(self.answers)), style="bold #f9e2af")
             if len(self.answers) == len(INCIDENTS):
                 app.state.complete("incidents", badge="Run Rescuer" if good >= 5 else None)
                 if good >= 5:
-                    out.append("\n" + tr("inc_badge"), style="bold #ffd166")
+                    out.append("\n" + tr("inc_badge"), style="bold #f9e2af")
         self.query_one("#case", Static).update(app.roman(out.plain) if app.state.romanize else out)

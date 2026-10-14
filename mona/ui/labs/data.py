@@ -217,26 +217,26 @@ class DataLab(Screen):
             return
         doc = self.pool[self.i]
         raw = doc["raw"].strip()
-        out = Text(tr("dat_doc", i=self.n + (self.answered is None), src=doc["lang"], n=len(raw)) + "\n\n", style="bold #8ecae6")
-        out.append(self.rr(raw[:600]) + ("…" if len(raw) > 600 else "") + "\n\n", style="#e8e8f0")
+        out = Text(tr("dat_doc", i=self.n + (self.answered is None), src=doc["lang"], n=len(raw)) + "\n\n", style="bold #89dceb")
+        out.append(self.rr(raw[:600]) + ("…" if len(raw) > 600 else "") + "\n\n", style="#cdd6f4")
         if self.answered is None:
-            out.append(tr("dat_q"), style="bold #ffd166")
+            out.append(tr("dat_q"), style="bold #f9e2af")
         else:
             keeps = doc["why"] is None
             if keeps:
-                out.append(tr("dat_kept") + "\n", style="bold #06d6a0")
+                out.append(tr("dat_kept") + "\n", style="bold #a6e3a1")
             else:
                 key, fmt = doc["why"]
                 out.append(tr("dat_dropped", why=tr(key, **fmt)) + "\n", style="bold #ef476f")
             right = self.answered == keeps
             out.append(tr("dat_you", y="K" if self.answered else "D", m="✓" if right else "✗") + "\n",
-                       style="#06d6a0" if right else "#f4a3c0")
-            out.append(tr("dat_score", k=self.k, n=self.n) + "\n", style="#c9cce0")
+                       style="#a6e3a1" if right else "#f5c2e7")
+            out.append(tr("dat_score", k=self.k, n=self.n) + "\n", style="#bac2de")
             if self.rates:
                 out.append(tr("dat_rates", e=self.rates.get("english", 0), h=self.rates.get("hindi", 0),
-                              g=self.rates.get("hinglish", 0)), style="#8a8fb0")
+                              g=self.rates.get("hinglish", 0)), style="#9399b2")
             if self.n >= 8 and self.k / self.n >= 0.75:
-                out.append("\n" + tr("dat_badge"), style="bold #ffd166")
+                out.append("\n" + tr("dat_badge"), style="bold #f9e2af")
             self.query_one("#avatar", Avatar).set_mood("wow" if right else "thinking")
         view.update(out)
 
@@ -249,26 +249,26 @@ class DataLab(Screen):
         # (stable-phase share, decay-phase share) from scripts/mona_pretrain.py; decay = last 15% of training
         shares = {"english": (0.55, 0.55), "hindi": (0.40, 0.40), "hinglish": (0.0497, 0.049), "awadhi": (0.00026, 0.00104)}
         total = sum(v["train_tokens"] for v in manifest.values())
-        out = Text(tr("dat_mix_title") + "\n\n", style="bold #8ecae6")
+        out = Text(tr("dat_mix_title") + "\n\n", style="bold #89dceb")
         for c, (lang, v) in enumerate(sorted(manifest.items(), key=lambda kv: -kv[1]["train_tokens"])):
             n = v["train_tokens"]
             out.append(f"{lang:9s} ", style=f"bold {CHIP_COLOURS[c]}")
             out.append("█" * max(1, round(50 * n / total)), style=CHIP_COLOURS[c])
             s_stable, s_decay = shares.get(lang, (0, 0))
             seen = 2.5e9 * (0.85 * s_stable + 0.15 * s_decay) / n
-            out.append(f"  {n / 1e6:8,.1f}M tokens · {s_stable:.1%} of training · seen ~{seen:.1f}×\n", style="#c9cce0")
+            out.append(f"  {n / 1e6:8,.1f}M tokens · {s_stable:.1%} of training · seen ~{seen:.1f}×\n", style="#bac2de")
         out.append(f"\n{'total':9s} {total / 1e9:.2f}B tokens available · 2.5B used for training\n\n", style="bold")
-        out.append(tr("dat_mix_note"), style="italic #c9cce0")
+        out.append(tr("dat_mix_note"), style="italic #bac2de")
         self.query_one("#mix-view", Static).update(out)
 
     def draw_fix(self):
         tr = self.app.tr
-        out = Text(tr("dat_fix_title") + "\n\n", style="bold #8ecae6")
-        out.append(tr("dat_fix_note") + "\n\n", style="#c9cce0")
+        out = Text(tr("dat_fix_title") + "\n\n", style="bold #89dceb")
+        out.append(tr("dat_fix_note") + "\n\n", style="#bac2de")
         if self.fix:
             before, after = self.fix
             out.append(f"{tr('dat_before')}:\n", style="bold #ef476f")
-            out.append(before + "…\n\n", style="#e8e8f0")
-            out.append(f"{tr('dat_after')}:\n", style="bold #06d6a0")
-            out.append(after + "…", style="#e8e8f0")
+            out.append(before + "…\n\n", style="#cdd6f4")
+            out.append(f"{tr('dat_after')}:\n", style="bold #a6e3a1")
+            out.append(after + "…", style="#cdd6f4")
         self.query_one("#fix-view", Static).update(out)

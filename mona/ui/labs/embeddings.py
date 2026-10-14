@@ -178,13 +178,13 @@ class EmbeddingsLab(Screen):
         rows = [(self.app.gb.tok.decode([i]), s) for s, i in zip(vals.tolist(), idx.tolist()) if i not in own][:12]
         tr = self.app.tr
         star = tr("emb_star", n=n) if n > 1 else ""
-        out = Text(tr("emb_nb_title", w=self.rr(word), star=star) + "\n\n", style="bold #8ecae6")
+        out = Text(tr("emb_nb_title", w=self.rr(word), star=star) + "\n\n", style="bold #89dceb")
         label_w = max(cell_len(self.rr(show_piece(t))) for t, _ in rows) + 2
         for k, (t, s) in enumerate(rows):
             piece = self.rr(show_piece(t))
             out.append(piece + " " * (label_w - cell_len(piece)), style=f"bold {CHIP_COLOURS[k % len(CHIP_COLOURS)]}")
             out.append("█" * max(1, round(36 * max(s, 0))), style=CHIP_COLOURS[k % len(CHIP_COLOURS)])
-            out.append(f" {s:.2f}\n", style="#c9cce0")
+            out.append(f" {s:.2f}\n", style="#bac2de")
         self.query_one("#nb-view", Static).update(out)
 
     # ── 2D word map ──────────────────────────────────────────────────────────
@@ -209,9 +209,9 @@ class EmbeddingsLab(Screen):
         rows = {}
         for w, c, (x, y) in zip(words, cats, P.tolist()):
             rows.setdefault(int(y * (height - 1)), []).append((int(x * (width - 12)), self.rr(w), c))
-        out = Text(self.app.tr("emb_map_title", name=name) + "\n\n", style="bold #8ecae6")
+        out = Text(self.app.tr("emb_map_title", name=name) + "\n\n", style="bold #89dceb")
         for r in range(height - 1, -1, -1):
-            line, pos = Text("│ ", style="#3a3f5c"), 0
+            line, pos = Text("│ ", style="#45475a"), 0
             for x, w, c in sorted(rows.get(r, [])):
                 x = max(x, pos)
                 line.append(" " * (x - pos))
@@ -220,14 +220,14 @@ class EmbeddingsLab(Screen):
                 line.append(" ")
             out.append_text(line)
             out.append("\n")
-        out.append("└" + "─" * width + "\n", style="#3a3f5c")
+        out.append("└" + "─" * width + "\n", style="#45475a")
         legend = Text()
         for c, cat in enumerate(CATEGORIES):
             legend.append(f"● {cat}   ", style=CHIP_COLOURS[c])
         out.append_text(legend)
-        out.append("\n" + self.app.tr("emb_map_note"), style="italic #8a8fb0")
+        out.append("\n" + self.app.tr("emb_map_note"), style="italic #9399b2")
         if which == 2:
-            out.append("\n" + self.app.tr("emb_map_mixed"), style="italic #ffd166")
+            out.append("\n" + self.app.tr("emb_map_mixed"), style="italic #f9e2af")
         self.query_one("#map-view", Static).update(out)
 
     # ── odd one out ──────────────────────────────────────────────────────────
@@ -270,16 +270,16 @@ class EmbeddingsLab(Screen):
             return
         tr = self.app.tr
         words, ans = self.odd
-        out = Text(tr("emb_odd_q") + "\n\n", style="bold #8ecae6")
+        out = Text(tr("emb_odd_q") + "\n\n", style="bold #89dceb")
         for i, w in enumerate(words, 1):
-            out.append(f"  {i}  ", style="bold #ffd166")
-            out.append(self.rr(w) + "\n", style="bold #e8e8f0")
+            out.append(f"  {i}  ", style="bold #f9e2af")
+            out.append(self.rr(w) + "\n", style="bold #cdd6f4")
         if self.odd_answered:
             you, mona = self.odd_result
             out.append("\n" + tr("emb_odd_res", a=self.rr(words[ans]), y="✓" if you == ans else "✗",
-                                 m=self.rr(words[mona]), mm="✓" if mona == ans else "✗") + "\n", style="bold #06d6a0")
-            out.append(tr("emb_odd_score", k=self.odd_k, n=self.odd_n), style="#c9cce0")
+                                 m=self.rr(words[mona]), mm="✓" if mona == ans else "✗") + "\n", style="bold #a6e3a1")
+            out.append(tr("emb_odd_score", k=self.odd_k, n=self.odd_n), style="#bac2de")
             if self.odd_k >= 3:
-                out.append("\n" + tr("emb_badge"), style="bold #ffd166")
+                out.append("\n" + tr("emb_badge"), style="bold #f9e2af")
         self.query_one("#odd-view", Static).update(out)
         self.query_one("#avatar", Avatar).set_mood("wow" if self.odd_answered else "thinking")

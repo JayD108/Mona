@@ -141,31 +141,31 @@ class BudgetScreen(Screen):
         n = SIZES[self.s]
         d = c / (6 * n)
         out = Text()
-        out.append(f"{tr('bud_budget')}:  ", style="bold #8ecae6")
-        out.append(f"{BUDGETS[self.b][col]}", style="bold #ffd166")
-        out.append(f"   ({c:.1e} FLOPs)\n", style="#8a8fb0")
-        out.append(f"{tr('bud_size')}:  ", style="bold #8ecae6")
-        out.append(f"{human(n)} parameters\n", style="bold #ffd166")
-        out.append(tr("bud_tokens", d=human(d), r=f"{d / n:,.1f}") + "\n", style="#e8e8f0")
+        out.append(f"{tr('bud_budget')}:  ", style="bold #89dceb")
+        out.append(f"{BUDGETS[self.b][col]}", style="bold #f9e2af")
+        out.append(f"   ({c:.1e} FLOPs)\n", style="#9399b2")
+        out.append(f"{tr('bud_size')}:  ", style="bold #89dceb")
+        out.append(f"{human(n)} parameters\n", style="bold #f9e2af")
+        out.append(tr("bud_tokens", d=human(d), r=f"{d / n:,.1f}") + "\n", style="#cdd6f4")
         gpu_h = c / H100 / 3600
         out.append(tr("bud_time", h=f"{gpu_h:,.0f}" if gpu_h >= 1 else f"{gpu_h:.2f}", c=f"{gpu_h * H100_PRICE:,.0f}",
-                      l=duration(c / LAPTOP, lang)) + "\n\n", style="#e8e8f0")
+                      l=duration(c / LAPTOP, lang)) + "\n\n", style="#cdd6f4")
 
         losses = [loss(sz, c / (6 * sz)) for sz in SIZES]
         best = losses.index(min(losses))
         lo = min(losses)
         hi = min(max(losses), lo + 3)
-        out.append(tr("bud_curve") + "\n", style="bold #8ecae6")
+        out.append(tr("bud_curve") + "\n", style="bold #89dceb")
         for i, (sz, ls) in enumerate(zip(SIZES, losses)):
             width = 40 - round(min((ls - lo) / ((hi - lo) or 1), 1) * 34)
-            colour = "#06d6a0" if i == best else ("#ffd166" if i == self.s else "#3a3f5c")
-            out.append(f"  {human(sz):>5} ", style="bold" if i == self.s else "#8a8fb0")
+            colour = "#a6e3a1" if i == best else ("#f9e2af" if i == self.s else "#45475a")
+            out.append(f"  {human(sz):>5} ", style="bold" if i == self.s else "#9399b2")
             out.append("█" * width, style=colour)
-            out.append(f" {ls:.2f}", style="#c9cce0")
+            out.append(f" {ls:.2f}", style="#bac2de")
             if i == best:
-                out.append("  " + tr("bud_best"), style="bold #06d6a0")
+                out.append("  " + tr("bud_best"), style="bold #a6e3a1")
             if i == self.s:
-                out.append("  " + tr("bud_you"), style="bold #ffd166")
+                out.append("  " + tr("bud_you"), style="bold #f9e2af")
             out.append("\n")
         out.append("\n")
         if self.s < best - 1:
@@ -174,12 +174,12 @@ class BudgetScreen(Screen):
             verdict = "bud_verdict_big"
         else:
             verdict = "bud_verdict_ok"
-        out.append(tr(verdict) + "\n\n", style="bold #f4a3c0" if verdict != "bud_verdict_ok" else "bold #06d6a0")
-        out.append(tr("bud_famous") + "\n", style="bold #8ecae6")
+        out.append(tr(verdict) + "\n\n", style="bold #f5c2e7" if verdict != "bud_verdict_ok" else "bold #a6e3a1")
+        out.append(tr("bud_famous") + "\n", style="bold #89dceb")
         for name, fn, fd in FAMOUS:
             out.append(f"  {name:<11} {human(fn):>5} params · {human(fd):>5} tokens · {fd / fn:7,.0f} tokens/param · "
-                       f"{6 * fn * fd:.1e} FLOPs\n", style="#c9cce0")
-        out.append("\n" + tr("bud_note"), style="italic #8a8fb0")
+                       f"{6 * fn * fd:.1e} FLOPs\n", style="#bac2de")
+        out.append("\n" + tr("bud_note"), style="italic #9399b2")
         self.query_one("#plan", Static).update(app.roman(out.plain) if app.state.romanize else out)
         if self.b == len(BUDGETS) - 1:
             app.state.complete("budget")

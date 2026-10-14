@@ -201,18 +201,18 @@ class TeacherScreen(Screen):
 
     def draw(self):
         tr, L = self.app.tr, self.lesson()
-        out = Text(f"{tr('te_obj')}: ", style="bold #ffd166")
-        out.append(L["goal"] + "\n\n", style="#e8e8f0")
-        out.append(tr("te_plan") + "\n", style="bold #8ecae6")
+        out = Text(f"{tr('te_obj')}: ", style="bold #f9e2af")
+        out.append(L["goal"] + "\n\n", style="#cdd6f4")
+        out.append(tr("te_plan") + "\n", style="bold #89dceb")
         for line in TIMELINE[self.lang]:
-            out.append("  • " + line.format(activity=L["activity"]) + "\n", style="#c9cce0")
-        out.append("\n" + tr("te_disc") + "\n", style="bold #8ecae6")
+            out.append("  • " + line.format(activity=L["activity"]) + "\n", style="#bac2de")
+        out.append("\n" + tr("te_disc") + "\n", style="bold #89dceb")
         for q in L["disc"]:
-            out.append(f"  ? {q}\n", style="#c9cce0")
-        out.append("\n" + tr("te_quiz") + "\n", style="bold #8ecae6")
+            out.append(f"  ? {q}\n", style="#bac2de")
+        out.append("\n" + tr("te_quiz") + "\n", style="bold #89dceb")
         for n, (q, opts, ans) in enumerate(L["quiz"] + live_questions(self.app, self.stage, self.lang), 1):
-            out.append(f"  {n}. {q}\n", style="#e8e8f0")
-            out.append("     " + "   ".join(f"{'abcd'[i]}) {o}" for i, o in enumerate(opts)) + "\n", style="#8a8fb0")
+            out.append(f"  {n}. {q}\n", style="#cdd6f4")
+            out.append("     " + "   ".join(f"{'abcd'[i]}) {o}" for i, o in enumerate(opts)) + "\n", style="#9399b2")
         self.query_one("#te-plan", Static).update(out)
 
     def action_save(self):

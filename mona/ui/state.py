@@ -4,14 +4,14 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 STATE_PATH = Path.home() / ".mona" / "state.json"
-LANGS = ["en", "hi", "hinglish"]
-DEPTHS = ["simple", "student", "engineer"]
+LANGS = ["en"]                      # the app is English-only (MONA herself still reads Hindi, Hinglish, Awadhi)
+DEPTHS = ["simple", "engineer"]
 
 
 @dataclass
 class State:
     lang: str = "en"
-    depth: str = "student"
+    depth: str = "simple"
     romanize: bool = False          # show Hindi in Latin letters (for terminals that can't draw Devanagari)
     display_checked: bool = False
     address: str = ""               # how MONA addresses the learner: "sir" | "maam" | "name" ("" = not chosen yet)
@@ -24,7 +24,10 @@ class State:
     def load(cls):
         try:
             data = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-            return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+            state = cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+            state.lang, state.romanize = "en", False                      # older saves may have Hindi / Hinglish on
+            state.depth = state.depth if state.depth in DEPTHS else "simple"   # the old "student" depth became "simple"
+            return state
         except (OSError, ValueError, TypeError):
             return cls()
 

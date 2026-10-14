@@ -4,7 +4,7 @@ from rich.text import Text
 from textual.widgets import Static
 
 # Token chip colours: soft backgrounds, dark text (readable on dark and light terminals)
-CHIP_COLOURS = ["#ffd166", "#06d6a0", "#8ecae6", "#f4a3c0", "#cdb4db", "#ffb703", "#90be6d", "#f9844a"]
+CHIP_COLOURS = ["#f9e2af", "#a6e3a1", "#89dceb", "#f5c2e7", "#cba6f7", "#fab387", "#94e2d5", "#f38ba8"]
 
 FACES = {"happy": "◕‿◕", "thinking": "◔_◔", "wow": "⊙▽⊙", "sleepy": "－_－"}
 
@@ -21,8 +21,8 @@ class Avatar(Static):
 
     def set_mood(self, mood):
         self.mood = mood
-        self.update(Text.assemble(("╭─────╮\n", "#8ecae6"), ("│ ", "#8ecae6"), (FACES[mood], "bold #ffd166"),
-                                  (" │\n", "#8ecae6"), ("╰─────╯\n", "#8ecae6"), (" MONA", "bold #8ecae6")))
+        self.update(Text.assemble(("╭─────╮\n", "#89dceb"), ("│ ", "#89dceb"), (FACES[mood], "bold #f9e2af"),
+                                  (" │\n", "#89dceb"), ("╰─────╯\n", "#89dceb"), (" MONA", "bold #89dceb")))
 
 
 def show_piece(text):
@@ -39,7 +39,7 @@ def token_chips(tokens, romanize=None, show_ids=False):
         piece = show_piece(tok.text)
         if romanize:
             piece = romanize(piece)
-        style = f"bold #1b1f3b on {CHIP_COLOURS[i % len(CHIP_COLOURS)]}"
+        style = f"bold #181825 on {CHIP_COLOURS[i % len(CHIP_COLOURS)]}"
         # terminals measure Devanagari vowel signs inconsistently: give those chips one cell of breathing room
         pad = "  " if any("ऀ" <= ch <= "ॿ" for ch in piece) else " "
         out.append(f" {piece}{pad}", style=style)
@@ -62,6 +62,6 @@ def prob_bars(guesses, romanize=None, width=28):
         out.append(f"{piece}", style=f"bold {CHIP_COLOURS[i % len(CHIP_COLOURS)]}")
         out.append(" " * max(1, label_w - cell_len(piece)))
         out.append("█" * filled, style=CHIP_COLOURS[i % len(CHIP_COLOURS)])
-        out.append("░" * (width - filled), style="#3a3f5c")
+        out.append("░" * (width - filled), style="#45475a")
         out.append(f" {g.prob:6.1%}\n", style="bold")
     return out

@@ -190,9 +190,9 @@ def chart(losses, width=50, height=5):
     blocks = " ▁▂▃▄▅▆▇█"
     out = Text()
     for row in range(height - 1, -1, -1):
-        out.append(f"{hi:5.2f} " if row == height - 1 else (f"{lo:5.2f} " if row == 0 else "      "), style="#5a5f7c")
+        out.append(f"{hi:5.2f} " if row == height - 1 else (f"{lo:5.2f} " if row == 0 else "      "), style="#6c7086")
         for v in vals:
-            out.append(blocks[min(max(round((v - lo) / span * height * 8) - row * 8, 0), 8)], style="#06d6a0")
+            out.append(blocks[min(max(round((v - lo) / span * height * 8) - row * 8, 0), 8)], style="#a6e3a1")
         out.append("\n")
     return out
 
@@ -236,7 +236,7 @@ class CourseScreen(Screen):
         box.clear_options()
         for n, (title, _, _) in enumerate(STEPS[app.state.lang], 1):
             mark = "✓" if n in self.done else "○"
-            box.add_option(Option(Text.assemble((f" {mark} ", "#06d6a0" if n in self.done else "#5a5f7c"),
+            box.add_option(Option(Text.assemble((f" {mark} ", "#a6e3a1" if n in self.done else "#6c7086"),
                                                 (app.roman(title) if app.state.romanize else title, "bold")), id=str(n)))
         box.highlighted = keep if keep is not None else 0
         self.show()
@@ -251,11 +251,11 @@ class CourseScreen(Screen):
         app, tr = self.app, self.app.tr
         n = self.current()
         title, what, cmd = STEPS[app.state.lang][n - 1]
-        info = Text(title + "\n\n", style="bold #ffd166")
-        info.append(what + "\n\n", style="#e8e8f0")
-        info.append(tr("co_cmd") + "\n", style="bold #8ecae6")
-        info.append(cmd + "\n\n", style="#c9cce0")
-        info.append(tr("co_busy") if self.busy else tr("co_run"), style="bold #f4a3c0" if self.busy else "bold #06d6a0")
+        info = Text(title + "\n\n", style="bold #f9e2af")
+        info.append(what + "\n\n", style="#cdd6f4")
+        info.append(tr("co_cmd") + "\n", style="bold #89dceb")
+        info.append(cmd + "\n\n", style="#bac2de")
+        info.append(tr("co_busy") if self.busy else tr("co_run"), style="bold #f5c2e7" if self.busy else "bold #a6e3a1")
         self.query_one("#step-info", Static).update(app.roman(info.plain) if app.state.romanize else info)
         self.query_one("#step-out", Static).update(self.out.get(n, ""))
         self.query_one("#step-out").display = n in self.out
@@ -303,33 +303,33 @@ class CourseScreen(Screen):
                 self.train_text, self.test_text = M.corpus(self.lang)
                 c = len(self.train_text) + len(self.test_text)
                 out = Text(tr("co_r1", c=c, w=len((self.train_text + self.test_text).split()),
-                              l=LANG_NAME[self.app.state.lang][self.lang]) + "\n", style="#e8e8f0")
-                out.append("“" + " ".join(self.train_text[:300].split()) + "…”", style="italic #c9cce0")
+                              l=LANG_NAME[self.app.state.lang][self.lang]) + "\n", style="#cdd6f4")
+                out.append("“" + " ".join(self.train_text[:300].split()) + "…”", style="italic #bac2de")
             elif n == 2:
                 import time
                 t = time.time()
                 self.tok = M.make_tokenizer(self.train_text)
                 secs = time.time() - t
-                out = Text(tr("co_r2", v=self.tok.get_vocab_size(), s=secs) + "\n\n", style="#e8e8f0")
+                out = Text(tr("co_r2", v=self.tok.get_vocab_size(), s=secs) + "\n\n", style="#cdd6f4")
                 ex = EXAMPLE[self.lang]
                 for key, tk in (("co_yours", self.tok), ("co_monas", self.app.tokenizer)):
                     pieces = self._pieces(tk, ex)
-                    out.append(tr(key, n=len(pieces)) + "\n", style="bold #8ecae6")
+                    out.append(tr(key, n=len(pieces)) + "\n", style="bold #89dceb")
                     out.append_text(token_chips(pieces))
                     out.append("\n\n")
-                out.append(tr("co_r2b"), style="italic #c9cce0")
+                out.append(tr("co_r2b"), style="italic #bac2de")
             elif n == 3:
                 self.device = M.pick_device()
                 self.model = M.make_model(self.device)
                 p = sum(x.numel() for x in self.model.parameters())
-                out = Text(tr("co_r3", p=p, x=round(110.1e6 / p)) + "\n", style="#e8e8f0")
+                out = Text(tr("co_r3", p=p, x=round(110.1e6 / p)) + "\n", style="#cdd6f4")
                 for part, cnt in M.count_parts(self.model).items():
                     bar = "█" * max(1, round(30 * cnt / p))
-                    out.append(f"  {part:<13} {cnt:>9,}  ", style="#c9cce0")
-                    out.append(bar + "\n", style="#ffd166")
-                out.append("\n" + tr("co_r3b") + "\n", style="#e8e8f0")
+                    out.append(f"  {part:<13} {cnt:>9,}  ", style="#bac2de")
+                    out.append(bar + "\n", style="#f9e2af")
+                out.append("\n" + tr("co_r3b") + "\n", style="#cdd6f4")
                 out.append("“" + PROMPT[self.lang] + M.to_text(M.sample(self.model, self.tok, PROMPT[self.lang], 30,
-                                                                       device=self.device)) + "”", style="italic #f4a3c0")
+                                                                       device=self.device)) + "”", style="italic #f5c2e7")
                 self.ids = M.encode(self.tok, self.train_text)
                 self.test_ids = M.encode(self.tok, self.test_text)
                 self.bpb_before = M.bits_per_byte(self.model, self.tok, self.test_text, device=self.device)
@@ -341,44 +341,44 @@ class CourseScreen(Screen):
                     losses.append(loss)
                     if step in (1, 100, 200, TRAIN_STEPS):
                         samples.append((step, M.to_text(M.sample(self.model, self.tok, PROMPT[self.lang], 30, device=self.device))))
-                    out = Text(tr("co_device", d=dev) + "\n", style="#8a8fb0")
-                    out.append(tr("co_r4", s=step, n=TRAIN_STEPS, l=loss, t=time.time() - t) + "\n", style="bold #ffd166")
+                    out = Text(tr("co_device", d=dev) + "\n", style="#9399b2")
+                    out.append(tr("co_r4", s=step, n=TRAIN_STEPS, l=loss, t=time.time() - t) + "\n", style="bold #f9e2af")
                     out.append_text(chart(losses))
                     for s, txt in samples:
-                        out.append("\n" + tr("co_r4_sample", s=s) + " ", style="bold #8ecae6")
-                        out.append("“" + PROMPT[self.lang] + flat(txt) + "”", style="italic #c9cce0")
+                        out.append("\n" + tr("co_r4_sample", s=s) + " ", style="bold #89dceb")
+                        out.append("“" + PROMPT[self.lang] + flat(txt) + "”", style="italic #bac2de")
                     call(self.set_out, 4, out)
-                out.append("\n\n" + tr("co_r4_done", a=losses[0], b=losses[-1]), style="bold #06d6a0")
+                out.append("\n\n" + tr("co_r4_done", a=losses[0], b=losses[-1]), style="bold #a6e3a1")
             elif n == 5:
                 p = prompt or PROMPT[self.lang]
-                out = Text(tr("co_r5", p=p) + "\n", style="bold #8ecae6")
+                out = Text(tr("co_r5", p=p) + "\n", style="bold #89dceb")
                 for _ in range(3):
                     txt = M.to_text(M.sample(self.model, self.tok, p, 40, device=self.device))
-                    out.append("  “" + p + flat(txt) + "”\n", style="italic #e8e8f0")
-                out.append("\n" + tr("co_r5b"), style="#c9cce0")
+                    out.append("  “" + p + flat(txt) + "”\n", style="italic #cdd6f4")
+                out.append("\n" + tr("co_r5b"), style="#bac2de")
             elif n == 7:
                 out = self.lr_experiment(M, call)
             else:
                 after = M.bits_per_byte(self.model, self.tok, self.test_text, device=self.device)
-                rows = [(tr("co_untrained"), self.bpb_before, "#f4a3c0"), (tr("co_trained"), after, "#ffd166")]
+                rows = [(tr("co_untrained"), self.bpb_before, "#f5c2e7"), (tr("co_trained"), after, "#f9e2af")]
                 gb = self.app.gb
                 if gb is not None:
                     rows.append((tr("co_mona"), M.bits_per_byte(gb.model, gb.tok, self.test_text, device=gb.device, chunks=2),
-                                 "#06d6a0"))
-                out = Text(tr("co_r6") + "\n\n", style="bold #8ecae6")
+                                 "#a6e3a1"))
+                out = Text(tr("co_r6") + "\n\n", style="bold #89dceb")
                 top = max(r[1] for r in rows)
                 for name, v, colour in rows:
-                    out.append(f"  {name:<34}", style="#e8e8f0")
+                    out.append(f"  {name:<34}", style="#cdd6f4")
                     out.append("█" * max(1, round(36 * v / top)), style=colour)
                     out.append(f" {v:.2f}\n", style="bold")
                 path = self._save()
-                out.append("\n" + tr("co_r6b", p=path) + "\n\n", style="bold #ffd166")
-                out.append(tr("co_r6c"), style="#c9cce0")
+                out.append("\n" + tr("co_r6b", p=path) + "\n\n", style="bold #f9e2af")
+                out.append(tr("co_r6c"), style="#bac2de")
                 call(self.app.state.complete, "course", "Model Maker")
             call(self.set_out, n, out)
             call(self.finish, n)
         except Exception as e:                                  # never crash the app: show what went wrong
-            call(self.set_out, n, Text(f"⚠ {type(e).__name__}: {e}", style="bold #f4a3c0"))
+            call(self.set_out, n, Text(f"⚠ {type(e).__name__}: {e}", style="bold #f5c2e7"))
             call(self._unbusy)
 
     def lr_experiment(self, M, call):
@@ -386,7 +386,7 @@ class CourseScreen(Screen):
         import torch
         tr = self.app.tr
         steps, runs = 150, []
-        colours = {3e-2: "#f4a3c0", 3e-3: "#06d6a0", 3e-4: "#8ecae6"}
+        colours = {3e-2: "#f5c2e7", 3e-3: "#a6e3a1", 3e-4: "#89dceb"}
         for lr in colours:
             model = M.make_model(self.device)                     # same seed every time: identical start
             torch.manual_seed(0)                                  # identical batches too
@@ -394,9 +394,9 @@ class CourseScreen(Screen):
             for step, loss in M.train(model, self.ids, steps=steps, lr=lr, device=self.device, every=5):
                 losses.append(loss)
                 if step % 25 == 0:
-                    call(self.set_out, 7, Text(tr("co_r7_run", lr=f"{lr:g}") + f"  {step}/{steps}", style="bold #ffd166"))
+                    call(self.set_out, 7, Text(tr("co_r7_run", lr=f"{lr:g}") + f"  {step}/{steps}", style="bold #f9e2af"))
             runs.append((lr, losses, M.test_loss(model, self.test_ids, device=self.device)))
-        out = Text(tr("co_r7", n=steps) + "\n\n", style="bold #8ecae6")
+        out = Text(tr("co_r7", n=steps) + "\n\n", style="bold #89dceb")
         hi = max(max(l) for _, l, _ in runs)
         lo = min(min(l) for _, l, _ in runs)
         width = 48
@@ -406,11 +406,11 @@ class CourseScreen(Screen):
             for v in vals:
                 out.append(" ▁▂▃▄▅▆▇█"[min(8, max(0, round((v - lo) / ((hi - lo) or 1) * 8)))], style=colours[lr])
             out.append(f"  {losses[0]:.2f} → {losses[-1]:.2f}\n")
-        out.append("\n" + tr("co_r7_end") + "\n", style="bold #8ecae6")
+        out.append("\n" + tr("co_r7_end") + "\n", style="bold #89dceb")
         best = min(runs, key=lambda r: r[2])[0]
         for lr, _, test in runs:
             out.append(f"  lr {lr:<7g} {test:.3f}{'  ★' if lr == best else ''}\n", style=f"bold {colours[lr]}")
-        out.append("\n" + tr("co_r7_why"), style="#c9cce0")
+        out.append("\n" + tr("co_r7_why"), style="#bac2de")
         return out
 
     def _unbusy(self):

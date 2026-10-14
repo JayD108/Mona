@@ -42,7 +42,7 @@ register({
                "hinglish": "“{w}” tak padhne ke baad, har layer ke baad agle tukde ka guess:"},
     "lay_layer": {"en": "layer", "hi": "लेयर", "hinglish": "layer"},
     "lay_change": {"en": "← changed its mind", "hi": "← राय बदली", "hinglish": "← mind badla"},
-    "lay_keys": {"en": "←/→ move along the sentence   / edit   Esc back   F2 language  F3 depth  F4 romanize",
+    "lay_keys": {"en": "←/→ move along the sentence   / edit   Esc back   F3 depth",
                  "hi": "←/→ वाक्य में आगे-पीछे   / बदलें   Esc वापस   F2 भाषा  F3 गहराई  F4 रोमन",
                  "hinglish": "←/→ sentence mein aage-peeche   / edit   Esc wapas   F2 bhasha  F3 depth  F4 roman"},
 })
@@ -120,28 +120,28 @@ class LayersLab(Screen):
         rr = roman or (lambda s: s)
         # sentence with the current position highlighted
         chips = token_chips(self.trace.tokens[:self.pos + 1], roman)
-        chips.append(" ▶ ?", style="bold #ffd166")
+        chips.append(" ▶ ?", style="bold #f9e2af")
         self.query_one("#chips", Static).update(chips)
 
         word = rr(show_piece(self.trace.tokens[self.pos].text))
-        out = Text(tr("lay_at", w=word) + "\n\n", style="bold #8ecae6")
+        out = Text(tr("lay_at", w=word) + "\n\n", style="bold #89dceb")
         guesses = [layer[self.pos] for layer in self.trace.layer_guesses]       # [layer][top-3]
         width = max(cell_len(rr(show_piece(gs[0].token.text))) for gs in guesses) + 2
         peak = max(gs[0].prob for gs in guesses) or 1          # bars relative to the most confident layer
         prev_top = None
         for l, gs in enumerate(guesses):
             top = gs[0]
-            out.append(f"{tr('lay_layer')} {l + 1:>2}  ", style="#5a5f7c")
+            out.append(f"{tr('lay_layer')} {l + 1:>2}  ", style="#6c7086")
             bar = "█" * max(1, round(20 * top.prob / peak))
-            colour = "#06d6a0" if top.prob > 0.4 else ("#ffd166" if top.prob > 0.1 else "#8a8fb0")
+            colour = "#a6e3a1" if top.prob > 0.4 else ("#f9e2af" if top.prob > 0.1 else "#9399b2")
             piece = rr(show_piece(top.token.text))
             out.append(piece + " " * (width - cell_len(piece)), style=f"bold {colour}")
             out.append(f"{bar:<20} {top.prob:5.1%}   ", style=colour)
             for g in gs[1:]:
                 p = rr(show_piece(g.token.text))
-                out.append(f"{p} {g.prob:.0%}   ", style="#5a5f7c")
+                out.append(f"{p} {g.prob:.0%}   ", style="#6c7086")
             if prev_top is not None and top.token.id != prev_top:
-                out.append(tr("lay_change"), style="italic #f4a3c0")
+                out.append(tr("lay_change"), style="italic #f5c2e7")
             prev_top = top.token.id
             out.append("\n")
         self.query_one("#lens", Static).update(out)

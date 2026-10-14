@@ -79,9 +79,9 @@ def exp_greedy(gb, lang):
     p = {"en": "The history of India", "hi": "भारत का इतिहास", "hinglish": "Bharat ka itihaas"}[lang]
     for t in (0.0, 0.8):
         txt = _gen(gb, p, 60, temperature=t)
-        out.append(f"temperature {t}:  ", style="bold #ffd166")
-        out.append(f"“{p}{flat(txt)}”\n", style="italic #e8e8f0")
-        out.append(f"   repeated 4-word chunks: {_repeats(txt):.0%}\n\n", style="#8ecae6")
+        out.append(f"temperature {t}:  ", style="bold #f9e2af")
+        out.append(f"“{p}{flat(txt)}”\n", style="italic #cdd6f4")
+        out.append(f"   repeated 4-word chunks: {_repeats(txt):.0%}\n\n", style="#89dceb")
     return out
 
 
@@ -89,14 +89,14 @@ def exp_topchoice(gb, lang):
     p = {"en": "The history of India", "hi": "भारत का इतिहास", "hinglish": "Bharat ka itihaas"}[lang]
     txt = _gen(gb, p, 40, temperature=0.0)
     ids = gb.encode(p + txt)
-    out = Text("Once a phrase appears, how sure is MONA that it comes again? (greedy run)\n", style="#c9cce0")
+    out = Text("Once a phrase appears, how sure is MONA that it comes again? (greedy run)\n", style="#bac2de")
     probs = gb.probs(ids)
     for g in gb.next_word(ids, top=5):
         out.append(f"  {g.token.text!r:>16}  ", style="bold")
-        out.append("█" * max(1, round(30 * g.prob)), style="#06d6a0")
+        out.append("█" * max(1, round(30 * g.prob)), style="#a6e3a1")
         out.append(f" {g.prob:.0%}\n")
     out.append(f"\nGreedy decoding always takes the top bar. The top choice here has {probs.max().item():.0%}: "
-               "a loop that feeds itself.", style="#8ecae6")
+               "a loop that feeds itself.", style="#89dceb")
     return out
 
 
@@ -104,17 +104,17 @@ def exp_seeds(gb, lang):
     p = {"en": "My favourite food is", "hi": "मेरा पसंदीदा खाना", "hinglish": "Mera favourite khaana"}[lang]
     out = Text()
     for label, t in (("greedy (temperature 0)", 0.0), ("sampled (temperature 0.8)", 0.8)):
-        out.append(label + ", three runs:\n", style="bold #ffd166")
+        out.append(label + ", three runs:\n", style="bold #f9e2af")
         for seed in (1, 2, 3):
-            out.append(f"  “{p}{flat(_gen(gb, p, 14, temperature=t, seed=seed))}”\n", style="italic #e8e8f0")
+            out.append(f"  “{p}{flat(_gen(gb, p, 14, temperature=t, seed=seed))}”\n", style="italic #cdd6f4")
         out.append("\n")
     return out
 
 
 def exp_question(gb, lang):
     q = {"en": "What is the capital of India?", "hi": "भारत की राजधानी क्या है?", "hinglish": "Bharat ki rajdhani kya hai?"}[lang]
-    out = Text("Base MONA, asked a plain question:\n", style="bold #ffd166")
-    out.append(f"  “{q}{flat(_gen(gb, q, 40, temperature=0.7))}”\n", style="italic #e8e8f0")
+    out = Text("Base MONA, asked a plain question:\n", style="bold #f9e2af")
+    out.append(f"  “{q}{flat(_gen(gb, q, 40, temperature=0.7))}”\n", style="italic #cdd6f4")
     return out
 
 
@@ -122,10 +122,10 @@ def exp_qa_format(gb, lang):
     q = {"en": "What is the capital of India?", "hi": "भारत की राजधानी क्या है?", "hinglish": "Bharat ki rajdhani kya hai?"}[lang]
     a = {"en": "Answer:", "hi": "उत्तर:", "hinglish": "Jawab:"}[lang]
     prompt = f"{q}\n{a}"
-    out = Text("Same model, but the text now LOOKS like an answer comes next:\n", style="bold #ffd166")
-    out.append(f"  “{prompt}{flat(_gen(gb, prompt, 20, temperature=0.3))}”\n", style="italic #e8e8f0")
+    out = Text("Same model, but the text now LOOKS like an answer comes next:\n", style="bold #f9e2af")
+    out.append(f"  “{prompt}{flat(_gen(gb, prompt, 20, temperature=0.3))}”\n", style="italic #cdd6f4")
     out.append("\nThe model didn't get smarter. The pattern of the text changed what 'the likely next words' are.",
-               style="#8ecae6")
+               style="#89dceb")
     return out
 
 
@@ -134,7 +134,7 @@ def exp_chat_model(gb, lang):
     if not CHAT_WEIGHTS.exists():
         return Text("MONA-Chat isn't trained yet on this computer (it's made after pretraining). Chat tuning shows the model "
                     "thousands of examples written as  <|user|> question <|end|> <|assistant|> answer <|end|>, "
-                    "so it learns that an answer follows a question.", style="#e8e8f0")
+                    "so it learns that an answer follows a question.", style="#cdd6f4")
     import torch
     from .. import tokenizer as T
     from ..engine.lessons import load_model
@@ -143,43 +143,43 @@ def exp_chat_model(gb, lang):
     end = {gb.tok.token_to_id(T.END), gb.tok.token_to_id(T.EOT)}
     torch.manual_seed(0)
     reply = gb.tok.decode(list(m.generate(ids, 50, temperature=0.5, top_p=0.9, stop_ids=end)))
-    out = Text("MONA-Chat (same base model + chat tuning), same question:\n", style="bold #ffd166")
-    out.append(f"  “{flat(reply).strip()}”\n", style="italic #e8e8f0")
+    out = Text("MONA-Chat (same base model + chat tuning), same question:\n", style="bold #f9e2af")
+    out.append(f"  “{flat(reply).strip()}”\n", style="italic #cdd6f4")
     return out
 
 
 def exp_confident(gb, lang):
     p = {"en": "The capital of Australia is", "hi": "ऑस्ट्रेलिया की राजधानी", "hinglish": "Australia ki rajdhani"}[lang]
-    out = Text(f"“{p} …”  MONA's top guesses for the next token:\n", style="bold #ffd166")
+    out = Text(f"“{p} …”  MONA's top guesses for the next token:\n", style="bold #f9e2af")
     for g in gb.next_word(p, top=6):
         out.append(f"  {g.token.text!r:>14}  ", style="bold")
-        out.append("█" * max(1, round(40 * g.prob)), style="#f4a3c0")
+        out.append("█" * max(1, round(40 * g.prob)), style="#f5c2e7")
         out.append(f" {g.prob:.1%}\n")
-    out.append("\n(The true answer is Canberra. Is it on top? Is it even on the list?)", style="#8ecae6")
+    out.append("\n(The true answer is Canberra. Is it on top? Is it even on the list?)", style="#89dceb")
     return out
 
 
 def exp_confidence_trace(gb, lang):
     p = {"en": "The first person to walk on the Moon was", "hi": "चाँद पर चलने वाले पहले इंसान थे", "hinglish": "Chaand par chalne wale pehle insaan the"}[lang]
-    out = Text("A sentence MONA writes, each token coloured by how sure she was:\n  ", style="bold #ffd166")
-    out.append(p, style="italic #e8e8f0")
+    out = Text("A sentence MONA writes, each token coloured by how sure she was:\n  ", style="bold #f9e2af")
+    out.append(p, style="italic #cdd6f4")
     for step in gb.generate(p, n=20, temperature=0.7, top_p=0.9, seed=4):
-        colour = "#06d6a0" if step.prob > 0.5 else "#ffd166" if step.prob > 0.15 else "#f4a3c0"
+        colour = "#a6e3a1" if step.prob > 0.5 else "#f9e2af" if step.prob > 0.15 else "#f5c2e7"
         out.append(step.token.text, style=f"bold {colour}")
-    out.append("\n\n  green = sure (>50%)   yellow = unsure   pink = a guess (<15%)\n", style="#8a8fb0")
-    out.append("Facts and fluent filler are produced by exactly the same mechanism.", style="#8ecae6")
+    out.append("\n\n  green = sure (>50%)   yellow = unsure   pink = a guess (<15%)\n", style="#9399b2")
+    out.append("Facts and fluent filler are produced by exactly the same mechanism.", style="#89dceb")
     return out
 
 
 def exp_rag_hint(gb, lang):
     p = "Australia's capital city, Canberra, was chosen as a compromise. The capital of Australia is"
-    out = Text("Now put the fact in the text first (what RAG does), then ask again:\n", style="bold #ffd166")
+    out = Text("Now put the fact in the text first (what RAG does), then ask again:\n", style="bold #f9e2af")
     for g in gb.next_word(p, top=4):
         out.append(f"  {g.token.text!r:>14}  ", style="bold")
-        out.append("█" * max(1, round(40 * g.prob)), style="#06d6a0")
+        out.append("█" * max(1, round(40 * g.prob)), style="#a6e3a1")
         out.append(f" {g.prob:.1%}\n")
     out.append("\nWith the answer in its context, MONA can simply copy it. Without it, she can only guess what sounds likely.",
-               style="#8ecae6")
+               style="#89dceb")
     return out
 
 
@@ -188,14 +188,14 @@ def exp_eval_losses(gb, lang):
     _, evals = training_curves()
     out = Text()
     if not evals:
-        return Text("No evaluation log found.", style="#f4a3c0")
+        return Text("No evaluation log found.", style="#f5c2e7")
     last = evals[-1]
-    out.append(f"Held-out loss per language at {int(last['tokens']) / 1e9:.2f}B tokens (lower = better):\n", style="bold #ffd166")
+    out.append(f"Held-out loss per language at {int(last['tokens']) / 1e9:.2f}B tokens (lower = better):\n", style="bold #f9e2af")
     for k in ("english", "hindi", "hinglish", "awadhi"):
         if k in last:
             v = float(last[k])
             out.append(f"  {k:<9} ", style="bold")
-            out.append("█" * round(v * 6), style="#f4a3c0" if k == "awadhi" else "#06d6a0")
+            out.append("█" * round(v * 6), style="#f5c2e7" if k == "awadhi" else "#a6e3a1")
             out.append(f" {v:.2f}\n")
     return out
 
@@ -205,17 +205,17 @@ def exp_data_share(gb, lang):
     try:
         manifest = json.loads((config.TOKENS_DIR / "manifest.json").read_text())
     except OSError:
-        return Text("No data manifest found.", style="#f4a3c0")
+        return Text("No data manifest found.", style="#f5c2e7")
     share = {"english": 0.55, "hindi": 0.40, "hinglish": 0.0497, "awadhi": 0.0003}
     out = Text("What MONA could read, per language (and its share of each batch since the copyright fix):\n",
-               style="bold #ffd166")
+               style="bold #f9e2af")
     for k in ("english", "hindi", "hinglish", "awadhi"):
         n = manifest.get(k, {}).get("train_tokens", 0)
         out.append(f"  {k:<9} {n:>15,} tokens   {share[k]:7.2%} of every batch\n",
-                   style="bold #f4a3c0" if k == "awadhi" else "#e8e8f0")
+                   style="bold #f5c2e7" if k == "awadhi" else "#cdd6f4")
     eng, awa = manifest.get("english", {}).get("train_tokens", 0), manifest.get("awadhi", {}).get("train_tokens", 1)
     out.append(f"\nThere is {eng / max(awa, 1):,.0f}× more English than Awadhi verse. Repeating the verse more often would make "
-               "MONA memorise it instead of learning the language.", style="#8ecae6")
+               "MONA memorise it instead of learning the language.", style="#89dceb")
     return out
 
 
@@ -223,43 +223,43 @@ def exp_awadhi_tokens(gb, lang):
     samples = {"English": "The king walked into the forest with his brother.",
                "Hindi": "राजा अपने भाई के साथ जंगल में गया।",
                "Awadhi": "राम लखन सिय बन गवने तहाँ।"}
-    out = Text("Tokens per word (fewer = the tokenizer knows these words well):\n", style="bold #ffd166")
+    out = Text("Tokens per word (fewer = the tokenizer knows these words well):\n", style="bold #f9e2af")
     for name, s in samples.items():
         n = len(gb.encode(s))
         out.append(f"  {name:<8} {n / len(s.split()):.2f}   ", style="bold")
-        out.append(" ".join(t.text for t in gb.tokens(s)) + "\n", style="#c9cce0")
-    out.append("\nRare words are cut into more, smaller pieces: harder to learn from very little data.", style="#8ecae6")
+        out.append(" ".join(t.text for t in gb.tokens(s)) + "\n", style="#bac2de")
+    out.append("\nRare words are cut into more, smaller pieces: harder to learn from very little data.", style="#89dceb")
     return out
 
 
 def exp_word_costs(gb, lang):
     words = ["the", "India", "information", "unbelievably", "photosynthesis", "नमस्ते", "विद्यालय", "Ramcharitmanas"]
-    out = Text("How many tokens each word costs MONA:\n", style="bold #ffd166")
+    out = Text("How many tokens each word costs MONA:\n", style="bold #f9e2af")
     for w in words:
         toks = gb.tokens(" " + w)
         out.append(f"  {w:<16} {len(toks)}  ", style="bold")
-        out.append(" | ".join(t.text.strip() or "▁" for t in toks) + "\n", style="#c9cce0")
+        out.append(" | ".join(t.text.strip() or "▁" for t in toks) + "\n", style="#bac2de")
     return out
 
 
 def exp_merge_order(gb, lang):
     from ..engine.lessons import bpe_replay
     out = Text("Replay the tokenizer on “unbelievably”: merges learned EARLY (low rank) are common pairs.\n",
-               style="bold #ffd166")
+               style="bold #f9e2af")
     for step in bpe_replay(gb.tok, " unbelievably")[1:]:
-        out.append(f"  rank {step.rank:>6,}  merge “{step.merged}”  → ", style="#e8e8f0")
-        out.append(" ".join(step.pieces) + "\n", style="#c9cce0")
+        out.append(f"  rank {step.rank:>6,}  merge “{step.merged}”  → ", style="#cdd6f4")
+        out.append(" ".join(step.pieces) + "\n", style="#bac2de")
     return out
 
 
 def exp_frequency(gb, lang):
     out = Text("Token id ≈ how early the piece was learned (lower id = more frequent in the training data):\n",
-               style="bold #ffd166")
+               style="bold #f9e2af")
     for w in (" the", " and", " India", " believe", " photos", " synthesis"):
         ids = gb.encode(w)
-        out.append(f"  {w!r:<12} ids {ids}\n", style="#e8e8f0")
+        out.append(f"  {w!r:<12} ids {ids}\n", style="#cdd6f4")
     out.append("\nBPE gives one token to pieces it saw very often. Rare words are spelled out from smaller, common pieces.",
-               style="#8ecae6")
+               style="#89dceb")
     return out
 
 
@@ -466,28 +466,28 @@ class MysteryScreen(Screen):
         app, tr = self.app, self.app.tr
         cid, icon, d, fns, correct, stage = self.current()
         title, symptom, labels, causes, why, code = d[app.state.lang]
-        out = Text(f"{icon} {title}\n\n", style="bold #ffd166")
-        out.append(tr("my_symptom") + "\n", style="bold #f4a3c0")
-        out.append(symptom + "\n\n", style="#e8e8f0")
-        out.append(tr("my_experiments") + "\n", style="bold #8ecae6")
+        out = Text(f"{icon} {title}\n\n", style="bold #f9e2af")
+        out.append(tr("my_symptom") + "\n", style="bold #f5c2e7")
+        out.append(symptom + "\n\n", style="#cdd6f4")
+        out.append(tr("my_experiments") + "\n", style="bold #89dceb")
         for i, label in enumerate(labels):
             done = (cid, i) in self.evidence
-            out.append(f"  {i + 1}. {label}{'  ✓' if done else ''}\n", style="#06d6a0" if done else "#e8e8f0")
-        out.append("\n" + tr("my_causes") + "\n", style="bold #8ecae6")
+            out.append(f"  {i + 1}. {label}{'  ✓' if done else ''}\n", style="#a6e3a1" if done else "#cdd6f4")
+        out.append("\n" + tr("my_causes") + "\n", style="bold #89dceb")
         chosen = self.answers.get(cid)
         for i, cause in enumerate(causes):
-            style = "#e8e8f0"
+            style = "#cdd6f4"
             if chosen is not None:
-                style = "bold #06d6a0" if i == correct else ("bold #f4a3c0" if i == chosen else "#8a8fb0")
+                style = "bold #a6e3a1" if i == correct else ("bold #f5c2e7" if i == chosen else "#9399b2")
             out.append(f"  {'ABC'[i]}. {cause}\n", style=style)
         self.query_one("#case", Static).update(app.roman(out.plain) if app.state.romanize else out)
 
-        ev = Text(tr("my_evidence") + "\n\n", style="bold #8ecae6")
+        ev = Text(tr("my_evidence") + "\n\n", style="bold #89dceb")
         if self.running and self.running[0] == cid:
-            ev.append(tr("my_running"), style="bold #ffd166")
+            ev.append(tr("my_running"), style="bold #f9e2af")
         for i in range(3):
             if (cid, i) in self.evidence:
-                ev.append(f"[{i + 1}] {labels[i]}\n", style="bold #e8e8f0")
+                ev.append(f"[{i + 1}] {labels[i]}\n", style="bold #cdd6f4")
                 ev.append_text(self.evidence[(cid, i)])
                 ev.append("\n\n")
         self.query_one("#evidence", Static).update(ev)
@@ -496,13 +496,13 @@ class MysteryScreen(Screen):
         verdict = self.query_one("#verdict", Static)
         verdict.display = chosen is not None
         if chosen is not None:
-            v = Text(tr("my_right") if chosen == correct else tr("my_wrong"), style="bold #06d6a0" if chosen == correct else "bold #f4a3c0")
-            v.append("\n\n" + tr("my_why") + "\n", style="bold #8ecae6")
-            v.append(why + "\n\n", style="#e8e8f0")
-            v.append(tr("my_code") + "\n", style="bold #cdb4db")
-            v.append(code, style="#c9cce0")
+            v = Text(tr("my_right") if chosen == correct else tr("my_wrong"), style="bold #a6e3a1" if chosen == correct else "bold #f5c2e7")
+            v.append("\n\n" + tr("my_why") + "\n", style="bold #89dceb")
+            v.append(why + "\n\n", style="#cdd6f4")
+            v.append(tr("my_code") + "\n", style="bold #cba6f7")
+            v.append(code, style="#bac2de")
             if len([k for k, a in self.answers.items() if a == next(c for c in CASES if c[0] == k)[4]]) == len(CASES):
-                v.append("\n\n" + tr("my_badge"), style="bold #ffd166")
+                v.append("\n\n" + tr("my_badge"), style="bold #f9e2af")
             verdict.update(app.roman(v.plain) if app.state.romanize else v)
 
     def action_experiment(self, i: int):
@@ -522,7 +522,7 @@ class MysteryScreen(Screen):
         try:
             result = case[3][i](self.app.gb, self.app.state.lang)
         except Exception as e:                              # an experiment must never crash the app
-            result = Text(f"⚠ {type(e).__name__}: {e}", style="bold #f4a3c0")
+            result = Text(f"⚠ {type(e).__name__}: {e}", style="bold #f5c2e7")
         self.app.call_from_thread(self._done, cid, i, result)
 
     def _done(self, cid, i, result):

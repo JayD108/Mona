@@ -57,7 +57,7 @@ register({
                 "hinglish": "(MONA abhi train ho rahi hai, isliye bada model CPU par chalega: dheema, par training disturb nahi hogi)"},
     "cmp_tokens": {"en": "Tokens needed for your text:  MONA {a}  ·  {name} {b}", "hi": "आपके पाठ के लिए टोकन:  MONA {a}  ·  {name} {b}",
                    "hinglish": "Tumhare text ke liye tokens:  MONA {a}  ·  {name} {b}"},
-    "cmp_keys": {"en": "Enter ask both   Esc back   F2 language  F3 depth  F4 romanize",
+    "cmp_keys": {"en": "Enter ask both   Esc back   F3 depth",
                  "hi": "Enter दोनों से पूछें   Esc वापस   F2 भाषा  F3 गहराई  F4 रोमन",
                  "hinglish": "Enter dono se poochho   Esc wapas   F2 bhasha  F3 depth  F4 roman"},
 })
@@ -117,7 +117,7 @@ class CompareLab(Screen):
     def _found(self, big):
         self.big = big
         if not big:
-            self.query_one("#right", Static).update(Text(self.app.tr("cmp_none"), style="#f4a3c0"))
+            self.query_one("#right", Static).update(Text(self.app.tr("cmp_none"), style="#f5c2e7"))
 
     def on_input_submitted(self, event):
         self.ask(event.value)
@@ -141,17 +141,17 @@ class CompareLab(Screen):
         out_ids = list(model.generate(torch.tensor([ids]), 80, temperature=0.7, top_p=0.9, stop_ids=stop))
         mona_text = gb.tok.decode(out_ids).strip()
         mona_s = time.perf_counter() - t
-        left = Text(f"{label}  ·  110M parameters  ·  2.5B training tokens\n", style="bold #ffd166")
-        left.append(f"{len(out_ids) / mona_s:.1f} tokens/s on CPU\n\n", style="#5a5f7c")
-        left.append(rr(mona_text), style="#e8e8f0")
+        left = Text(f"{label}  ·  110M parameters  ·  2.5B training tokens\n", style="bold #f9e2af")
+        left.append(f"{len(out_ids) / mona_s:.1f} tokens/s on CPU\n\n", style="#6c7086")
+        left.append(rr(mona_text), style="#cdd6f4")
         self.app.call_from_thread(self.query_one("#left", Static).update, left)
         if not self.big:
             return
         name = self.big["name"]
         cpu = training_running()
-        waiting = Text(f"{name} …\n", style="bold #8ecae6")
+        waiting = Text(f"{name} …\n", style="bold #89dceb")
         if cpu:
-            waiting.append(self.app.tr("cmp_cpu"), style="italic #8a8fb0")
+            waiting.append(self.app.tr("cmp_cpu"), style="italic #9399b2")
         self.app.call_from_thread(self.query_one("#right", Static).update, waiting)
         options = {"temperature": 0.7, "num_predict": 200}
         if cpu:
@@ -165,14 +165,14 @@ class CompareLab(Screen):
                                            "options": {**options, "num_predict": 1}})
             big_tokens = raw.get("prompt_eval_count")
         except Exception as e:
-            self.app.call_from_thread(self.query_one("#right", Static).update, Text(f"{name}: {e}", style="#f4a3c0"))
+            self.app.call_from_thread(self.query_one("#right", Static).update, Text(f"{name}: {e}", style="#f5c2e7"))
             return
         params = self.big.get("details", {}).get("parameter_size", "?")
         tps = r.get("eval_count", 0) / max(r.get("eval_duration", 1) / 1e9, 1e-6)
-        right = Text(f"{name}  ·  {params} parameters  ·  {'CPU' if cpu else 'GPU'}\n", style="bold #8ecae6")
-        right.append(f"{tps:.1f} tokens/s · {big_s:.0f} s\n\n", style="#5a5f7c")
-        right.append(rr(answer[:900]), style="#e8e8f0")
+        right = Text(f"{name}  ·  {params} parameters  ·  {'CPU' if cpu else 'GPU'}\n", style="bold #89dceb")
+        right.append(f"{tps:.1f} tokens/s · {big_s:.0f} s\n\n", style="#6c7086")
+        right.append(rr(answer[:900]), style="#cdd6f4")
         self.app.call_from_thread(self.query_one("#right", Static).update, right)
         mona_tokens = len(gb.encode(q))
-        tok = Text(self.app.tr("cmp_tokens", a=mona_tokens, name=name, b=big_tokens), style="bold #06d6a0")
+        tok = Text(self.app.tr("cmp_tokens", a=mona_tokens, name=name, b=big_tokens), style="bold #a6e3a1")
         self.app.call_from_thread(self.query_one("#tokens", Static).update, tok)

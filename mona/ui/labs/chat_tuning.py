@@ -70,7 +70,7 @@ register({
                   "hinglish": "Chat data pretraining ke baad apne-aap banega. Isme honge: ~80K English chats (smol-smoltalk), "
                               "Hindi chats (Aya), Hindi aur Hinglish Wikipedia Q&A, ~12K Tulsidas chaupai-completion tasks "
                               "(sirf public-domain chaupaiyan), aur \"tum kaun ho?\" examples."},
-    "ct_keys": {"en": "Esc back   F5 Template  F6 Base vs Chat  F7 Examples   N next example   F2 language  F3 depth  F4 romanize",
+    "ct_keys": {"en": "Esc back   F5 Template  F6 Base vs Chat  F7 Examples   N next example   F3 depth",
                 "hi": "Esc वापस   F5 ढाँचा  F6 Base बनाम Chat  F7 उदाहरण   N अगला उदाहरण   F2 भाषा  F3 गहराई  F4 रोमन",
                 "hinglish": "Esc wapas   F5 Template  F6 Base vs Chat  F7 Examples   N agla example   F2 bhasha  F3 depth  F4 roman"},
 })
@@ -158,15 +158,15 @@ class ChatTuningLab(Screen):
         for tid, m in zip(ids, mask):
             name = tok.id_to_token(tid)
             if name in T.SPECIAL_TOKENS:
-                out.append(f" {name} ", style="bold #14172b on #cdb4db")
+                out.append(f" {name} ", style="bold #1e1e2e on #cba6f7")
             else:
                 piece = self.rr(show_piece(tok.decode([tid])))
-                out.append(f"{piece}", style="bold #14172b on #06d6a0" if m else "#8a8fb0 on #2b2f55")
+                out.append(f"{piece}", style="bold #1e1e2e on #a6e3a1" if m else "#9399b2 on #2b2f55")
             out.append(" ")
         out.append("\n\n")
-        out.append(" LEARN ", style="bold #14172b on #06d6a0")
-        out.append("  " + tr("ct_learn") + "\n", style="#c9cce0")
-        out.append(tr("ct_count", a=sum(mask), n=len(mask)), style="bold #8ecae6")
+        out.append(" LEARN ", style="bold #1e1e2e on #a6e3a1")
+        out.append("  " + tr("ct_learn") + "\n", style="#bac2de")
+        out.append(tr("ct_count", a=sum(mask), n=len(mask)), style="bold #89dceb")
         self.query_one("#tpl-view", Static).update(out)
 
     # ── base vs chat ─────────────────────────────────────────────────────────
@@ -199,12 +199,12 @@ class ChatTuningLab(Screen):
             return
         base, chat = self.cmp
         out = Text(tr("ct_base") + "\n", style="bold #f78c6b")
-        out.append(self.rr(base.strip()) + "\n\n", style="#e8e8f0")
-        out.append(tr("ct_chat") + "\n", style="bold #06d6a0")
+        out.append(self.rr(base.strip()) + "\n\n", style="#cdd6f4")
+        out.append(tr("ct_chat") + "\n", style="bold #a6e3a1")
         if chat is None:
-            out.append(tr("ct_nochat"), style="italic #8a8fb0")
+            out.append(tr("ct_nochat"), style="italic #9399b2")
         else:
-            out.append(self.rr(chat.strip()), style="#e8e8f0")
+            out.append(self.rr(chat.strip()), style="#cdd6f4")
         view.update(out)
 
     # ── real SFT examples ────────────────────────────────────────────────────
@@ -239,12 +239,12 @@ class ChatTuningLab(Screen):
             view.update(tr("loading"))
             return
         if not self.examples:
-            view.update(Text(tr("ct_nodata"), style="#c9cce0"))
+            view.update(Text(tr("ct_nodata"), style="#bac2de"))
             return
         ex = self.examples[self.ex_i]
-        out = Text(f"[{ex['source']}]  {self.ex_i + 1}/{len(self.examples)}\n\n", style="bold #8ecae6")
-        colours = {"system": "#cdb4db", "user": "#8ecae6", "assistant": "#06d6a0"}
+        out = Text(f"[{ex['source']}]  {self.ex_i + 1}/{len(self.examples)}\n\n", style="bold #89dceb")
+        colours = {"system": "#cba6f7", "user": "#89dceb", "assistant": "#a6e3a1"}
         for m in ex["messages"]:
             out.append(f"{m['role']}: ", style=f"bold {colours[m['role']]}")
-            out.append(self.rr(m["content"][:500]) + "\n\n", style="#e8e8f0")
+            out.append(self.rr(m["content"][:500]) + "\n\n", style="#cdd6f4")
         view.update(out)
