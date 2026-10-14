@@ -199,6 +199,8 @@ good specimen: you can see *why*.
 
 **The whole project explained in one place: [`docs/MONA_GUIDE.md`](docs/MONA_GUIDE.md).**
 
+**Contributing? Start with [`docs/HANDOFF.md`](docs/HANDOFF.md)**: the code map, how to run the tests, conventions, and the state of the training work.
+
 ---
 
 ## Build MONA yourself
