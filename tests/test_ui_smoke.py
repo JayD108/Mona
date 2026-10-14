@@ -4,6 +4,7 @@ Run:  python -m pytest tests -q        (or:  python tests/test_ui_smoke.py)
 It needs MONA's weights (models/mona/ or ~/.mona/assets). Settings are redirected to a temp folder.
 """
 import asyncio
+import os
 import sys
 import tempfile
 from pathlib import Path
@@ -22,6 +23,7 @@ EXPLORE = ["mysteries", "incidents", "course", "journey", "budget", "tour", "com
 
 
 async def _run():
+    os.environ["MONA_REDUCED_MOTION"] = "1"             # welcome screen shows everything at once
     app = MonaApp()
     async with app.run_test(size=(150, 46)) as pilot:
         await pilot.pause(0.5)
@@ -72,10 +74,30 @@ async def _run():
         await pilot.pause(0.3)
 
 
+async def _welcome_animation():
+    os.environ.pop("MONA_REDUCED_MOTION", None)
+    app = MonaApp()
+    async with app.run_test(size=(150, 46)) as pilot:
+        await pilot.pause(0.3)
+        welcome = app.screen
+        assert type(welcome).__name__ == "WelcomeScreen" and not welcome.ready      # animating, choices hidden
+        await pilot.press("space")                                                   # any key skips the animation
+        await pilot.pause(0.3)
+        assert welcome.ready
+        await pilot.press("escape")                                                  # now Esc leaves the screen
+        await pilot.pause(0.3)
+        assert type(app.screen).__name__ == "HomeScreen"
+
+
 def test_every_screen_opens():
     asyncio.run(_run())
 
 
+def test_welcome_animation_can_be_skipped():
+    asyncio.run(_welcome_animation())
+
+
 if __name__ == "__main__":
+    test_welcome_animation_can_be_skipped()
     test_every_screen_opens()
-    print("ok: every screen opened at both depths")
+    print("ok: welcome animation skips; every screen opened at both depths")

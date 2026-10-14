@@ -88,11 +88,14 @@ TabPane { padding: 0 1; }
 
 #check-box { align: center middle; padding: 2 4; }
 #wel-box { align: center middle; padding: 1 4; }
-#wel-box #avatar { height: 5; }
-#wel-text { margin: 1 0; color: #cdd6f4; width: 120; }
-#wel-choices { width: 44; height: 5; border: round #89dceb; margin: 1 0 0 0; }
-#wel-name { width: 44; }
-#wel-keys { margin: 1 0 0 0; }
+#wel-logo { width: 90; height: 5; content-align: center middle; }
+#wel-tag { width: 90; height: 1; margin: 1 0 0 0; content-align: center middle; }
+#wel-text { width: 90; height: auto; margin: 1 0 0 0; padding: 1 3; color: #cdd6f4; border: round #89dceb;
+            border-title-align: center; border-title-color: #f9e2af; border-title-style: bold; }
+#wel-ask { width: 90; margin: 1 0 0 0; content-align: center middle; }
+#wel-choices { width: 44; height: 6; margin: 0 23; }
+#wel-name { width: 44; margin: 1 23 0 23; }
+#wel-keys { width: 90; margin: 1 0 0 0; content-align: center middle; }
 
 /* explore screens: a list on the left, the details on the right */
 #tour-cols { height: 1fr; }
